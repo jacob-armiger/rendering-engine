@@ -1,6 +1,10 @@
 # CS452-Starter
 Starter code for CS452 - Computer Graphics
 
+## URLs for hydra machines
+https://web.eecs.utk.edu/~jarmiger/dynamic-degree/  
+https://help.eecs.utk.edu/knowledge-base/linux-topics/user-websites  
+
 ## Compatibility
 
 Check if your browser is usable here:
