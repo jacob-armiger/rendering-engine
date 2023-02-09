@@ -29,6 +29,10 @@ function main() {
   gl.depthFunc(gl.LEQUAL);
   gl.enable(gl.DEPTH_TEST);
 
+  // Setup Controls
+  sliderVals = new Map()
+  sliderVals = setupUI(sliderVals);
+
   // Draw the scene repeatedly
   let then = 0.0;
   function render(now) {
@@ -36,7 +40,7 @@ function main() {
     const deltaTime = now - then;
     then = now;
 
-    drawScene(deltaTime);
+    drawScene(deltaTime, sliderVals);
 
     requestAnimationFrame(render);
   }
@@ -58,8 +62,6 @@ function main() {
                    zNear,
                    zFar);
 
-  // Setup Controls
-  setupUI();
 
   // Right now, in draw, the scene will not render until the drawable is prepared
   // this allows us to acynchronously load content. If you are not familiar with async
@@ -68,11 +70,12 @@ function main() {
   setupScene();
 }
 
-function setupUI() {
+function setupUI(sliderDict) {
   // in index.html we need to setup some callback functions for the sliders
   // right now just have them report the values beside the slider.
   let sliders = ['cam', 'look'];
   let dims = ['X', 'Y', 'Z'];
+
   // for cam and look UI..
   sliders.forEach(controlType => {
     // for x, y, z control slider...
@@ -81,19 +84,29 @@ function setupUI() {
       console.log(`Setting up control for ${slideID}`);
       let slider = document.getElementById(slideID);
       let sliderVal = document.getElementById(`${slideID}Val`);
+      // Initialize dictionary values
+      sliderDict.set(sliderVal.id, sliderVal.value)
+
       // These are called "callback functions", essentially when the input
       // value for the slider or the field beside the slider change,
       // run the code we supply here!
       slider.oninput = () => {
         let newVal = slider.value;
         sliderVal.value = newVal;
+
+        // update slider dictionary on slider change
+        sliderDict.set(sliderVal.id, sliderVal.value)
       };
       sliderVal.oninput = () => {
         let newVal = sliderVal.value;
         slider.value = newVal;
+
+        // update slider dictionary on input change
+        sliderDict.set(sliderVal.id, sliderVal.value)
       };
     });
   });
+  return sliderDict
 }
 
 // Async as it loads resources over the network.
@@ -104,7 +117,7 @@ async function setupScene() {
   initializeMyObject(vertSource, fragSource, objData);
 }
 
-function drawScene(deltaTime) {
+function drawScene(deltaTime, sliderVals) {
   globalTime += deltaTime;
 
   // Clear the color buffer with specified clear color
@@ -121,8 +134,9 @@ function drawScene(deltaTime) {
                       );
 
   let viewMatrix = glMatrix.mat4.create();
-  let cameraPos = [0.0, 0.0, Math.sin(globalTime) * 4.0];
-  let cameraFocus = [0.0, 0.0, -6.0];
+  // let cameraPos = [0.0, 0.0, Math.sin(globalTime) * 4.0];
+  let cameraPos = [sliderVals.get("camXVal"), sliderVals.get("camYVal"), sliderVals.get("camZVal")];
+  let cameraFocus = [sliderVals.get("lookXVal"), sliderVals.get("lookYVal"), sliderVals.get("lookZVal")];
   glMatrix.mat4.lookAt(viewMatrix,
                        cameraPos,
                        cameraFocus,
