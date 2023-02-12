@@ -111,10 +111,11 @@ function setupUI(sliderDict) {
 
 // Async as it loads resources over the network.
 async function setupScene() {
-  let objData = await loadNetworkResourceAsText('resources/models/sphere.obj');
+  let sphereData = await loadNetworkResourceAsText('resources/models/sphere.obj');
+  let bunnyData = await loadNetworkResourceAsText('resources/models/bunny.obj');
   let vertSource = await loadNetworkResourceAsText('resources/shaders/verts/bary300.vert');
   let fragSource = await loadNetworkResourceAsText('resources/shaders/frags/bary300.frag');
-  initializeMyObject(vertSource, fragSource, objData);
+  initializeMyObject(vertSource, fragSource, sphereData);
 }
 
 function drawScene(deltaTime, sliderVals) {
@@ -123,32 +124,29 @@ function drawScene(deltaTime, sliderVals) {
   // Clear the color buffer with specified clear color
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-  let modelMatrix = glMatrix.mat4.create();
-  let objectWorldPos = [0.0, 0.0, -6.0];
-  let rotationAxis = [1.0, 1.0, 0.0];
-  glMatrix.mat4.translate(modelMatrix, modelMatrix, objectWorldPos);
-  glMatrix.mat4.rotate(modelMatrix,
-                       modelMatrix,
-                       globalTime,
-                       rotationAxis
-                      );
+  for (let i = 0; i < 4; i++) {
+    let modelMatrix = glMatrix.mat4.create();
+    let objectWorldPos = [0.0 + i*2.5, 0.0, -6.0];
+    let rotationAxis = [1.0, 1.0, 0.0];
+    let objectScale = [1 * i, 1, 1]
+    glMatrix.mat4.translate(modelMatrix, modelMatrix, objectWorldPos);
+    glMatrix.mat4.rotate(modelMatrix, modelMatrix, globalTime, rotationAxis);
+    glMatrix.mat4.scale(modelMatrix, modelMatrix, objectScale);
 
-  let viewMatrix = glMatrix.mat4.create();
-  // let cameraPos = [0.0, 0.0, Math.sin(globalTime) * 4.0];
-  let cameraPos = [sliderVals.get("camXVal"), sliderVals.get("camYVal"), sliderVals.get("camZVal")];
-  let cameraFocus = [sliderVals.get("lookXVal"), sliderVals.get("lookYVal"), sliderVals.get("lookZVal")];
-  glMatrix.mat4.lookAt(viewMatrix,
-                       cameraPos,
-                       cameraFocus,
-                       [0.0, 1.0, 0.0]
-                      );
+    let viewMatrix = glMatrix.mat4.create();
+    // let cameraPos = [0.0, 0.0, Math.sin(globalTime) * 4.0];
+    let cameraPos = [sliderVals.get("camXVal"), sliderVals.get("camYVal"), sliderVals.get("camZVal")];
+    let cameraFocus = [sliderVals.get("lookXVal"), sliderVals.get("lookYVal"), sliderVals.get("lookZVal")];
+    glMatrix.mat4.lookAt(viewMatrix, cameraPos, cameraFocus, [0.0, 1.0, 0.0]);
 
-  modelViewMatrix = glMatrix.mat4.create();
-  glMatrix.mat4.mul(modelViewMatrix, viewMatrix, modelMatrix);
+    modelViewMatrix = glMatrix.mat4.create();
+    glMatrix.mat4.mul(modelViewMatrix, viewMatrix, modelMatrix);
 
-  if (myDrawableInitialized){
-    myDrawable.draw();
-  }
+    if (myDrawableInitialized){
+      myDrawable.draw();
+    };
+  };
+
 }
 
 function initializeMyObject(vertSource, fragSource, objData) {
@@ -219,7 +217,6 @@ function initializeMyObject(vertSource, fragSource, objData) {
       modelViewMatrix
     );
   };
-
   myDrawableInitialized = true;
 }
 
