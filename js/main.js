@@ -126,14 +126,30 @@ function drawScene(deltaTime, sliderVals) {
   // Clear the color buffer with specified clear color
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-  for (let i = 0; i < 4; i++) {
+  // Draw planets
+  for (let planet of planets) {
     let modelMatrix = glMatrix.mat4.create();
-    let objectWorldPos = [0.0 + i*2.5, 0.0, -6.0];
-    let rotationAxis = [1.0, 1.0, 0.0];
-    let objectScale = [1 * i, 1, 1]
-    glMatrix.mat4.translate(modelMatrix, modelMatrix, objectWorldPos);
-    glMatrix.mat4.rotate(modelMatrix, modelMatrix, globalTime, rotationAxis);
+    let objectWorldPos = planet.position;
+    let orbitTrans = planet.calcPos(globalTime);
+    let rotationAxis = [0.0, 1.0, 0.0];
+    let objectScale = glMatrix.mat4.multiplyScalar(
+      [1, 1, 1],
+      [1, 1, 1],
+      planet.scale
+    );
+    // scale -> rotation on axis to direction -> translate to distance -> rotate around sun
+    // glMatrix.mat4.translate(modelMatrix, modelMatrix, objectWorldPos);
+    // glMatrix.mat4.rotate(modelMatrix, modelMatrix, globalTime, rotationAxis);
+    // glMatrix.mat4.scale(modelMatrix, modelMatrix, objectScale);
+
+    // CHange size if planet
     glMatrix.mat4.scale(modelMatrix, modelMatrix, objectScale);
+    // Translate to distance from center
+    glMatrix.mat4.translate(modelMatrix, modelMatrix, objectWorldPos);
+    // Translate in orbit based on time
+    glMatrix.mat4.translate(modelMatrix, modelMatrix, orbitTrans); // TODO: figure out how to orbit around sun insterad of own position
+    // Rotate on axis
+    glMatrix.mat4.rotate(modelMatrix, modelMatrix, globalTime, rotationAxis);
 
     let viewMatrix = glMatrix.mat4.create();
     // let cameraPos = [0.0, 0.0, Math.sin(globalTime) * 4.0];
