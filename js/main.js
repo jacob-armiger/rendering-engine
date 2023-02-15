@@ -9,6 +9,8 @@ var modelViewMatrix = null;
 var projectionMatrix = null;
 var globalTime = 0.0;
 var parsedData = null;
+// TODO: clean up planet api
+let planets = createPlanetData()
 
 function main() {
   const canvas = document.getElementById('glCanvas');
