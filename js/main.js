@@ -131,7 +131,6 @@ function drawScene(deltaTime, sliderVals) {
     let modelMatrix = glMatrix.mat4.create();
 
     let objectWorldPos = planet.position;
-    let orbitAxis = planet.calcPos(globalTime);
     let rotationAxis = [0.0, 1.0, 0.0];
     let objectScale = glMatrix.mat4.multiplyScalar(
       [1, 1, 1],
@@ -139,13 +138,13 @@ function drawScene(deltaTime, sliderVals) {
       planet.scale
     );
     
+    // 7 matrices to position each sphere by end of lab
     // scale -> rotation on axis to direction -> translate to distance -> rotate around sun
-    glMatrix.mat4.rotate(modelMatrix, modelMatrix, globalTime*planet.speed, orbitAxis);
+    glMatrix.mat4.rotate(modelMatrix, modelMatrix, globalTime*planet.speed, planet.orbitVector);
     glMatrix.mat4.translate(modelMatrix, modelMatrix, objectWorldPos);
     glMatrix.mat4.rotate(modelMatrix, modelMatrix, globalTime, rotationAxis);
     glMatrix.mat4.scale(modelMatrix, modelMatrix, objectScale);
 
-    // 7 matrices to position each sphere by end of lab
     // glMatrix.mat4.scale(modelMatrix, modelMatrix, objectScale);
     // glMatrix.mat4.rotate(modelMatrix, modelMatrix, globalTime, rotationAxis);
     // glMatrix.mat4.translate(modelMatrix, modelMatrix, objectWorldPos);
@@ -155,7 +154,7 @@ function drawScene(deltaTime, sliderVals) {
     // // Translate to distance from center
     // // glMatrix.mat4.translate(modelMatrix, modelMatrix, objectWorldPos);
     // // Translate in orbit based on time
-    // glMatrix.mat4.translate(modelMatrix, modelMatrix, orbit); // TODO: figure out how to orbit around sun insterad of own position
+    // glMatrix.mat4.translate(modelMatrix, modelMatrix, orbit);
     // // Rotate on axis
     // glMatrix.mat4.rotate(modelMatrix, modelMatrix, globalTime, rotationAxis);
 
