@@ -20,7 +20,7 @@ class Planet {
 // z = radius * sin(theta)
 
 function createPlanetData() {
-    let ratio = 0.8
+    let ratio = 2.5           // This is NOT a hard coded value for object bounds. This is used for experimenting with object system sizes 
 
     let sun = new Planet() // 16 ratio
     sun.scale = 3*ratio
@@ -81,6 +81,6 @@ function createPlanetData() {
     pluto.speed = 1.03
 
     let planets = [sun, mercury,venus,earth,mars,jupiter,saturn,uranus,neptune,pluto]
-    // let planets = [sun, mercury, earth, mars]
+    // let planets = [sun, mercury, venus, earth, mars]
     return planets
 }

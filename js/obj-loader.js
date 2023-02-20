@@ -73,7 +73,15 @@ class OBJData {
         vertices: [],
         textureCoords: [],
         vertexNormals: [],
-        faces: []
+        faces: [],
+        boundingBox: { 
+          maxX: 0,
+          maxY: 0,
+          maxZ: 0,
+          minX: 0,
+          minY: 0,
+          minZ: 0,
+        },
       });
       this.currentGroup = '';
       this.smoothingGroup = 0;
@@ -156,6 +164,20 @@ class OBJData {
     const textureCoords = model.textureCoords;
     const vertexNormals = model.vertexNormals;
 
+    let span = []
+    let unitspan = []
+    let bbox = model.boundingBox
+
+    // Create NORMALIZED scaling vector based on box bounds
+    let maxXYZ = glMatrix.vec3.fromValues(bbox.maxX, bbox.maxY, bbox.maxZ)
+    let minXYZ = glMatrix.vec3.fromValues(bbox.minX, bbox.minY, bbox.minZ)
+    glMatrix.vec3.sub(span, maxXYZ, minXYZ)
+    glMatrix.vec3.normalize(unitspan, span)
+    let xScale = unitspan[0] / span[0]
+    let yScale = unitspan[1] / span[1]
+    let zScale = unitspan[2] / span[2]
+    let scalingVector = glMatrix.vec3.fromValues(xScale, yScale, zScale)
+
     // If your model does not have vertex normals, you should detect that here
     // and can calculate them here.
 
@@ -206,6 +228,7 @@ class OBJData {
       normals: normalData,
       vertices: vertexData,
       barycentricCoords: barycentricCoords,
+      boundingVector: scalingVector,
     }
   }
 
@@ -216,7 +239,15 @@ class OBJData {
       vertices: [],
       textureCoords: [],
       vertexNormals: [],
-      faces: []
+      faces: [],
+      boundingBox: { 
+        maxX: 0,
+        maxY: 0,
+        maxZ: 0,
+        minX: 0,
+        minY: 0,
+        minZ: 0,
+      },
     });
     this.currentGroup = '';
     this.smoothingGroup = 0;
@@ -234,6 +265,26 @@ class OBJData {
     const z = lineItems.length >= 4 ? parseFloat(lineItems[3]) : 0.0;
 
     this.currentModel().vertices.push({ x, y, z });
+
+    // Update bounding Box
+    if (this.currentModel().boundingBox.maxX < x) {
+      this.currentModel().boundingBox.maxX = x
+    }
+    if (this.currentModel().boundingBox.maxY < y) {
+      this.currentModel().boundingBox.maxY = y
+    }
+    if (this.currentModel().boundingBox.maxZ < z) {
+      this.currentModel().boundingBox.maxZ = z
+    }
+    if (this.currentModel().boundingBox.minX > x) {
+      this.currentModel().boundingBox.minX = x
+    }
+    if (this.currentModel().boundingBox.minY > y) {
+      this.currentModel().boundingBox.minY = y
+    }
+    if (this.currentModel().boundingBox.minZ > z) {
+      this.currentModel().boundingBox.minZ = z
+    }
   }
 
   parseTextureCoords(lineItems) {

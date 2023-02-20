@@ -11,6 +11,7 @@ var globalTime = 0.0;
 var parsedData = null;
 
 let planets = createPlanetData()
+boundingVector = [0,0,0]
 
 function main() {
   const canvas = document.getElementById('glCanvas');
@@ -140,23 +141,11 @@ function drawScene(deltaTime, sliderVals) {
     // 7 matrices to position each sphere by end of lab
     // scale -> rotation on axis to direction -> translate to distance -> rotate around sun
     // Call in reverse order for stack
-    glMatrix.mat4.rotate(modelMatrix, modelMatrix, globalTime*planet.speed, planet.orbitVector);  // rotation around sun
-    glMatrix.mat4.translate(modelMatrix, modelMatrix, objectWorldPos);                            // Translate planet away from sun
-    glMatrix.mat4.rotate(modelMatrix, modelMatrix, globalTime, rotationAxis);                     // give planet its own rotation  
-    glMatrix.mat4.scale(modelMatrix, modelMatrix, objectScale);                                   // scale planet to size
-
-    // glMatrix.mat4.scale(modelMatrix, modelMatrix, objectScale);
-    // glMatrix.mat4.rotate(modelMatrix, modelMatrix, globalTime, rotationAxis);
-    // glMatrix.mat4.translate(modelMatrix, modelMatrix, objectWorldPos);
-
-    // // Change size of planet
-    // glMatrix.mat4.scale(modelMatrix, modelMatrix, objectScale);
-    // // Translate to distance from center
-    // // glMatrix.mat4.translate(modelMatrix, modelMatrix, objectWorldPos);
-    // // Translate in orbit based on time
-    // glMatrix.mat4.translate(modelMatrix, modelMatrix, orbit);
-    // // Rotate on axis
-    // glMatrix.mat4.rotate(modelMatrix, modelMatrix, globalTime, rotationAxis);
+    glMatrix.mat4.rotate(modelMatrix, modelMatrix, globalTime*planet.speed, planet.orbitVector);  // orbit around center
+    glMatrix.mat4.translate(modelMatrix, modelMatrix, objectWorldPos);                            // translate object away from center
+    glMatrix.mat4.rotate(modelMatrix, modelMatrix, globalTime, rotationAxis);                     // rotate object on its own axis  
+    glMatrix.mat4.scale(modelMatrix, modelMatrix, objectScale);                                   // scale object to variable size
+    glMatrix.mat4.scale(modelMatrix, modelMatrix, boundingVector);                                // normalize object to bounds
 
     let viewMatrix = glMatrix.mat4.create();
     // let cameraPos = [0.0, 0.0, Math.sin(globalTime) * 4.0];
@@ -179,6 +168,7 @@ function initializeMyObject(vertSource, fragSource, objData) {
   myShader = new ShaderProgram(vertSource, fragSource); // this class is in shader.js
   parsedData = new OBJData(objData); // this class is in obj-loader.js
   let rawData = parsedData.getFlattenedDataFromModelAtIndex(0);
+  boundingVector = rawData.boundingVector
 
   // Generate Buffers on the GPU using the geometry data we pull from the obj
   let vertexPositionBuffer = new VertexArrayData( // this class is in vertex-data.js
