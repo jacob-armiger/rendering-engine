@@ -10,8 +10,9 @@ var projectionMatrix = null;
 var globalTime = 0.0;
 var parsedData = null;
 
+// These global variables apply to the entire scene for the duration of the program
 let planets = createPlanetData()
-boundingVector = [0,0,0]
+boundingVector = [0,0,0]        // updated during object initialization
 
 function main() {
   const canvas = document.getElementById('glCanvas');
