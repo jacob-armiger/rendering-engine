@@ -1,6 +1,6 @@
 class Planet {
     constructor () {
-        this.scaleVectoe = [1,1,1]
+        this.scaleVector = [1,1,1]
         this.orbitVector = [0,0,0]
         this.position = [0,0,0]
         this.speed = 1
