@@ -52,31 +52,31 @@ function createPlanetData() {
     mars.orbitVector = [0,1,0]
     mars.speed = 1.24
 
-    let jupiter = new Planet(  11*ratio, 10)
+    let jupiter = new Planet()
     jupiter.updateScale(1.8*ratio)
     jupiter.position = [11.5,0,0]
     jupiter.orbitVector = [0,1,0]
     jupiter.speed = 1.13
 
-    let saturn = new Planet(    9*ratio, 15)
+    let saturn = new Planet()
     saturn.updateScale(1.7*ratio)
     saturn.position = [15.3,0,0]
     saturn.orbitVector = [0,1,0]
     saturn.speed = 1.09
 
-    let uranus = new Planet(    4*ratio, 18.5)
+    let uranus = new Planet()
     uranus.updateScale(1.4*ratio)
     uranus.position = [19,0,0]
     uranus.orbitVector = [0,-1,0]
     uranus.speed = 1.068
 
-    let neptune = new Planet( 3.9*ratio, 21)
+    let neptune = new Planet()
     neptune.updateScale(1.3*ratio)
     neptune.position = [22,0,0]
     neptune.orbitVector = [0,1,0]
     neptune.speed = 1.055
 
-    let pluto = new Planet(    .2*ratio, 23)
+    let pluto = new Planet()
     pluto.updateScale(0.3*ratio)
     pluto.position = [24,0,0]
     pluto.orbitVector = [0,1,0]
