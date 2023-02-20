@@ -132,11 +132,6 @@ function drawScene(deltaTime, sliderVals) {
 
     let objectWorldPos = planet.position;
     let rotationAxis = [0.0, 1.0, 0.0];
-    let objectScale = glMatrix.mat4.multiplyScalar(
-      [1, 1, 1],
-      [1, 1, 1],
-      planet.scale
-    );
     
     // 7 matrices to position each sphere by end of lab
     // scale -> rotation on axis to direction -> translate to distance -> rotate around sun
@@ -144,7 +139,7 @@ function drawScene(deltaTime, sliderVals) {
     glMatrix.mat4.rotate(modelMatrix, modelMatrix, globalTime*planet.speed, planet.orbitVector);  // orbit around center
     glMatrix.mat4.translate(modelMatrix, modelMatrix, objectWorldPos);                            // translate object away from center
     glMatrix.mat4.rotate(modelMatrix, modelMatrix, globalTime, rotationAxis);                     // rotate object on its own axis  
-    glMatrix.mat4.scale(modelMatrix, modelMatrix, objectScale);                                   // scale object to variable size
+    glMatrix.mat4.scale(modelMatrix, modelMatrix, planet.scaleVector);                            // scale object to variable size
     glMatrix.mat4.scale(modelMatrix, modelMatrix, boundingVector);                                // normalize object to bounds
 
     let viewMatrix = glMatrix.mat4.create();
