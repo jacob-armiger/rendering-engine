@@ -9,7 +9,7 @@ var modelViewMatrix = null;
 var projectionMatrix = null;
 var globalTime = 0.0;
 var parsedData = null;
-// TODO: clean up planet api
+
 let planets = createPlanetData()
 
 function main() {
@@ -113,11 +113,10 @@ function setupUI(sliderDict) {
 
 // Async as it loads resources over the network.
 async function setupScene() {
-  let sphereData = await loadNetworkResourceAsText('resources/models/sphere.obj');
-  let bunnyData = await loadNetworkResourceAsText('resources/models/bunny.obj');
+  let objData = await loadNetworkResourceAsText('resources/models/cube.obj');
   let vertSource = await loadNetworkResourceAsText('resources/shaders/verts/bary300.vert');
   let fragSource = await loadNetworkResourceAsText('resources/shaders/frags/bary300.frag');
-  initializeMyObject(vertSource, fragSource, sphereData);
+  initializeMyObject(vertSource, fragSource, objData);
 }
 
 function drawScene(deltaTime, sliderVals) {
@@ -140,10 +139,11 @@ function drawScene(deltaTime, sliderVals) {
     
     // 7 matrices to position each sphere by end of lab
     // scale -> rotation on axis to direction -> translate to distance -> rotate around sun
-    glMatrix.mat4.rotate(modelMatrix, modelMatrix, globalTime*planet.speed, planet.orbitVector);
-    glMatrix.mat4.translate(modelMatrix, modelMatrix, objectWorldPos);
-    glMatrix.mat4.rotate(modelMatrix, modelMatrix, globalTime, rotationAxis);
-    glMatrix.mat4.scale(modelMatrix, modelMatrix, objectScale);
+    // Call in reverse order for stack
+    glMatrix.mat4.rotate(modelMatrix, modelMatrix, globalTime*planet.speed, planet.orbitVector);  // rotation around sun
+    glMatrix.mat4.translate(modelMatrix, modelMatrix, objectWorldPos);                            // Translate planet away from sun
+    glMatrix.mat4.rotate(modelMatrix, modelMatrix, globalTime, rotationAxis);                     // give planet its own rotation  
+    glMatrix.mat4.scale(modelMatrix, modelMatrix, objectScale);                                   // scale planet to size
 
     // glMatrix.mat4.scale(modelMatrix, modelMatrix, objectScale);
     // glMatrix.mat4.rotate(modelMatrix, modelMatrix, globalTime, rotationAxis);
