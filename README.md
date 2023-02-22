@@ -1,5 +1,5 @@
-# CS452-Starter
-Starter code for CS452 - Computer Graphics
+# CS452
+I'm keeping my current work at the top of the directory and anything that needs to be graded is put in folders with appropriate labels.
 
 ## URLs for hydra machines
 https://web.eecs.utk.edu/~jarmiger/dynamic-degree/  
