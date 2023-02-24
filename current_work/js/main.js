@@ -116,8 +116,8 @@ function setupUI(sliderDict) {
 // Async as it loads resources over the network.
 async function setupScene() {
   let objData = await loadNetworkResourceAsText('../shared/resources/models/sphere.obj');
-  let vertSource = await loadNetworkResourceAsText('../shared/resources/shaders/verts/bary300.vert');
-  let fragSource = await loadNetworkResourceAsText('../shared/resources/shaders/frags/bary300.frag');
+  let vertSource = await loadNetworkResourceAsText('../shared/resources/shaders/verts/myshader300.vert');
+  let fragSource = await loadNetworkResourceAsText('../shared/resources/shaders/frags/myshader300.frag');
   initializeMyObject(vertSource, fragSource, objData);
 }
 
@@ -172,23 +172,23 @@ function initializeMyObject(vertSource, fragSource, objData) {
     gl.FLOAT,         // What type should WebGL treat it as?
     3                 // How many per vertex?
   );
-  /*
   let vertexNormalBuffer = new VertexArrayData(
     rawData.normals,
     gl.FLOAT,
     3
   );
+  /*
   let vertexTexCoordBuffer = new VertexArrayData (
     rawData.uvs,
     gl.FLOAT,
     2
   );
-  */
   let vertexBarycentricBuffer = new VertexArrayData (
     rawData.barycentricCoords,
     gl.FLOAT,
     3
   );
+  */
 
   /*
   For any model that is smooth (non discrete) indices should be used, but we are learning! Maybe you can get this working later?
@@ -206,8 +206,8 @@ function initializeMyObject(vertSource, fragSource, objData) {
   // Checkout the Drawable constructor and draw function to see how it tells the GPU to bind these buffers for drawing.
   let bufferMap = {
     'aVertexPosition': vertexPositionBuffer,
-    'aBarycentricCoord': vertexBarycentricBuffer,
-    // 'aVertexNormal': vertexNormalBuffer, -> Not working with normals, yet! The sphere has norms included, the bunny needs norms generated.
+    // 'aBarycentricCoord': vertexBarycentricBuffer,
+    'aVertexNormal': vertexNormalBuffer, // -> Not working with normals, yet! The sphere has norms included, the bunny needs norms generated.
     // 'aVertexTexCoord': vertexTexCoordBuffer -> Same, not working with texture coords yet.
   };
 
