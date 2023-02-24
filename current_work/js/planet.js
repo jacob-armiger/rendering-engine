@@ -82,7 +82,7 @@ function createPlanetData() {
     pluto.orbitVector = [0,1,0]
     pluto.speed = 1.03
 
-    let planets = [sun, mercury,venus,earth,mars,jupiter,saturn,uranus,neptune,pluto]
-    // let planets = [sun, mercury, venus, earth]
+    // let planets = [sun, mercury,venus,earth,mars,jupiter,saturn,uranus,neptune,pluto]
+    let planets = [sun]
     return planets
 }
