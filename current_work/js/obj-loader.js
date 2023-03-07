@@ -162,13 +162,20 @@ class OBJData {
     const faces = model.faces;
     const vertices = model.vertices;
     const textureCoords = model.textureCoords;
-    const vertexNormals = model.vertexNormals;
+    // let vertexNormals = model.vertexNormals;
+    let vertexNormals = [];
+    
+    // let t = 1
+    // console.log(faces[t])
+    // console.log(vertices[1])
+    // console.log(vertices[32])
+    // console.log(vertices[16])
 
     let span = []
     let unitspan = []
     let bbox = model.boundingBox
 
-    // Create NORMALIZED scaling vector based on box bounds
+    // Create normalized scaling vector based on box bounds
     let maxXYZ = glMatrix.vec3.fromValues(bbox.maxX, bbox.maxY, bbox.maxZ)
     let minXYZ = glMatrix.vec3.fromValues(bbox.minX, bbox.minY, bbox.minZ)
     glMatrix.vec3.sub(span, maxXYZ, minXYZ)
@@ -180,6 +187,65 @@ class OBJData {
 
     // If your model does not have vertex normals, you should detect that here
     // and can calculate them here.
+    if(vertexNormals.length < 1) {
+      let calculatedNormals = new Array(vertices.length)
+      let vert_map = new Map()
+
+      for(let i = 0; i < faces.length-1; i++) {
+        let v1_index = faces[i].vertices[0].vertexIndex - 1
+        let v2_index = faces[i].vertices[1].vertexIndex - 1
+        let v3_index = faces[i].vertices[2].vertexIndex - 1
+
+        let v1 = [vertices[v1_index].x, vertices[v1_index].y, vertices[v1_index].z]
+        let v2 = [vertices[v2_index].x, vertices[v2_index].y, vertices[v2_index].z]
+        let v3 = [vertices[v3_index].x, vertices[v3_index].y, vertices[v3_index].z]
+        
+        let face_normal = [0,0,0]
+        let u = []
+        let w = []
+        
+        // Calculate face normal
+        glMatrix.vec3.subtract(u, v2,v1)
+        glMatrix.vec3.subtract(w, v3,v1)
+        glMatrix.vec3.cross(face_normal, u, w)
+        glMatrix.vec3.normalize(face_normal, face_normal)
+        
+        let face_obj = {
+          x: face_normal[0],
+          y: face_normal[1],
+          z: face_normal[2],
+        }
+
+        // Add face normal to map
+        for(let vert_index of [v1_index,v2_index,v3_index]) {
+          if(vert_map.has(vert_index)) {
+            vert_map.get(vert_index).push(face_normal)
+          } else {
+            vert_map.set(vert_index, [face_normal])
+          }
+        }
+      }
+      vert_map.forEach((face_norms, vert_ind) => {
+        let vert_norm = [0,0,0]
+        let count = 0
+        for(let norm of face_norms) {
+          count += 1
+          glMatrix.vec3.add(vert_norm,vert_norm, norm)
+        }
+        glMatrix.vec3.divide(vert_norm,vert_norm,[count,count,count])
+        glMatrix.vec3.normalize(vert_norm, vert_norm)
+
+
+        let vert_obj = {
+          x: vert_norm[0],
+          y: vert_norm[1],
+          z: vert_norm[2],
+        }
+
+        calculatedNormals[vert_ind] = vert_obj
+      })
+      vertexNormals = calculatedNormals
+    }
 
     let textureData = [];
     let normalData = [];
@@ -343,6 +409,7 @@ class OBJData {
       });
     }
     this.currentModel().faces.push(face);
+    // console.log(face)
   }
 
   parseMtlLib(lineItems) {
