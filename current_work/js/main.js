@@ -115,7 +115,7 @@ function setupUI(sliderDict) {
 
 // Async as it loads resources over the network.
 async function setupScene() {
-  let objData = await loadNetworkResourceAsText('../shared/resources/models/sphere.obj');
+  let objData = await loadNetworkResourceAsText('../shared/resources/models/bunny.obj');
   let vertSource = await loadNetworkResourceAsText('../shared/resources/shaders/verts/myshader300.vert');
   let fragSource = await loadNetworkResourceAsText('../shared/resources/shaders/frags/myshader300.frag');
   initializeMyObject(vertSource, fragSource, objData);

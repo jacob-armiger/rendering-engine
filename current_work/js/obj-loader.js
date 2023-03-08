@@ -162,14 +162,7 @@ class OBJData {
     const faces = model.faces;
     const vertices = model.vertices;
     const textureCoords = model.textureCoords;
-    // let vertexNormals = model.vertexNormals;
-    let vertexNormals = [];
-    
-    // let t = 1
-    // console.log(faces[t])
-    // console.log(vertices[1])
-    // console.log(vertices[32])
-    // console.log(vertices[16])
+    let vertexNormals = model.vertexNormals;
 
     let span = []
     let unitspan = []
@@ -185,17 +178,22 @@ class OBJData {
     let zScale = unitspan[2] / span[2]
     let scalingVector = glMatrix.vec3.fromValues(xScale, yScale, zScale)
 
-    // If your model does not have vertex normals, you should detect that here
-    // and can calculate them here.
+    // If your model does not have vertex normals, calculate them here.
     if(vertexNormals.length < 1) {
       let calculatedNormals = new Array(vertices.length)
       let vert_map = new Map()
 
-      for(let i = 0; i < faces.length-1; i++) {
+      // Loop through faces
+      for(let i = 0; i < faces.length; i++) {
+        // Set vertex normal index so that normalData can be created
+        faces[i].vertices[0].vertexNormalIndex = faces[i].vertices[0].vertexIndex
+        faces[i].vertices[1].vertexNormalIndex = faces[i].vertices[1].vertexIndex
+        faces[i].vertices[2].vertexNormalIndex = faces[i].vertices[2].vertexIndex
+
+        // get vertices from indexes
         let v1_index = faces[i].vertices[0].vertexIndex - 1
         let v2_index = faces[i].vertices[1].vertexIndex - 1
         let v3_index = faces[i].vertices[2].vertexIndex - 1
-
         let v1 = [vertices[v1_index].x, vertices[v1_index].y, vertices[v1_index].z]
         let v2 = [vertices[v2_index].x, vertices[v2_index].y, vertices[v2_index].z]
         let v3 = [vertices[v3_index].x, vertices[v3_index].y, vertices[v3_index].z]
@@ -203,18 +201,11 @@ class OBJData {
         let face_normal = [0,0,0]
         let u = []
         let w = []
-        
-        // Calculate face normal
+        // Calculate face_normal
         glMatrix.vec3.subtract(u, v2,v1)
         glMatrix.vec3.subtract(w, v3,v1)
         glMatrix.vec3.cross(face_normal, u, w)
         glMatrix.vec3.normalize(face_normal, face_normal)
-        
-        let face_obj = {
-          x: face_normal[0],
-          y: face_normal[1],
-          z: face_normal[2],
-        }
 
         // Add face normal to map
         for(let vert_index of [v1_index,v2_index,v3_index]) {
@@ -225,6 +216,8 @@ class OBJData {
           }
         }
       }
+
+      // Calculate vertex normals with face normals
       vert_map.forEach((face_norms, vert_ind) => {
         let vert_norm = [0,0,0]
         let count = 0
@@ -235,25 +228,25 @@ class OBJData {
         glMatrix.vec3.divide(vert_norm,vert_norm,[count,count,count])
         glMatrix.vec3.normalize(vert_norm, vert_norm)
 
-
         let vert_obj = {
           x: vert_norm[0],
           y: vert_norm[1],
           z: vert_norm[2],
         }
-
+        // Add vertex to in correct order
         calculatedNormals[vert_ind] = vert_obj
       })
       vertexNormals = calculatedNormals
     }
 
-    let textureData = [];
-    let normalData = [];
-    let vertexData = [];
     // This is just for the wireframe shader, feel free to remove this information if not necessary
     // I am only including it here for a cheap wireframe effect.
     let barycentricCoords = [];
     let barycentricValues = [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]];
+
+    let textureData = [];
+    let normalData = [];
+    let vertexData = [];
     faces.forEach(face => {
       // A face can have 3+ vertices.
       // Since we want triangles, we turn the face into a fan of triangles.
@@ -286,9 +279,10 @@ class OBJData {
       }
     });
 
-    // if (normalData.length < 1) console.warn("No normal data loaded for model.");
+    if (normalData.length < 1) console.warn("No normal data loaded for model.");
     if (vertexData.length < 1) console.warn("No vertex data loaded for model.");
     // if (textureData.length < 1) console.warn("No texture data loaded for model.");
+
     return {
       uvs: textureData,
       normals: normalData,
@@ -409,7 +403,6 @@ class OBJData {
       });
     }
     this.currentModel().faces.push(face);
-    // console.log(face)
   }
 
   parseMtlLib(lineItems) {
