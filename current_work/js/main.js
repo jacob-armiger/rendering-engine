@@ -7,6 +7,7 @@ var myDrawable = null;
 var myDrawableInitialized = null;
 var modelViewMatrix = null;
 var projectionMatrix = null;
+var normalMatrix = null;
 var globalTime = 0.0;
 var parsedData = null;
 
@@ -115,9 +116,9 @@ function setupUI(sliderDict) {
 
 // Async as it loads resources over the network.
 async function setupScene() {
-  let objData = await loadNetworkResourceAsText('../shared/resources/models/bunny.obj');
-  let vertSource = await loadNetworkResourceAsText('../shared/resources/shaders/verts/myshader300.vert');
-  let fragSource = await loadNetworkResourceAsText('../shared/resources/shaders/frags/myshader300.frag');
+  let objData = await loadNetworkResourceAsText('../shared/resources/models/sphere.obj');
+  let vertSource = await loadNetworkResourceAsText('../shared/resources/shaders/verts/gouraud300.vert');
+  let fragSource = await loadNetworkResourceAsText('../shared/resources/shaders/frags/gouraud300.frag');
   initializeMyObject(vertSource, fragSource, objData);
 }
 
@@ -137,8 +138,8 @@ function drawScene(deltaTime, sliderVals) {
     // 7 matrices to position each sphere by end of lab
     // scale -> rotation on axis to direction -> translate to distance -> rotate around sun
     // Call in reverse order for stack
-    glMatrix.mat4.rotate(modelMatrix, modelMatrix, globalTime*planet.speed, planet.orbitVector);  // orbit around center
-    glMatrix.mat4.translate(modelMatrix, modelMatrix, objectWorldPos);                            // translate object away from center
+    // glMatrix.mat4.rotate(modelMatrix, modelMatrix, globalTime*planet.speed, planet.orbitVector);  // orbit around center
+    // glMatrix.mat4.translate(modelMatrix, modelMatrix, objectWorldPos);                            // translate object away from center
     glMatrix.mat4.rotate(modelMatrix, modelMatrix, globalTime, rotationAxis);                     // rotate object on its own axis  
     glMatrix.mat4.scale(modelMatrix, modelMatrix, planet.scaleVector);                            // scale object to variable size
     glMatrix.mat4.scale(modelMatrix, modelMatrix, boundingVector);                                // normalize object to bounds
@@ -151,6 +152,12 @@ function drawScene(deltaTime, sliderVals) {
 
     modelViewMatrix = glMatrix.mat4.create();
     glMatrix.mat4.mul(modelViewMatrix, viewMatrix, modelMatrix);
+
+
+    //mat4 normalMatrix = transpose(inverse(modelView));
+    normalMatrix = glMatrix.mat4.create();
+    glMatrix.mat4.invert(normalMatrix, modelViewMatrix)
+    glMatrix.mat4.transpose(normalMatrix, modelViewMatrix)
 
     if (myDrawableInitialized){
       myDrawable.draw();
@@ -207,7 +214,7 @@ function initializeMyObject(vertSource, fragSource, objData) {
   let bufferMap = {
     'aVertexPosition': vertexPositionBuffer,
     // 'aBarycentricCoord': vertexBarycentricBuffer,
-    'aVertexNormal': vertexNormalBuffer, // -> Not working with normals, yet! The sphere has norms included, the bunny needs norms generated.
+    'aVertexNormal': vertexNormalBuffer,
     // 'aVertexTexCoord': vertexTexCoordBuffer -> Same, not working with texture coords yet.
   };
 
@@ -215,7 +222,7 @@ function initializeMyObject(vertSource, fragSource, objData) {
 
   // Checkout the drawable class' draw function. It calls a uniform setup function every time it is drawn. 
   // Put your uniforms that change per frame in this setup function.
-  myDrawable.uniformLocations = myShader.getUniformLocations(['uModelViewMatrix', 'uProjectionMatrix']);
+  myDrawable.uniformLocations = myShader.getUniformLocations(['uModelViewMatrix', 'uProjectionMatrix', 'uNormalMatrix']);
   myDrawable.uniformSetup = () => {
     gl.uniformMatrix4fv(
       myDrawable.uniformLocations.uProjectionMatrix,
@@ -227,6 +234,16 @@ function initializeMyObject(vertSource, fragSource, objData) {
       false,
       modelViewMatrix
     );
+    gl.uniformMatrix4fv(
+      myDrawable.uniformLocations.uNormalMatrix,
+      false,
+      normalMatrix
+    );
+    // gl.uniformMatrix4fv(
+    //   myDrawable.uniformLocations.uLightPosition,
+    //   false,
+    //   glMatrix.vec4.fromValues(5.0, 3.0, 8.0,1.0)
+    // );
   };
   myDrawableInitialized = true;
 }
