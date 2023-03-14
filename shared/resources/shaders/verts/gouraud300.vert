@@ -16,18 +16,27 @@ in vec3 aVertexNormal;
 
 //In OpenGL vayring is replaced by in/out (vertex shader creates it as 'out', fragment uses it as an 'in')
 // out vec3 outColor;
-out vec3 normal;
+out vec3 lighting;
+out vec3 color;
 
 // Uniforms do not change from one shader invocation to the next,
 // these are set "constant" values that can be read by vertex and fragment shader
 // if you want to use a uniform in the fragment shader then you must declare it at the top as well.
 uniform mat4 uModelViewMatrix;
 uniform mat4 uProjectionMatrix;
+uniform mat4 uNormalMatrix;
 
 void main() {
-  // gl_Position is still reserved in this version of GLSL :)
   gl_Position = uProjectionMatrix * uModelViewMatrix * vec4(aVertexPosition, 1.0);
- 
-  normal = aVertexNormal;
-  // outColor = vec3(255.0, 0.0, 0.0);
+
+  highp vec3 ambientLight = vec3(0.3, 0.3, 0.3);
+  highp vec3 directionalLightColor = vec3(1.0, 1.0, 1.0);
+  highp vec3 directionalVector = normalize(vec3(8.0, 3.0, 5.0));
+
+  highp vec4 transformedNormal = uNormalMatrix * vec4(aVertexNormal, 1.0);
+  highp float directional = max(dot(transformedNormal.xyz, directionalVector), 0.0);
+
+  lighting = ambientLight + (directionalLightColor * directional);
+
+  color = vec3(0.0,1.0,0.0);
 }
