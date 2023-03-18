@@ -12,7 +12,7 @@ var globalTime = 0.0;
 var parsedData = null;
 
 // These global variables apply to the entire scene for the duration of the program
-let planets = createPlanetData()
+let models = createModelData()
 boundingVector = [0,0,0]        // updated during object initialization
 
 function main() {
@@ -128,24 +128,23 @@ function drawScene(deltaTime, sliderVals) {
   // Clear the color buffer with specified clear color
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-  // Draw planets
-  for (let planet of planets) {
+  // Draw models
+  for (let model of models) {
     let modelMatrix = glMatrix.mat4.create();
 
-    let objectWorldPos = planet.position;
+    let objectWorldPos = model.position;
     let rotationAxis = [0.0, 1.0, 0.0];
     
     // 7 matrices to position each sphere by end of lab
     // scale -> rotation on axis to direction -> translate to distance -> rotate around sun
     // Call in reverse order for stack
-    // glMatrix.mat4.rotate(modelMatrix, modelMatrix, globalTime*planet.speed, planet.orbitVector);  // orbit around center
+    // glMatrix.mat4.rotate(modelMatrix, modelMatrix, globalTime*model.speed, model.orbitVector);  // orbit around center
     // glMatrix.mat4.translate(modelMatrix, modelMatrix, objectWorldPos);                            // translate object away from center
     glMatrix.mat4.rotate(modelMatrix, modelMatrix, globalTime, rotationAxis);                     // rotate object on its own axis  
-    glMatrix.mat4.scale(modelMatrix, modelMatrix, planet.scaleVector);                            // scale object to variable size
+    glMatrix.mat4.scale(modelMatrix, modelMatrix, model.scaleVector);                            // scale object to variable size
     glMatrix.mat4.scale(modelMatrix, modelMatrix, boundingVector);                                // normalize object to bounds
 
     let viewMatrix = glMatrix.mat4.create();
-    // let cameraPos = [0.0, 0.0, Math.sin(globalTime) * 4.0];
     let cameraPos = [sliderVals.get("camXVal"), sliderVals.get("camYVal"), sliderVals.get("camZVal")];
     let cameraFocus = [sliderVals.get("lookXVal"), sliderVals.get("lookYVal"), sliderVals.get("lookZVal")];
     glMatrix.mat4.lookAt(viewMatrix, cameraPos, cameraFocus, [0.0, 1.0, 0.0]); // does up vector need to be changed? ortho to y?
@@ -155,9 +154,9 @@ function drawScene(deltaTime, sliderVals) {
 
 
     //mat4 normalMatrix = transpose(inverse(modelView));
-    normalMatrix = glMatrix.mat4.create();
-    glMatrix.mat4.invert(normalMatrix, modelViewMatrix)
-    glMatrix.mat4.transpose(normalMatrix, modelViewMatrix)
+    // normalMatrix = glMatrix.mat4.create();
+    // glMatrix.mat4.invert(normalMatrix, modelViewMatrix)
+    // glMatrix.mat4.transpose(normalMatrix, modelViewMatrix)
 
     if (myDrawableInitialized){
       myDrawable.draw();
@@ -172,6 +171,11 @@ function initializeMyObject(vertSource, fragSource, objData) {
   parsedData = new OBJData(objData); // this class is in obj-loader.js
   let rawData = parsedData.getFlattenedDataFromModelAtIndex(0);
   boundingVector = rawData.boundingVector
+
+  // Create light position
+  // TODO: light position roates with object
+  let lightPosition = glMatrix.vec3.fromValues(5.0, 3.0, 8.0)
+  glMatrix.vec3.normalize(lightPosition,lightPosition)
 
   // Generate Buffers on the GPU using the geometry data we pull from the obj
   let vertexPositionBuffer = new VertexArrayData( // this class is in vertex-data.js
@@ -222,7 +226,7 @@ function initializeMyObject(vertSource, fragSource, objData) {
 
   // Checkout the drawable class' draw function. It calls a uniform setup function every time it is drawn. 
   // Put your uniforms that change per frame in this setup function.
-  myDrawable.uniformLocations = myShader.getUniformLocations(['uModelViewMatrix', 'uProjectionMatrix', 'uNormalMatrix']);
+  myDrawable.uniformLocations = myShader.getUniformLocations(['uModelViewMatrix', 'uProjectionMatrix', 'uLightPosition']);
   myDrawable.uniformSetup = () => {
     gl.uniformMatrix4fv(
       myDrawable.uniformLocations.uProjectionMatrix,
@@ -234,11 +238,15 @@ function initializeMyObject(vertSource, fragSource, objData) {
       false,
       modelViewMatrix
     );
-    gl.uniformMatrix4fv(
-      myDrawable.uniformLocations.uNormalMatrix,
-      false,
-      normalMatrix
+    gl.uniform3fv(
+      myDrawable.uniformLocations.uLightPosition,
+      lightPosition
     );
+    // gl.uniformMatrix4fv(
+    //   myDrawable.uniformLocations.uNormalMatrix,
+    //   false,
+    //   normalMatrix
+    // );
     // gl.uniformMatrix4fv(
     //   myDrawable.uniformLocations.uLightPosition,
     //   false,
