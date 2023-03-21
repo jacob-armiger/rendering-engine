@@ -152,12 +152,6 @@ function drawScene(deltaTime, sliderVals) {
     modelViewMatrix = glMatrix.mat4.create();
     glMatrix.mat4.mul(modelViewMatrix, viewMatrix, modelMatrix);
 
-
-    //mat4 normalMatrix = transpose(inverse(modelView));
-    // normalMatrix = glMatrix.mat4.create();
-    // glMatrix.mat4.invert(normalMatrix, modelViewMatrix)
-    // glMatrix.mat4.transpose(normalMatrix, modelViewMatrix)
-
     if (myDrawableInitialized){
       myDrawable.draw();
     };
@@ -176,6 +170,12 @@ function initializeMyObject(vertSource, fragSource, objData) {
   // TODO: light position roates with object
   let lightPosition = glMatrix.vec3.fromValues(5.0, 3.0, 8.0)
   glMatrix.vec3.normalize(lightPosition,lightPosition)
+
+  // Create normal matrix
+  // mat4 normalMatrix = transpose(inverse(modelView));
+  // normalMatrix = glMatrix.mat4.create();
+  // glMatrix.mat4.invert(normalMatrix, modelViewMatrix)
+  // glMatrix.mat4.transpose(normalMatrix, modelViewMatrix)
 
   // Generate Buffers on the GPU using the geometry data we pull from the obj
   let vertexPositionBuffer = new VertexArrayData( // this class is in vertex-data.js
@@ -246,11 +246,6 @@ function initializeMyObject(vertSource, fragSource, objData) {
     //   myDrawable.uniformLocations.uNormalMatrix,
     //   false,
     //   normalMatrix
-    // );
-    // gl.uniformMatrix4fv(
-    //   myDrawable.uniformLocations.uLightPosition,
-    //   false,
-    //   glMatrix.vec4.fromValues(5.0, 3.0, 8.0,1.0)
     // );
   };
   myDrawableInitialized = true;
