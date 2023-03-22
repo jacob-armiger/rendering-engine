@@ -36,12 +36,13 @@ void main() {
   // vec4 glSpecular = vec4(0.393548, 0.271906, 0.166721, 1.0);
   // float glShininess = 25.6;
 
+  // Normalize values
   vec3 norm = normalize(normal);
-
   vec3 L = normalize(lightVec);
   vec3 V = normalize(viewVec);
   vec3 halfAngle = normalize(L + V);
 
+  // Get cosine between vectors with dot product
   float NdotL = clamp(dot(L, norm), 0.0, 1.0);
   float NdotH = clamp(dot(halfAngle, norm), 0.0, 1.0);
   

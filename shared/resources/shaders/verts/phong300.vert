@@ -21,13 +21,11 @@ void main() {
   // Position of vertex in clip space
   gl_Position = uProjectionMatrix * uModelViewMatrix * vec4(aVertexPosition, 1.0);
 
+  // Transform vertexes into eye space
   vec4 vert = uModelViewMatrix * vec4(aVertexPosition, 1.0);
-
+  // Reorient normals into eye space
   normal = vec3(uModelViewMatrix * vec4(aVertexNormal, 0.0));
+
   lightVec = vec3(vec4(uLightPosition, 1.0) - vert);
   viewVec  = -vec3(vert);
-
 }
-
-// Ambient light + diffuse light * dot(Normal, light position)
-// spec = spec * (N*)

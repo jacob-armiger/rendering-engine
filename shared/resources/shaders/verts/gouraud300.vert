@@ -34,18 +34,21 @@ void main() {
   vec4 glSpecular = vec4(0.774597, 0.774597, 0.774597, 1.0);
   float glShininess = 76.8;
 
+  // Transform vertexes into eye space
   vec4 vert = uModelViewMatrix * vec4(aVertexPosition, 1.0);
+  // Reorient normals into eye space
   vec3 normal = vec3(uModelViewMatrix * vec4(aVertexNormal, 0.0));
 
   vec3 lightVec = vec3(vec4(uLightPosition, 1.0) - vert);
   vec3 viewVec  = -vec3(vert);
 
+  // Normalize values
   vec3 norm = normalize(normal);
-
   vec3 L = normalize(lightVec);
   vec3 V = normalize(viewVec);
   vec3 halfAngle = normalize(L + V);
 
+  // Get cosine between vectors with dot product
   float NdotL = clamp(dot(L, norm), 0.0, 1.0);
   float NdotH = clamp(dot(halfAngle, norm), 0.0, 1.0);
   
@@ -55,11 +58,9 @@ void main() {
 
   // Final color for fragment
   vec4 lighting = glAmbient + diffuse + specular;
+  // Pass color to fragment shader
   color = vec4(lighting);
 
   // Position of vertex in clip space
   gl_Position = uProjectionMatrix * uModelViewMatrix * vec4(aVertexPosition, 1.0);
 }
-
-// Ambient light + diffuse light * dot(Normal, light position)
-// spec = spec * (N*)
