@@ -10,6 +10,7 @@ var projectionMatrix = null;
 var normalMatrix = null;
 var globalTime = 0.0;
 var parsedData = null;
+var lightPosition = null
 
 // These global variables apply to the entire scene for the duration of the program
 let models = createModelData()
@@ -78,7 +79,7 @@ function main() {
 function setupUI(sliderDict) {
   // in index.html we need to setup some callback functions for the sliders
   // right now just have them report the values beside the slider.
-  let sliders = ['cam', 'look'];
+  let sliders = ['cam', 'look', 'light'];
   let dims = ['X', 'Y', 'Z'];
 
   // for cam and look UI..
@@ -117,8 +118,8 @@ function setupUI(sliderDict) {
 // Async as it loads resources over the network.
 async function setupScene() {
   let objData = await loadNetworkResourceAsText('../shared/resources/models/sphere.obj');
-  let vertSource = await loadNetworkResourceAsText('../shared/resources/shaders/verts/gouraud300.vert');
-  let fragSource = await loadNetworkResourceAsText('../shared/resources/shaders/frags/gouraud300.frag');
+  let vertSource = await loadNetworkResourceAsText('../shared/resources/shaders/verts/phong300.vert');
+  let fragSource = await loadNetworkResourceAsText('../shared/resources/shaders/frags/phong300.frag');
   initializeMyObject(vertSource, fragSource, objData);
 }
 
@@ -152,6 +153,8 @@ function drawScene(deltaTime, sliderVals) {
     modelViewMatrix = glMatrix.mat4.create();
     glMatrix.mat4.mul(modelViewMatrix, viewMatrix, modelMatrix);
 
+    lightPosition = glMatrix.vec3.fromValues(sliderVals.get("lightXVal"), sliderVals.get("lightYVal"), sliderVals.get("lightZVal"))
+
     if (myDrawableInitialized){
       myDrawable.draw();
     };
@@ -165,17 +168,6 @@ function initializeMyObject(vertSource, fragSource, objData) {
   parsedData = new OBJData(objData); // this class is in obj-loader.js
   let rawData = parsedData.getFlattenedDataFromModelAtIndex(0);
   boundingVector = rawData.boundingVector
-
-  // Create light position
-  // TODO: light position roates with object
-  let lightPosition = glMatrix.vec3.fromValues(5.0, 3.0, 8.0)
-  // glMatrix.vec3.normalize(lightPosition,lightPosition)
-
-  // Create normal matrix
-  // mat4 normalMatrix = transpose(inverse(modelView));
-  // normalMatrix = glMatrix.mat4.create();
-  // glMatrix.mat4.invert(normalMatrix, modelViewMatrix)
-  // glMatrix.mat4.transpose(normalMatrix, modelViewMatrix)
 
   // Generate Buffers on the GPU using the geometry data we pull from the obj
   let vertexPositionBuffer = new VertexArrayData( // this class is in vertex-data.js
@@ -242,11 +234,6 @@ function initializeMyObject(vertSource, fragSource, objData) {
       myDrawable.uniformLocations.uLightPosition,
       lightPosition
     );
-    // gl.uniformMatrix4fv(
-    //   myDrawable.uniformLocations.uNormalMatrix,
-    //   false,
-    //   normalMatrix
-    // );
   };
   myDrawableInitialized = true;
 }

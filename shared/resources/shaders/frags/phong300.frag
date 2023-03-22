@@ -19,18 +19,18 @@ in vec3 viewVec;
 out vec4 fragColor;
 
 void main() {
-  // vec4 glAmbient = vec4(0.2125, 0.1275, 0.054, 1.0);
-  // vec4 glDiffuse = vec4(0.714, 0.4284, 0.18144, 1.0);
-  // vec4 glSpecular = vec4(0.393548, 0.271906, 0.166721, 1.0);
-  // float glShininess = 25.6;
+  vec4 glAmbient = vec4(0.2125, 0.1275, 0.054, 1.0);
+  vec4 glDiffuse = vec4(0.714, 0.4284, 0.18144, 1.0);
+  vec4 glSpecular = vec4(0.393548, 0.271906, 0.166721, 1.0);
+  float glShininess = 25.6;
 //   vec4 glAmbient = vec4(0.25, 0.148, 0.06475, 1.0);
 //   vec4 glDiffuse = vec4(0.4, 0.2368, 0.1036, 1.0);
 //   vec4 glSpecular = vec4(0.774597, 0.458561, 0.200621, 1.0);
 //   float glShininess = 76.8;
-  vec4 glAmbient = vec4(0.25, 0.25, 0.25, 1.0);
-  vec4 glDiffuse = vec4(0.4, 0.4, 0.4, 1.0);
-  vec4 glSpecular = vec4(0.774597, 0.774597, 0.774597, 1.0);
-  float glShininess = 76.8;
+  // vec4 glAmbient = vec4(0.25, 0.25, 0.25, 1.0);
+  // vec4 glDiffuse = vec4(0.4, 0.4, 0.4, 1.0);
+  // vec4 glSpecular = vec4(0.774597, 0.774597, 0.774597, 1.0);
+  // float glShininess = 76.8;
 
   vec3 norm = normalize(normal);
 

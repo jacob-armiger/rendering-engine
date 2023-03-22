@@ -99,3 +99,10 @@ function calculateVertexNormals(faces, vertices) {
   });
   return calculatedNormals;
 }
+
+
+  // Create normal matrix
+  // mat4 normalMatrix = transpose(inverse(modelView));
+  // normalMatrix = glMatrix.mat4.create();
+  // glMatrix.mat4.invert(normalMatrix, modelViewMatrix)
+  // glMatrix.mat4.transpose(normalMatrix, modelViewMatrix)
