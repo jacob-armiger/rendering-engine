@@ -32,7 +32,7 @@ void main() {
   vec3 V = normalize(viewVec);
   vec3 halfAngle = normalize(L + V);
 
-  float NdotL = dot(L, norm);
+  float NdotL = clamp(dot(L, norm), 0.0, 1.0);
   float NdotH = clamp(dot(halfAngle, norm), 0.0, 1.0);
   
   // Calculate diffuse and specular with material components
