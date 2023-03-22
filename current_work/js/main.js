@@ -117,8 +117,8 @@ function setupUI(sliderDict) {
 // Async as it loads resources over the network.
 async function setupScene() {
   let objData = await loadNetworkResourceAsText('../shared/resources/models/sphere.obj');
-  let vertSource = await loadNetworkResourceAsText('../shared/resources/shaders/verts/phong300.vert');
-  let fragSource = await loadNetworkResourceAsText('../shared/resources/shaders/frags/phong300.frag');
+  let vertSource = await loadNetworkResourceAsText('../shared/resources/shaders/verts/gouraud300.vert');
+  let fragSource = await loadNetworkResourceAsText('../shared/resources/shaders/frags/gouraud300.frag');
   initializeMyObject(vertSource, fragSource, objData);
 }
 
@@ -140,7 +140,7 @@ function drawScene(deltaTime, sliderVals) {
     // Call in reverse order for stack
     // glMatrix.mat4.rotate(modelMatrix, modelMatrix, globalTime*model.speed, model.orbitVector);  // orbit around center
     // glMatrix.mat4.translate(modelMatrix, modelMatrix, objectWorldPos);                            // translate object away from center
-    glMatrix.mat4.rotate(modelMatrix, modelMatrix, globalTime, rotationAxis);                     // rotate object on its own axis  
+    // glMatrix.mat4.rotate(modelMatrix, modelMatrix, globalTime, rotationAxis);                     // rotate object on its own axis  
     glMatrix.mat4.scale(modelMatrix, modelMatrix, model.scaleVector);                            // scale object to variable size
     glMatrix.mat4.scale(modelMatrix, modelMatrix, boundingVector);                                // normalize object to bounds
 
@@ -169,7 +169,7 @@ function initializeMyObject(vertSource, fragSource, objData) {
   // Create light position
   // TODO: light position roates with object
   let lightPosition = glMatrix.vec3.fromValues(5.0, 3.0, 8.0)
-  glMatrix.vec3.normalize(lightPosition,lightPosition)
+  // glMatrix.vec3.normalize(lightPosition,lightPosition)
 
   // Create normal matrix
   // mat4 normalMatrix = transpose(inverse(modelView));

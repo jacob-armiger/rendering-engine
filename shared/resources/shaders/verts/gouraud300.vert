@@ -8,7 +8,7 @@ in vec3 aVertexNormal;
 
 //In OpenGL vayring is replaced by in/out (vertex shader creates it as 'out', fragment uses it as an 'in')
 // out vec3 outColor;
-out vec3 lighting;
+// out vec3 lighting;
 out vec4 color;
 
 // Uniforms do not change from one shader invocation to the next, these are set "constant" values that can be read by vertex and fragment shader; if you want to use a uniform in the fragment shader then you must declare it at the top as well.
@@ -16,24 +16,27 @@ uniform mat4 uModelViewMatrix;
 uniform mat4 uProjectionMatrix;
 uniform vec3 uLightPosition;
 
-// uniform mat3 uNormalMatrix;
-
 void main() {
-  // highp vec3 glAmbient = vec3(0.25, 0.25, 0.25);
-  // highp vec3 glDiffuse = vec3(0.4, 0.4, 0.4);
-  // highp vec3 glSpecular = vec3(0.774597, 0.774597, 0.774597);
-  vec3 glAmbient = vec3(0.25, 0.25, 0.25);
-  vec3 glDiffuse = vec3(0.4, 0.4, 0.4);
-  vec3 glSpecular = vec3(0.774597, 0.774597, 0.774597);
+  vec4 glAmbient = vec4(0.25, 0.25, 0.25, 1.0);
+  vec4 glDiffuse = vec4(0.4, 0.4, 0.4, 1.0);
+  vec4 glSpecular = vec4(0.774597, 0.774597, 0.774597, 1.0);
+  float glShininess = 76.8;
+  // vec4 glAmbient = vec4(0.2125, 0.1275, 0.054, 1.0);
+  // vec4 glDiffuse = vec4(0.714, 0.4284, 0.18144, 1.0);
+  // vec4 glSpecular = vec4(0.393548, 0.271906, 0.166721, 1.0);
+  // float glShininess = 25.6;
+  // vec4 glAmbient = vec4(0.25, 0.148, 0.06475, 1.0);
+  // vec4 glDiffuse = vec4(0.4, 0.2368, 0.1036, 1.0);
+  // vec4 glSpecular = vec4(0.774597, 0.458561, 0.200621, 1.0);
+  // float glShininess = 76.8;
 
-  vec3 modelViewVertex = vec3(uModelViewMatrix * vec4(aVertexPosition, 0.0));
-  vec3 modelViewNormal = vec3(uModelViewMatrix * vec4(aVertexNormal, 1.0));
+  vec4 vert = uModelViewMatrix * vec4(aVertexPosition, 1.0);
+  vec3 normal = vec3(uModelViewMatrix * vec4(aVertexNormal, 0.0));
 
-  // vec4 vert = uModelViewMatrix * gl_Vertex;
-  vec3 lightVec = vec3(uLightPosition - modelViewVertex);
-  vec3 viewVec  = -vec3(modelViewVertex);
+  vec3 lightVec = vec3(vec4(uLightPosition, 1.0) - vert);
+  vec3 viewVec  = -vec3(vert);
 
-  vec3 norm = normalize(modelViewNormal);
+  vec3 norm = normalize(normal);
 
   vec3 L = normalize(lightVec);
   vec3 V = normalize(viewVec);
@@ -42,19 +45,14 @@ void main() {
   float NdotL = dot(L, norm);
   float NdotH = clamp(dot(halfAngle, norm), 0.0, 1.0);
   
-  // diffuse = Kd*Il(N*L)
-  // float diffuse  = 1.0 * NdotL + 0.5;
-  float diffuse  = 1.0 * NdotL;
-  // float specular = pow(NdotH, 64.0);
-  float specular = pow(NdotH, 76.8);
+  // Calculate diffuse and specular with material components
+  vec4 diffuse  = NdotL * glDiffuse;
+  vec4 specular = pow(NdotH, glShininess) * glSpecular;
 
-  lighting = vec3(glAmbient + diffuse * specular);
-  // lighting = ambientLight + diffuseLight * (dot(aVertexNormal, uLightPosition));
-  color = vec4(vec3(0.0,1.0,0.0) * lighting, 1.0);
+  // Final color for fragment
+  vec4 lighting = glAmbient + diffuse + specular;
+  color = vec4(lighting);
 
-
+  // Position of vertex in clip space
   gl_Position = uProjectionMatrix * uModelViewMatrix * vec4(aVertexPosition, 1.0);
 }
-
-// Ambient light + diffuse light * dot(Normal, light position)
-// spec = spec * (N*)
