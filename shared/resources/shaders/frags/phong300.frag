@@ -10,7 +10,7 @@ precision mediump float;
 
 // This is a varying var written to by our vertex shader
 // since this is 3.0 we specify it in the fragment shader with "in"
-in vec3 norm;
+in vec3 normal;
 in vec3 lightVec;
 in vec3 viewVec;
 
@@ -19,9 +19,20 @@ in vec3 viewVec;
 out vec4 fragColor;
 
 void main() {
-  vec3 glAmbient = vec3(0.3, 0.3, 0.3);
-  vec3 glDiffuse = vec3(0.5, 0.5, 0.5);
-  vec3 glSpecular = vec3(0.2, 0.2, 0.2);
+  // vec4 glAmbient = vec4(0.2125, 0.1275, 0.054, 1.0);
+  // vec4 glDiffuse = vec4(0.714, 0.4284, 0.18144, 1.0);
+  // vec4 glSpecular = vec4(0.393548, 0.271906, 0.166721, 1.0);
+  // float glShininess = 25.6;
+//   vec4 glAmbient = vec4(0.25, 0.148, 0.06475, 1.0);
+//   vec4 glDiffuse = vec4(0.4, 0.2368, 0.1036, 1.0);
+//   vec4 glSpecular = vec4(0.774597, 0.458561, 0.200621, 1.0);
+//   float glShininess = 76.8;
+  vec4 glAmbient = vec4(0.25, 0.25, 0.25, 1.0);
+  vec4 glDiffuse = vec4(0.4, 0.4, 0.4, 1.0);
+  vec4 glSpecular = vec4(0.774597, 0.774597, 0.774597, 1.0);
+  float glShininess = 76.8;
+
+  vec3 norm = normalize(normal);
 
   vec3 L = normalize(lightVec);
   vec3 V = normalize(viewVec);
@@ -30,14 +41,13 @@ void main() {
   float NdotL = dot(L, norm);
   float NdotH = clamp(dot(halfAngle, norm), 0.0, 1.0);
   
-  // diffuse = Kd*Il(N*L)
-  float diffuse  = 1.0 * NdotL;
+  // Calculate diffuse and specular with material components
+  vec4 diffuse  = NdotL * glDiffuse;
+  vec4 specular = pow(NdotH, glShininess) * glSpecular;
   
-  float specular = pow(NdotH, 76.8);
-
-  vec3 lighting = vec3(glAmbient + diffuse * specular);
-  // lighting = ambientLight + diffuseLight * (dot(aVertexNormal, uLightPosition));
-  vec4 color = vec4(vec3(0.5,1.0,0.8) * lighting, 1.0);
+  // Final color for vertex
+  vec4 lighting = glAmbient + diffuse + specular;
+  vec4 color = vec4(lighting);
 
   fragColor = color;
 }

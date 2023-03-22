@@ -8,7 +8,7 @@ in vec3 aVertexNormal;
 
 //In OpenGL vayring is replaced by in/out (vertex shader creates it as 'out', fragment uses it as an 'in')
 // out vec3 outColor;
-out vec3 norm;
+out vec3 normal;
 out vec3 lightVec;
 out vec3 viewVec;
 
@@ -18,16 +18,15 @@ uniform mat4 uProjectionMatrix;
 uniform vec3 uLightPosition;
 
 void main() {
-
-  vec3 modelViewVertex = vec3(uModelViewMatrix * vec4(aVertexPosition, 0.0));
-  vec3 modelViewNormal = vec3(uModelViewMatrix * vec4(aVertexNormal, 1.0));
-
-  lightVec = vec3(uLightPosition - modelViewVertex);
-  viewVec  = -vec3(modelViewVertex);
-
-  norm = normalize(modelViewNormal);
-
+  // Position of vertex in clip space
   gl_Position = uProjectionMatrix * uModelViewMatrix * vec4(aVertexPosition, 1.0);
+
+  vec4 vert = uModelViewMatrix * vec4(aVertexPosition, 1.0);
+
+  normal = vec3(uModelViewMatrix * vec4(aVertexNormal, 0.0));
+  lightVec = vec3(vec4(uLightPosition, 1.0) - vert);
+  viewVec  = -vec3(vert);
+
 }
 
 // Ambient light + diffuse light * dot(Normal, light position)
