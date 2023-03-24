@@ -7,7 +7,6 @@ var myDrawable = null;
 var myDrawableInitialized = null;
 var modelViewMatrix = null;
 var projectionMatrix = null;
-var normalMatrix = null;
 var globalTime = 0.0;
 var parsedData = null;
 var lightPosition = null
@@ -117,9 +116,9 @@ function setupUI(sliderDict) {
 
 // Async as it loads resources over the network.
 async function setupScene() {
-  let objData = await loadNetworkResourceAsText('../shared/resources/models/sphere.obj');
-  let vertSource = await loadNetworkResourceAsText('../shared/resources/shaders/verts/gouraud300.vert');
-  let fragSource = await loadNetworkResourceAsText('../shared/resources/shaders/frags/gouraud300.frag');
+  let objData = await loadNetworkResourceAsText('../shared/resources/models/bunny.obj');
+  let vertSource = await loadNetworkResourceAsText('../shared/resources/shaders/verts/textureEC300.vert');
+  let fragSource = await loadNetworkResourceAsText('../shared/resources/shaders/frags/textureEC300.frag');
   initializeMyObject(vertSource, fragSource, objData);
 }
 
@@ -169,6 +168,9 @@ function initializeMyObject(vertSource, fragSource, objData) {
   parsedData = new OBJData(objData); // this class is in obj-loader.js
   let rawData = parsedData.getFlattenedDataFromModelAtIndex(0);
   boundingVector = rawData.boundingVector
+  console.log(rawData.uvs)
+
+  let texture = generateTexture()
 
   // Generate Buffers on the GPU using the geometry data we pull from the obj
   let vertexPositionBuffer = new VertexArrayData( // this class is in vertex-data.js
@@ -181,12 +183,12 @@ function initializeMyObject(vertSource, fragSource, objData) {
     gl.FLOAT,
     3
   );
-  /*
   let vertexTexCoordBuffer = new VertexArrayData (
     rawData.uvs,
     gl.FLOAT,
     2
   );
+  /*
   let vertexBarycentricBuffer = new VertexArrayData (
     rawData.barycentricCoords,
     gl.FLOAT,
@@ -212,14 +214,14 @@ function initializeMyObject(vertSource, fragSource, objData) {
     'aVertexPosition': vertexPositionBuffer,
     // 'aBarycentricCoord': vertexBarycentricBuffer,
     'aVertexNormal': vertexNormalBuffer,
-    // 'aVertexTexCoord': vertexTexCoordBuffer -> Same, not working with texture coords yet.
+    // 'aVertexTexCoord': vertexTexCoordBuffer,
   };
 
   myDrawable = new Drawable(myShader, bufferMap, null, rawData.vertices.length / 3);
 
   // Checkout the drawable class' draw function. It calls a uniform setup function every time it is drawn. 
   // Put your uniforms that change per frame in this setup function.
-  myDrawable.uniformLocations = myShader.getUniformLocations(['uModelViewMatrix', 'uProjectionMatrix', 'uLightPosition']);
+  myDrawable.uniformLocations = myShader.getUniformLocations(['uModelViewMatrix', 'uProjectionMatrix', 'uLightPosition', 'uTexture']);
   myDrawable.uniformSetup = () => {
     gl.uniformMatrix4fv(
       myDrawable.uniformLocations.uProjectionMatrix,
@@ -235,6 +237,10 @@ function initializeMyObject(vertSource, fragSource, objData) {
       myDrawable.uniformLocations.uLightPosition,
       lightPosition
     );
+    gl.uniform1i(
+      myDrawable.uniformLocations.uTexture,
+      texture
+    )
   };
   myDrawableInitialized = true;
 }
