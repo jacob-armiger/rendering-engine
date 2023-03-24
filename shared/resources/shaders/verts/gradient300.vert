@@ -13,6 +13,8 @@ out vec3 lightVec;
 out vec3 viewVec;
 
 out float yCoord;
+out float maxY;
+out float minY;
 
 // Uniforms do not change from one shader invocation to the next, these are set "constant" values that can be read by vertex and fragment shader; if you want to use a uniform in the fragment shader then you must declare it at the top as well.
 uniform mat4 uModelViewMatrix;
@@ -22,6 +24,10 @@ uniform vec3 uLightPosition;
 void main() {
   // Position of vertex in clip space
   gl_Position = uProjectionMatrix * uModelViewMatrix * vec4(aVertexPosition, 1.0);
+  yCoord = gl_Position.y;
+  maxY = gl_Position.w;
+  minY = -gl_Position.w;
+
 
   // Transform vertexes into eye space
   vec4 vert = uModelViewMatrix * vec4(aVertexPosition, 1.0);

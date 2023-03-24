@@ -15,6 +15,8 @@ in vec3 lightVec;
 in vec3 viewVec;
 
 in float yCoord;
+in float maxY;
+in float minY;
 
 // We also have to specify the "output" of the fragment shader
 // Typically we only output RGBA color, and that is what I will do here!
@@ -41,7 +43,8 @@ void main() {
   vec4 specular = pow(NdotH, glShininess) * glSpecular;
   
   // Create gradient based on frag y coordinate
-  float gradient = gl_FragCoord.y/480.0;
+  // float gradient = gl_FragCoord.y/480.0;
+  float gradient = smoothstep(minY,maxY,yCoord);
   // Sum lighting components and multiply red gradient
   vec4 lighting = (glAmbient + diffuse + specular) * vec4(gradient,1.0,1.0,1.0);
   // Final color for vertex
