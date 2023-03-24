@@ -100,6 +100,38 @@ function calculateVertexNormals(faces, vertices) {
   return calculatedNormals;
 }
 
+function generateTexture() {
+  var texture = gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_2D, texture);
+  
+  // // Fill the texture with a 1x1 blue pixel.
+  // gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE,
+  //   new Uint8Array([255, 55, 55 ,255]));
+
+  let vals = []
+  let value = 0
+  for(let i = 1; i < 9; i++) {
+    value = i * 10
+    for(let j = 1; j < 9; j++) {
+      vals.push(value)
+      vals.push(value)
+      vals.push(value)
+      // vals.push(0)
+      value = value + 10
+    }
+  }
+  console.log(vals)
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, 8, 8, 0, gl.RGB, gl.UNSIGNED_BYTE,
+    new Uint8Array(vals));
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+  gl.generateMipmap(gl.TEXTURE_2D);
+
+  return texture;
+}
+
 
   // Create normal matrix
   // mat4 normalMatrix = transpose(inverse(modelView));
