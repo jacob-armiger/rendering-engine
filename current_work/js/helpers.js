@@ -100,41 +100,29 @@ function calculateVertexNormals(faces, vertices) {
   return calculatedNormals;
 }
 
-function generateTexture() {
+
+function generateTexture(img) {
+  img = "../shared/resources/images/" + img
   var texture = gl.createTexture();
+  
   gl.bindTexture(gl.TEXTURE_2D, texture);
   
-  // // Fill the texture with a 1x1 blue pixel.
-  // gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE,
-  //   new Uint8Array([255, 55, 55 ,255]));
+  // Fill the texture with a 1x1 blue pixel.
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE,
+    new Uint8Array([255, 55, 55 ,255]));
 
-  let vals = []
-  let value = 0
-  for(let i = 1; i < 9; i++) {
-    value = i * 10
-    for(let j = 1; j < 9; j++) {
-      vals.push(value)
-      vals.push(value)
-      vals.push(value)
-      // vals.push(0)
-      value = value + 10
-    }
-  }
-  
-  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, 8, 8, 0, gl.RGB, gl.UNSIGNED_BYTE,
-    new Uint8Array(vals));
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-  gl.generateMipmap(gl.TEXTURE_2D);
+  // Asynchronously load an image
+  var image = new Image();
+  image.src = img;
+  image.addEventListener('load', function() {
+    // Now that the image has loaded make copy it to the texture.
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true)
+
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, 256, 256, 0, gl.RGB, gl.UNSIGNED_BYTE,image);
+    
+    gl.generateMipmap(gl.TEXTURE_2D);
+  });
 
   return texture;
 }
-
-
-  // Create normal matrix
-  // mat4 normalMatrix = transpose(inverse(modelView));
-  // normalMatrix = glMatrix.mat4.create();
-  // glMatrix.mat4.invert(normalMatrix, modelViewMatrix)
-  // glMatrix.mat4.transpose(normalMatrix, modelViewMatrix)
