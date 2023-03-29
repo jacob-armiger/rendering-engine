@@ -116,9 +116,9 @@ function setupUI(sliderDict) {
 
 // Async as it loads resources over the network.
 async function setupScene() {
-  let objData = await loadNetworkResourceAsText('../shared/resources/models/bunny.obj');
-  let vertSource = await loadNetworkResourceAsText('../shared/resources/shaders/verts/textureEC300.vert');
-  let fragSource = await loadNetworkResourceAsText('../shared/resources/shaders/frags/textureEC300.frag');
+  let objData = await loadNetworkResourceAsText('../shared/resources/models/cube.obj');
+  let vertSource = await loadNetworkResourceAsText('../shared/resources/shaders/verts/texture.vert');
+  let fragSource = await loadNetworkResourceAsText('../shared/resources/shaders/frags/texture.frag');
   initializeMyObject(vertSource, fragSource, objData);
 }
 
@@ -168,8 +168,51 @@ function initializeMyObject(vertSource, fragSource, objData) {
   parsedData = new OBJData(objData); // this class is in obj-loader.js
   let rawData = parsedData.getFlattenedDataFromModelAtIndex(0);
   boundingVector = rawData.boundingVector
-
-  let texture = generateTexture()
+  
+  rawData.uvs = [
+    // Front
+    0.0,  0.0,
+    1.0,  1.0,
+    1.0,  0.0,
+    0.0,  0.0,
+    0.0,  1.0,
+    1.0,  1.0,
+    // Right
+    0.0,  0.0,
+    1.0,  1.0,
+    1.0,  0.0,
+    0.0,  0.0,
+    0.0,  1.0,
+    1.0,  1.0,
+    // Top
+    0.0,  0.0,
+    1.0,  1.0,
+    1.0,  0.0,
+    0.0,  0.0,
+    0.0,  1.0,
+    1.0,  1.0,
+    // Left
+    0.0,  0.0,
+    0.0,  1.0,
+    1.0,  1.0,
+    0.0,  0.0,
+    1.0,  1.0,
+    1.0,  0.0,
+    // Bottom
+    0.0,  0.0,
+    0.0,  1.0,
+    1.0,  1.0,
+    0.0,  0.0,
+    1.0,  1.0,
+    1.0,  0.0,
+    // Back
+    0.0,  0.0,
+    0.0,  1.0,
+    1.0,  1.0,
+    0.0,  0.0,
+    1.0,  1.0,
+    1.0,  0.0,
+  ]
 
   // Generate Buffers on the GPU using the geometry data we pull from the obj
   let vertexPositionBuffer = new VertexArrayData( // this class is in vertex-data.js
@@ -213,8 +256,11 @@ function initializeMyObject(vertSource, fragSource, objData) {
     'aVertexPosition': vertexPositionBuffer,
     // 'aBarycentricCoord': vertexBarycentricBuffer,
     'aVertexNormal': vertexNormalBuffer,
-    // 'aVertexTexCoord': vertexTexCoordBuffer,
+    'aVertexTexCoord': vertexTexCoordBuffer,
   };
+
+  let img = "sd_ut_system_logo.png"
+  let texture = generateTexture(img)
 
   myDrawable = new Drawable(myShader, bufferMap, null, rawData.vertices.length / 3);
 
