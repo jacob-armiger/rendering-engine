@@ -166,7 +166,7 @@ class OBJData {
     const model = this.result.models[index];
     const faces = model.faces;
     const vertices = model.vertices;
-    const textureCoords = model.textureCoords;
+    let textureCoords = model.textureCoords;
 
     let vertexNormals = model.vertexNormals;
     let bbox = model.boundingBox
@@ -177,6 +177,9 @@ class OBJData {
     // If model does not have vertex normals, calculate them here.
     if(vertexNormals < 1) {
       vertexNormals = calculateVertexNormals(faces,vertices)
+    }
+    if(textureCoords < 1) {
+      console.log("no tex coords")
     }
 
     // This is just for the wireframe shader, feel free to remove this information if not necessary
