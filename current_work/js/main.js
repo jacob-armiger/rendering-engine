@@ -116,9 +116,9 @@ function setupUI(sliderDict) {
 
 // Async as it loads resources over the network.
 async function setupScene() {
-  let objData = await loadNetworkResourceAsText('../shared/resources/models/cube.obj');
-  let vertSource = await loadNetworkResourceAsText('../shared/resources/shaders/verts/texture.vert');
-  let fragSource = await loadNetworkResourceAsText('../shared/resources/shaders/frags/texture.frag');
+  let objData = await loadNetworkResourceAsText('../shared/resources/models/sphere_with_vt.obj');
+  let vertSource = await loadNetworkResourceAsText('../shared/resources/shaders/verts/textureGouraud.vert');
+  let fragSource = await loadNetworkResourceAsText('../shared/resources/shaders/frags/textureGouraud.frag');
   initializeMyObject(vertSource, fragSource, objData);
 }
 
@@ -169,50 +169,7 @@ function initializeMyObject(vertSource, fragSource, objData) {
   let rawData = parsedData.getFlattenedDataFromModelAtIndex(0);
   boundingVector = rawData.boundingVector
   
-  rawData.uvs = [
-    // Front
-    0.0,  0.0,
-    1.0,  1.0,
-    1.0,  0.0,
-    0.0,  0.0,
-    0.0,  1.0,
-    1.0,  1.0,
-    // Right
-    0.0,  0.0,
-    1.0,  1.0,
-    1.0,  0.0,
-    0.0,  0.0,
-    0.0,  1.0,
-    1.0,  1.0,
-    // Top
-    0.0,  0.0,
-    1.0,  1.0,
-    1.0,  0.0,
-    0.0,  0.0,
-    0.0,  1.0,
-    1.0,  1.0,
-    // Left
-    0.0,  0.0,
-    0.0,  1.0,
-    1.0,  1.0,
-    0.0,  0.0,
-    1.0,  1.0,
-    1.0,  0.0,
-    // Bottom
-    0.0,  0.0,
-    0.0,  1.0,
-    1.0,  1.0,
-    0.0,  0.0,
-    1.0,  1.0,
-    1.0,  0.0,
-    // Back
-    0.0,  0.0,
-    0.0,  1.0,
-    1.0,  1.0,
-    0.0,  0.0,
-    1.0,  1.0,
-    1.0,  0.0,
-  ]
+  // rawData.uvs = getCubeUVs()
 
   // Generate Buffers on the GPU using the geometry data we pull from the obj
   let vertexPositionBuffer = new VertexArrayData( // this class is in vertex-data.js
@@ -254,12 +211,12 @@ function initializeMyObject(vertSource, fragSource, objData) {
   // Checkout the Drawable constructor and draw function to see how it tells the GPU to bind these buffers for drawing.
   let bufferMap = {
     'aVertexPosition': vertexPositionBuffer,
-    // 'aBarycentricCoord': vertexBarycentricBuffer,
     'aVertexNormal': vertexNormalBuffer,
     'aVertexTexCoord': vertexTexCoordBuffer,
+    // 'aBarycentricCoord': vertexBarycentricBuffer,
   };
 
-  let img = "sd_ut_system_logo.png"
+  let img = "hd_power_t.png"
   let texture = generateTexture(img)
 
   myDrawable = new Drawable(myShader, bufferMap, null, rawData.vertices.length / 3);
