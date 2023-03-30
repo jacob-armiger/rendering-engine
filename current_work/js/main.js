@@ -9,9 +9,10 @@ var modelViewMatrix = null;
 var projectionMatrix = null;
 var globalTime = 0.0;
 var parsedData = null;
-var lightPosition = null
 
 // These global variables apply to the entire scene for the duration of the program
+let lightPosition = null
+let cameraPos = null
 let models = createModelData()
 boundingVector = [0,0,0]        // updated during object initialization
 
@@ -116,9 +117,9 @@ function setupUI(sliderDict) {
 
 // Async as it loads resources over the network.
 async function setupScene() {
-  let objData = await loadNetworkResourceAsText('../shared/resources/models/sphere_with_vt.obj');
-  let vertSource = await loadNetworkResourceAsText('../shared/resources/shaders/verts/texturePhong.vert');
-  let fragSource = await loadNetworkResourceAsText('../shared/resources/shaders/frags/texturePhong.frag');
+  let objData = await loadNetworkResourceAsText('../shared/resources/models/box_with_vt.obj');
+  let vertSource = await loadNetworkResourceAsText('../shared/resources/shaders/verts/textureCubemap.vert');
+  let fragSource = await loadNetworkResourceAsText('../shared/resources/shaders/frags/textureCubemap.frag');
   initializeMyObject(vertSource, fragSource, objData);
 }
 
@@ -133,19 +134,19 @@ function drawScene(deltaTime, sliderVals) {
     let modelMatrix = glMatrix.mat4.create();
 
     let objectWorldPos = model.position;
-    let rotationAxis = [0.0, 1.0, 0.0];
+    let rotationAxis = [1.0, 1.0, 0.0];
     
     // 7 matrices to position each sphere by end of lab
     // scale -> rotation on axis to direction -> translate to distance -> rotate around sun
     // Call in reverse order for stack
     // glMatrix.mat4.rotate(modelMatrix, modelMatrix, globalTime*model.speed, model.orbitVector);  // orbit around center
-    // glMatrix.mat4.translate(modelMatrix, modelMatrix, objectWorldPos);                            // translate object away from center
-    // glMatrix.mat4.rotate(modelMatrix, modelMatrix, globalTime, rotationAxis);                     // rotate object on its own axis  
+    glMatrix.mat4.translate(modelMatrix, modelMatrix, objectWorldPos);                            // translate object away from center
+    glMatrix.mat4.rotate(modelMatrix, modelMatrix, globalTime, rotationAxis);                     // rotate object on its own axis  
     glMatrix.mat4.scale(modelMatrix, modelMatrix, model.scaleVector);                            // scale object to variable size
     glMatrix.mat4.scale(modelMatrix, modelMatrix, boundingVector);                                // normalize object to bounds
 
     let viewMatrix = glMatrix.mat4.create();
-    let cameraPos = [sliderVals.get("camXVal"), sliderVals.get("camYVal"), sliderVals.get("camZVal")];
+    cameraPos = [sliderVals.get("camXVal"), sliderVals.get("camYVal"), sliderVals.get("camZVal")];
     let cameraFocus = [sliderVals.get("lookXVal"), sliderVals.get("lookYVal"), sliderVals.get("lookZVal")];
     glMatrix.mat4.lookAt(viewMatrix, cameraPos, cameraFocus, [0.0, 1.0, 0.0]); // does up vector need to be changed? ortho to y?
 
@@ -212,18 +213,20 @@ function initializeMyObject(vertSource, fragSource, objData) {
   let bufferMap = {
     'aVertexPosition': vertexPositionBuffer,
     'aVertexNormal': vertexNormalBuffer,
-    'aVertexTexCoord': vertexTexCoordBuffer,
+    // 'aVertexTexCoord': vertexTexCoordBuffer,
     // 'aBarycentricCoord': vertexBarycentricBuffer,
   };
 
-  let img = "hd_power_t.png"
-  let texture = generateTexture(img)
+  // let img = "hd_power_t.png"
+  // let texture = generateTexture(img)
+  let cubemapDir = "../shared/resources/coit_tower/"
+  let texture = generateCubeMap(cubemapDir)
 
   myDrawable = new Drawable(myShader, bufferMap, null, rawData.vertices.length / 3);
 
   // Checkout the drawable class' draw function. It calls a uniform setup function every time it is drawn. 
   // Put your uniforms that change per frame in this setup function.
-  myDrawable.uniformLocations = myShader.getUniformLocations(['uModelViewMatrix', 'uProjectionMatrix', 'uLightPosition', 'uTexture']);
+  myDrawable.uniformLocations = myShader.getUniformLocations(['uModelViewMatrix', 'uProjectionMatrix', 'uLightPosition', 'uCameraPosition', 'uTexture']);
   myDrawable.uniformSetup = () => {
     gl.uniformMatrix4fv(
       myDrawable.uniformLocations.uProjectionMatrix,
@@ -238,6 +241,10 @@ function initializeMyObject(vertSource, fragSource, objData) {
     gl.uniform3fv(
       myDrawable.uniformLocations.uLightPosition,
       lightPosition
+    );
+    gl.uniform3fv(
+      myDrawable.uniformLocations.uCameraPosition,
+      cameraPos
     );
     gl.uniform1i(
       myDrawable.uniformLocations.uTexture,
