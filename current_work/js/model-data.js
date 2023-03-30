@@ -25,7 +25,7 @@ function createModelData() {
     let ratio = 2.5           // This is NOT a hard coded value for object bounds. This is used for experimenting with object system sizes 
 
     let sun = new Model() // 16 ratio
-    sun.updateScale(3*ratio)
+    sun.updateScale(5*ratio)
     sun.position = [0,0,0]
 
     let mercury = new Model()
