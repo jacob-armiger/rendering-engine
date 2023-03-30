@@ -44,7 +44,7 @@ void main() {
   // Calculate lighting components:       vec3(color) * intensity
   vec3 ambient =                          vec3(1.0,1.0,1.0) * 0.3;
   vec3 diffuse  = NdotL *                 vec3(1.0,1.0,1.0) * 0.7;
-  vec3 specular = pow(NdotH, shininess) * vec3(1.0,1.0,1.0) * 1.0;
+  vec3 specular = pow(NdotH, shininess) * vec3(1.0,1.0,1.0) * 0.7;
 
 
   // Lighting for fragment

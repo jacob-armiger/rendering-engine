@@ -21,9 +21,7 @@ out vec4 fragColor;
 uniform sampler2D uTexture;
 
 void main() {
-  float glShininess = 50.0;
-
-  // Discard frragments with low opacity
+  // Discard fragments with low opacity
   vec4 texColor = texture(uTexture,texCoord);
   if(texColor.a < 0.1) {
     discard;
@@ -39,13 +37,15 @@ void main() {
   float NdotL = clamp(dot(L, norm), 0.0, 1.0);
   float NdotH = clamp(dot(halfAngle, norm), 0.0, 1.0);
   
-  // Calculate lighting components components
-  vec4 ambient = vec4(0.6 * texColor.xyz, 1.0);
-  vec4 diffuse  = NdotL * texColor;
-  vec4 specular = vec4(pow(NdotH, 150.0));
-  
-  // Final color for fragment
-  vec4 lighting = diffuse + ambient + specular;
+  float shininess = 80.0;
+  // Calculate lighting components:       vec3(color) * intensity
+  vec3 ambient =                          texColor.xyz * 0.4;
+  vec3 diffuse  = NdotL *                 texColor.xyz * 0.4;
+  vec3 specular = pow(NdotH, shininess) * vec3(1.0,1.0,1.0) * 0.5;
+
+
+  // Lighting for fragment
+  vec4 lighting = vec4(diffuse + specular + ambient, 1.0);
   vec4 color = vec4(lighting);
 
   fragColor = color;
