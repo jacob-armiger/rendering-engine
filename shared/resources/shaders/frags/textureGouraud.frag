@@ -10,13 +10,23 @@ precision mediump float;
 
 // This is a varying var written to by our vertex shader
 // since this is 3.0 we specify it in the fragment shader with "in"
+in vec3 normal;
+in vec3 lightVec;
+in vec3 viewVec;
+
 in vec2 texCoord;
 uniform sampler2D uTexture;
 
 // We also have to specify the "output" of the fragment shader
 // Typically we only output RGBA color, and that is what I will do here!
 out vec4 fragColor;
+in vec4 color;
 
 void main() {
-  fragColor = texture(uTexture,texCoord);
+  // Discard if opacity is less than 0.1
+  vec4 texColor = texture(uTexture,texCoord);
+  if(texColor.a < 0.1) {
+    discard;
+  }
+  fragColor = color * (texColor);
 }
