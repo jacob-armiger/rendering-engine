@@ -116,7 +116,7 @@ function generateTexture(img) {
     new Uint8Array([255, 55, 55 ,255]));
 
   // Asynchronously load an image
-  var image = new Image();
+  let image = new Image();
   image.src = img;
   
   image.addEventListener('load', function() {
@@ -133,6 +133,65 @@ function generateTexture(img) {
     gl.generateMipmap(gl.TEXTURE_2D);
   });
 
+  return texture;
+}
+
+/**
+ * generateCubeMap takes a cubemap directory and creates a cubemap from it
+ * @param {Object} cubemapDir
+ */
+function generateCubeMap(cubemapDir) {
+  let texture = gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
+
+  const faces = [
+    {
+      cubeSide: gl.TEXTURE_CUBE_MAP_POSITIVE_X,
+      src: cubemapDir + "posx.jpg",
+    },
+    {
+      cubeSide: gl.TEXTURE_CUBE_MAP_NEGATIVE_X,
+      src: cubemapDir + "negx.jpg",
+    },
+    {
+      cubeSide: gl.TEXTURE_CUBE_MAP_POSITIVE_Y,
+      src: cubemapDir + "posy.jpg",
+    },
+    {
+      cubeSide: gl.TEXTURE_CUBE_MAP_NEGATIVE_Y,
+      src: cubemapDir + "negy.jpg",
+    },
+    {
+      cubeSide: gl.TEXTURE_CUBE_MAP_POSITIVE_Z,
+      src: cubemapDir + "posz.jpg",
+    },
+    {
+      cubeSide: gl.TEXTURE_CUBE_MAP_NEGATIVE_Z,
+      src: cubemapDir + "negz.jpg",
+    },
+  ];
+
+  faces.forEach((face) => {
+    let {cubeSide, src} = face
+
+    // Fill the texture with a 1x1 blue pixel.
+    gl.texImage2D(cubeSide, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE,
+      new Uint8Array([0, 0, 255 ,255]));
+    
+    // Asynchronously load an image
+    let image = new Image();
+    image.src = src;
+    
+    image.addEventListener('load', function() {
+      // Image now loaded
+      gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
+      gl.texImage2D(cubeSide, 0, gl.RGBA, 2048, 2048, 0, gl.RGBA, gl.UNSIGNED_BYTE, image);
+      gl.generateMipmap(gl.TEXTURE_CUBE_MAP);
+      });
+  });
+
+  gl.generateMipmap(gl.TEXTURE_CUBE_MAP);
+  gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
   return texture;
 }
 
