@@ -116,9 +116,9 @@ function setupUI(sliderDict) {
 
 // Async as it loads resources over the network.
 async function setupScene() {
-  let objData = await loadNetworkResourceAsText('../shared/resources/models/sphere_with_vt.obj');
-  let vertSource = await loadNetworkResourceAsText('../shared/resources/shaders/verts/textureGouraud.vert');
-  let fragSource = await loadNetworkResourceAsText('../shared/resources/shaders/frags/textureGouraud.frag');
+  let objData = await loadNetworkResourceAsText('../../shared/resources/models/sphere_with_vt.obj');
+  let vertSource = await loadNetworkResourceAsText('../../shared/resources/shaders/verts/textureGouraud.vert');
+  let fragSource = await loadNetworkResourceAsText('../../shared/resources/shaders/frags/textureGouraud.frag');
   initializeMyObject(vertSource, fragSource, objData);
 }
 

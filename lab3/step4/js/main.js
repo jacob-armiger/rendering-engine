@@ -117,9 +117,9 @@ function setupUI(sliderDict) {
 
 // Async as it loads resources over the network.
 async function setupScene() {
-  let objData = await loadNetworkResourceAsText('../shared/resources/models/box_with_vt.obj');
-  let vertSource = await loadNetworkResourceAsText('../shared/resources/shaders/verts/textureCubemap.vert');
-  let fragSource = await loadNetworkResourceAsText('../shared/resources/shaders/frags/textureCubemap.frag');
+  let objData = await loadNetworkResourceAsText('../../shared/resources/models/box_with_vt.obj');
+  let vertSource = await loadNetworkResourceAsText('../../shared/resources/shaders/verts/textureCubemap.vert');
+  let fragSource = await loadNetworkResourceAsText('../../shared/resources/shaders/frags/textureCubemap.frag');
   initializeMyObject(vertSource, fragSource, objData);
 }
 
@@ -219,7 +219,7 @@ function initializeMyObject(vertSource, fragSource, objData) {
 
   // let img = "hd_power_t.png"
   // let texture = generateTexture(img)
-  let cubemapDir = "../shared/resources/coit_tower/"
+  let cubemapDir = "../../shared/resources/coit_tower/"
   let texture = generateCubeMap(cubemapDir)
 
   myDrawable = new Drawable(myShader, bufferMap, null, rawData.vertices.length / 3);

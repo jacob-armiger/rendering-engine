@@ -102,7 +102,7 @@ function calculateVertexNormals(faces, vertices) {
 
 
 function generateTexture(img) {
-  img = "../shared/resources/images/" + img
+  img = "../../shared/resources/images/" + img
   var texture = gl.createTexture();
   
   gl.bindTexture(gl.TEXTURE_2D, texture);
