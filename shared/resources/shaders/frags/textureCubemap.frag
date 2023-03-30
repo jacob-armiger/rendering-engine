@@ -26,6 +26,5 @@ void main() {
   vec3 V = normalize(viewVec - uCameraPosition);
   vec3 reflection = reflect(V,norm);
   
-
   fragColor = texture(uTexture, reflection);
 }

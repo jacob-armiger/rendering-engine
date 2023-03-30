@@ -40,13 +40,15 @@ void main() {
   float NdotL = clamp(dot(L, norm), 0.0, 1.0);
   float NdotH = clamp(dot(halfAngle, norm), 0.0, 1.0);
   
-  // Calculate diffuse and specular with material components
-  float diffuse  = 0.2 * NdotL + 0.6;
-  float specular = pow(NdotH, 70.0);
+  float shininess = 90.0;
+  // Calculate lighting components:       vec3(color) * intensity
+  vec3 ambient =                          vec3(1.0,1.0,1.0) * 0.3;
+  vec3 diffuse  = NdotL *                 vec3(1.0,1.0,1.0) * 0.7;
+  vec3 specular = pow(NdotH, shininess) * vec3(1.0,1.0,1.0) * 1.0;
 
 
   // Lighting for fragment
-  vec4 lighting = vec4(0.5 + diffuse + specular);
+  vec4 lighting = vec4(diffuse + specular + ambient, 1.0);
   // Pass color to fragment shader
   color = lighting;
   texCoord = aVertexTexCoord;
