@@ -101,10 +101,14 @@ function calculateVertexNormals(faces, vertices) {
 }
 
 
+/**
+ * generateTexture takes an img resource and applies it to a texture that can be used in a shader
+ * @param {Object} img
+ */
 function generateTexture(img) {
   img = "../shared/resources/images/" + img
   var texture = gl.createTexture();
-  
+
   gl.bindTexture(gl.TEXTURE_2D, texture);
   
   // Fill the texture with a 1x1 blue pixel.
@@ -114,15 +118,71 @@ function generateTexture(img) {
   // Asynchronously load an image
   var image = new Image();
   image.src = img;
+  
   image.addEventListener('load', function() {
     // Now that the image has loaded make copy it to the texture.
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true)
 
     gl.bindTexture(gl.TEXTURE_2D, texture);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, 256, 256, 0, gl.RGB, gl.UNSIGNED_BYTE,image);
-    
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, image.naturalWidth, image.naturalHeight, 0, gl.RGBA, gl.UNSIGNED_BYTE,image);
+    // gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image)
+    // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+    // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
     gl.generateMipmap(gl.TEXTURE_2D);
   });
 
   return texture;
+}
+
+/**
+ * getCubeUVs gets the manually created uvs for the cube object
+ */
+function getCubeUVs() {
+  uvs = [
+    // Front
+    0.0,  0.0,
+    1.0,  1.0,
+    1.0,  0.0,
+    0.0,  0.0,
+    0.0,  1.0,
+    1.0,  1.0,
+    // Right
+    0.0,  0.0,
+    1.0,  1.0,
+    1.0,  0.0,
+    0.0,  0.0,
+    0.0,  1.0,
+    1.0,  1.0,
+    // Top
+    0.0,  0.0,
+    1.0,  1.0,
+    1.0,  0.0,
+    0.0,  0.0,
+    0.0,  1.0,
+    1.0,  1.0,
+    // Left
+    0.0,  0.0,
+    0.0,  1.0,
+    1.0,  1.0,
+    0.0,  0.0,
+    1.0,  1.0,
+    1.0,  0.0,
+    // Bottom
+    0.0,  0.0,
+    0.0,  1.0,
+    1.0,  1.0,
+    0.0,  0.0,
+    1.0,  1.0,
+    1.0,  0.0,
+    // Back
+    0.0,  0.0,
+    0.0,  1.0,
+    1.0,  1.0,
+    0.0,  0.0,
+    1.0,  1.0,
+    1.0,  0.0,
+  ]
+  return uvs
 }
