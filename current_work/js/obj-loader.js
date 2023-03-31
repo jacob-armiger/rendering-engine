@@ -28,34 +28,36 @@ class OBJData {
       const lineItems = line.replace(/\s\s+/g, ' ').trim().split(' ');
       if (line.length <= 0) continue;
       switch (lineItems[0].toLowerCase()) {
-        case 'o': // Start A New Model
+        case "o": // Start A New Model
           this.parseObject(lineItems);
           break;
-        case 'g': // Start a new polygon group
+        case "g": // Start a new polygon group
           this.parseGroup(lineItems);
           break;
-        case 'v': // Define a vertex for the current model
+        case "v": // Define a vertex for the current model
           this.parseVertexCoords(lineItems);
           break;
-        case 'vt': // Texture Coords
+        case "vt": // Texture Coords
           this.parseTextureCoords(lineItems);
           break;
-        case 'vn': // Define a vertex normal for the current model
+        case "vn": // Define a vertex normal for the current model
           this.parseVertexNormal(lineItems);
           break;
-        case 's': // Smooth shading statement
+        case "s": // Smooth shading statement
           this.parseSmoothShadingStatement(lineItems);
           break;
-        case 'f': // Define a Face/Polygon
+        case "f": // Define a Face/Polygon
           this.parsePolygon(lineItems);
           break;
-        case 'mtllib': // Reference to a material library file (.mtl)
+        case "mtllib": // Reference to a material library file (.mtl)
           this.parseMtlLib(lineItems);
           break;
-        case 'usemtl': // Sets the current material to be applied to polygons defined from this point forward
+        case "usemtl": // Sets the current material to be applied to polygons defined from this point forward
           this.parseUseMtl(lineItems);
           break;
-        case '#':
+        case "#":
+          break;
+        case "":
           break;
         default:
           console.warn(`Unhandled obj statement at line #${i}: ${line}`);
