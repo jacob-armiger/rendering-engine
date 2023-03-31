@@ -1,4 +1,4 @@
-#version 300 es // These is an OpenGL ES 3.0 Shader!
+#version 300 es // textureGouraud
 
 // In's and Out's of a Fragment Shader
 // an 'in' inside of a fragment shader is a varying var

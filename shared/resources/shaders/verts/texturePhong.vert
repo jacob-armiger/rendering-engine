@@ -1,4 +1,4 @@
-#version 300 es // These is an OpenGL ES 3.0 Shader!
+#version 300 es // texturePhong
 
 // In's and Out's of Vertex Shader in Version 3.0; an 'in' inside of a vertex shader is an attribute; an 'out' inside of a vertex shader is a varying
 
