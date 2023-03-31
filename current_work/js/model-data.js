@@ -40,6 +40,9 @@
 
 class Shape {
   constructor() {
+    this.textureIMG = "sd_ut_system_logo.png"
+    this.objDataPath = "../shared/resources/models/sphere_with_vt.obj"
+
     this.position = [0,0,0]
     this.scaleVector = [4,4,4]
     this.boundingVector = [1,1,1]
@@ -51,8 +54,19 @@ class Shape {
     this.modelViewMatrix = null
 
     this.shaderProgram = null
+    this.bufferMap = null
+    this.parsedData = null
+
     this.myDrawable = null
     this.drawableInitialized = false
+  }
+
+  setTexImg(src) {
+    this.textureIMG = src
+  }
+
+  setObjDataPath(objFile) {
+    this.objDataPath = "../shared/resources/models/" + objFile
   }
 
   setRotationValues(axis, degree, onTime) {
@@ -72,15 +86,30 @@ class Shape {
 
 
 function createShapeData() {
+  list = [];
 
-    let floor = new Shape();
-    floor.setPositionValue(0,-1.3,0)
-    floor.setScaleValue(20)
-    floor.setRotationValues([1,0,0], -1.55, false)
-  
-    let ball = new Shape();
-    ball.position = [2,0,0]
-  
-    let shapes = [floor,ball];
-    return shapes;
-  }
+  let floor = new Shape();
+  floor.setObjDataPath("floor.obj");
+
+  floor.setPositionValue(0, -1.3, 0);
+  floor.setScaleValue(20);
+  floor.setRotationValues([1, 0, 0], -1.55, false);
+
+  list.push(floor)
+
+  let ball = new Shape();
+  ball.setObjDataPath("sphere_with_vt.obj");
+
+  ball.setRotationValues([1, 1, 0], 0, true);
+  ball.setPositionValue(2, 0, 0);
+  list.push(ball)
+
+  let cube = new Shape()
+  cube.setObjDataPath("box_with_vt.obj");
+
+  cube.setPositionValue(-2,0,2)
+  list.push(cube)
+
+  // let shapes = [floor,ball, cube];
+  return list;
+}

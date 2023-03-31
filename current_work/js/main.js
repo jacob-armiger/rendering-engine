@@ -15,11 +15,16 @@ let lightPosition = null
 let cameraPos = null
 let shapes = createShapeData()
 
-shaders = []
+let lastShaderInfo = null
+let currentShader = null
+
+let lastBufferMap = null
+let currentBufferMap = null
 
 function main() {
   const canvas = document.getElementById('glCanvas');
   // Initialize the GL context
+  // gl = canvas.getContext('webgl2', { preserveDrawingBuffer: true });
   gl = canvas.getContext('webgl2');
 
   // Only continue if WebGL is available and working
@@ -118,15 +123,16 @@ function setupUI(sliderDict) {
 
 // Async as it loads resources over the network.
 async function setupScene() {
-  let objData = await loadNetworkResourceAsText('../shared/resources/models/floor.obj');
-  let vertSource = await loadNetworkResourceAsText('../shared/resources/shaders/verts/phong300.vert');
-  let fragSource = await loadNetworkResourceAsText('../shared/resources/shaders/frags/phong300.frag');
-  initializeMyObject(vertSource, fragSource, objData, shapes[0]);
+  let vertSource = await loadNetworkResourceAsText('../shared/resources/shaders/verts/texturePhong.vert');
+  let fragSource = await loadNetworkResourceAsText('../shared/resources/shaders/frags/texturePhong.frag');
 
-  let objData2 = await loadNetworkResourceAsText('../shared/resources/models/box_with_vt.obj');
-  let vertSource2 = await loadNetworkResourceAsText('../shared/resources/shaders/verts/texturePhong.vert');
-  let fragSource2 = await loadNetworkResourceAsText('../shared/resources/shaders/frags/texturePhong.frag');
-  initializeMyObject(vertSource2, fragSource2, objData2, shapes[1]);
+  let vertSource2 = await loadNetworkResourceAsText('../shared/resources/shaders/verts/textureGouraud.vert');
+  let fragSource2 = await loadNetworkResourceAsText('../shared/resources/shaders/frags/textureGouraud.frag');
+
+  for(let shape of shapes) {
+    let objData = await loadNetworkResourceAsText(shape.objDataPath);
+    initializeMyObject(vertSource, fragSource, objData, shape);
+  }
 }
 
 function drawScene(deltaTime, sliderVals) {
@@ -183,18 +189,35 @@ function drawScene(deltaTime, sliderVals) {
 }
 
 
-let flag = true
 function initializeMyObject(vertSource, fragSource, objData, shape) {
-  
-  if(flag){
-    myShader = new ShaderProgram(vertSource, fragSource); // this class is in shader.js
-    shaders.push(myShader)
-    flag = false
-  } else {
-    myShader = shaders[0]
+  let rawData = null
+
+
+  // TODO: Fix for differing shaders
+  // let tmpShaderinfo = {vert: vertSource, frag: fragSource}
+  // if (lastShaderInfo === null) {
+  //   // init shaderinfo
+  //   currentShader = new ShaderProgram(vertSource, fragSource);
+  //   lastShaderInfo = {vert: vertSource, frag: fragSource}
+
+  //   shape.shaderProgram = currentShader
+  // } else if (lastShaderInfo.vert !== tmpShaderinfo.vert || lastShaderInfo.frag !== tmpShaderinfo.frag) {
+  //   console.log("CHANGE")
+  //   // create new shader program if new shader
+  //   currentShader = new ShaderProgram(vertSource, fragSource)
+  //   lastShaderInfo = tmpShaderinfo
+  //   shape.shaderProgram = currentShader
+  // } else if(lastShaderInfo.vert === tmpShaderinfo.vert && lastShaderInfo.frag === tmpShaderinfo.frag) {
+  //   console.log("SAME")
+  //   shape.shaderProgram = currentShader
+  // }
+  if(currentShader == null) {
+    currentShader = new ShaderProgram(vertSource, fragSource)
   }
+  shape.shaderProgram = currentShader
+
   parsedData = new OBJData(objData); // this class is in obj-loader.js
-  let rawData = parsedData.getFlattenedDataFromModelAtIndex(0);
+  rawData = parsedData.getFlattenedDataFromModelAtIndex(0);
   shape.boundingVector = rawData.boundingVector
   
   // rawData.uvs = getCubeUVs()
@@ -244,18 +267,18 @@ function initializeMyObject(vertSource, fragSource, objData, shape) {
     // 'aBarycentricCoord': vertexBarycentricBuffer,
   };
 
-  let img = "sd_ut_system_logo.png"
+
+  let img = "sidewalk_Albedo.jpg"
   let texture = generateTexture(img)
   // let cubemapDir = "../shared/resources/coit_tower/"
   // let texture = generateCubeMap(cubemapDir)
 
-  shape.myDrawable = new Drawable(myShader, bufferMap, null, rawData.vertices.length / 3);
+  shape.myDrawable = new Drawable(shape.shaderProgram, bufferMap, null, rawData.vertices.length / 3);
   myDrawable = shape.myDrawable
-
 
   // Checkout the drawable class' draw function. It calls a uniform setup function every time it is drawn. 
   // Put your uniforms that change per frame in this setup function.
-  myDrawable.uniformLocations = myShader.getUniformLocations(['uModelViewMatrix', 'uProjectionMatrix', 'uLightPosition', 'uCameraPosition', 'uTexture']);
+  myDrawable.uniformLocations = shape.shaderProgram.getUniformLocations(['uModelViewMatrix', 'uProjectionMatrix', 'uLightPosition', 'uCameraPosition', 'uTexture']);
   myDrawable.uniformSetup = () => {
     gl.uniformMatrix4fv(
       myDrawable.uniformLocations.uProjectionMatrix,
