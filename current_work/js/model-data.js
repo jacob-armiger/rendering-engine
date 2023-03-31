@@ -44,6 +44,10 @@ class Shape {
     this.scaleVector = [4,4,4]
     this.boundingVector = [1,1,1]
 
+    this.rotationAxis = [0,1,0]
+    this.rotateOnTime = false
+    this.roationDegree = 10
+
     this.modelViewMatrix = null
 
     this.shaderProgram = null
@@ -55,12 +59,15 @@ class Shape {
 
 function createShapeData() {
 
-    let shape1 = new Shape();
-    shape1.position = [-2,0,0]
+    let floor = new Shape();
+    floor.position = [0,-1.3,0]
+    floor.scaleVector = [20,20,20]
+    floor.rotationAxis = [1,0,0] 
+    floor.roationDegree = -1.55
   
     let shape2 = new Shape();
     shape2.position = [2,0,0]
   
-    let shapes = [shape1,shape2];
+    let shapes = [floor,shape2];
     return shapes;
   }

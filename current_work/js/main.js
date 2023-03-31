@@ -118,12 +118,12 @@ function setupUI(sliderDict) {
 
 // Async as it loads resources over the network.
 async function setupScene() {
-  let objData = await loadNetworkResourceAsText('../shared/resources/models/box_with_vt.obj');
-  let vertSource = await loadNetworkResourceAsText('../shared/resources/shaders/verts/texturePhong.vert');
-  let fragSource = await loadNetworkResourceAsText('../shared/resources/shaders/frags/texturePhong.frag');
+  let objData = await loadNetworkResourceAsText('../shared/resources/models/floor.obj');
+  let vertSource = await loadNetworkResourceAsText('../shared/resources/shaders/verts/phong300.vert');
+  let fragSource = await loadNetworkResourceAsText('../shared/resources/shaders/frags/phong300.frag');
   initializeMyObject(vertSource, fragSource, objData, shapes[0]);
 
-  let objData2 = await loadNetworkResourceAsText('../shared/resources/models/sphere_with_vt.obj');
+  let objData2 = await loadNetworkResourceAsText('../shared/resources/models/box_with_vt.obj');
   let vertSource2 = await loadNetworkResourceAsText('../shared/resources/shaders/verts/texturePhong.vert');
   let fragSource2 = await loadNetworkResourceAsText('../shared/resources/shaders/frags/texturePhong.frag');
   initializeMyObject(vertSource2, fragSource2, objData2, shapes[1]);
@@ -145,12 +145,15 @@ function drawScene(deltaTime, sliderVals) {
     // Update Model Matrix
     let modelMatrix = glMatrix.mat4.create();
     let objectWorldPos = shape.position;
-    let rotationAxis = [1.0, 1.0, 0.0];
 
     // scale -> rotation on axis to direction -> translate to distance -> rotate around sun
     // glMatrix.mat4.rotate(modelMatrix, modelMatrix, globalTime*models[0].speed, models[0].orbitVector);  // orbit around center
     glMatrix.mat4.translate(modelMatrix, modelMatrix, objectWorldPos); // translate object away from center
-    // glMatrix.mat4.rotate(modelMatrix, modelMatrix, globalTime, rotationAxis); // rotate object on its own axis
+    if(shape.rotateOnTime) {
+      glMatrix.mat4.rotate(modelMatrix, modelMatrix, globalTime, shape.rotationAxis); // rotate object on its own axis
+    } else {
+      glMatrix.mat4.rotate(modelMatrix, modelMatrix, shape.roationDegree, shape.rotationAxis); // rotate object on its own axis
+    }
     glMatrix.mat4.scale(modelMatrix, modelMatrix, shape.scaleVector); // scale object to variable size
     glMatrix.mat4.scale(modelMatrix, modelMatrix, shape.boundingVector); // normalize object to bounds
 
