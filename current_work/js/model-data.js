@@ -45,8 +45,8 @@ class Shape {
     this.boundingVector = [1,1,1]
 
     this.rotationAxis = [0,1,0]
-    this.rotateOnTime = false
     this.roationDegree = 10
+    this.rotateOnTime = false
 
     this.modelViewMatrix = null
 
@@ -54,20 +54,33 @@ class Shape {
     this.myDrawable = null
     this.drawableInitialized = false
   }
+
+  setRotationValues(axis, degree, onTime) {
+    this.rotationAxis = axis
+    this.roationDegree = degree
+    this.rotateOnTime = onTime
+  }
+
+  setScaleValue(scalar) {
+    this.scaleVector = [scalar,scalar,scalar]
+  }
+
+  setPositionValue(x,y,z) {
+    this.position = [x,y,z]
+  }
 }
 
 
 function createShapeData() {
 
     let floor = new Shape();
-    floor.position = [0,-1.3,0]
-    floor.scaleVector = [20,20,20]
-    floor.rotationAxis = [1,0,0] 
-    floor.roationDegree = -1.55
+    floor.setPositionValue(0,-1.3,0)
+    floor.setScaleValue(20)
+    floor.setRotationValues([1,0,0], -1.55, false)
   
-    let shape2 = new Shape();
-    shape2.position = [2,0,0]
+    let ball = new Shape();
+    ball.position = [2,0,0]
   
-    let shapes = [floor,shape2];
+    let shapes = [floor,ball];
     return shapes;
   }
