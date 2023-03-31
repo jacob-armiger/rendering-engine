@@ -13,8 +13,9 @@ var parsedData = null;
 // These global variables apply to the entire scene for the duration of the program
 let lightPosition = null
 let cameraPos = null
-let models = createModelData()
-boundingVector = [0,0,0]        // updated during object initialization
+let shapes = createShapeData()
+
+shaders = []
 
 function main() {
   const canvas = document.getElementById('glCanvas');
@@ -118,57 +119,80 @@ function setupUI(sliderDict) {
 // Async as it loads resources over the network.
 async function setupScene() {
   let objData = await loadNetworkResourceAsText('../shared/resources/models/box_with_vt.obj');
-  let vertSource = await loadNetworkResourceAsText('../shared/resources/shaders/verts/textureCubemap.vert');
-  let fragSource = await loadNetworkResourceAsText('../shared/resources/shaders/frags/textureCubemap.frag');
-  initializeMyObject(vertSource, fragSource, objData);
+  let vertSource = await loadNetworkResourceAsText('../shared/resources/shaders/verts/texturePhong.vert');
+  let fragSource = await loadNetworkResourceAsText('../shared/resources/shaders/frags/texturePhong.frag');
+  initializeMyObject(vertSource, fragSource, objData, shapes[0]);
+
+  let objData2 = await loadNetworkResourceAsText('../shared/resources/models/sphere_with_vt.obj');
+  let vertSource2 = await loadNetworkResourceAsText('../shared/resources/shaders/verts/texturePhong.vert');
+  let fragSource2 = await loadNetworkResourceAsText('../shared/resources/shaders/frags/texturePhong.frag');
+  initializeMyObject(vertSource2, fragSource2, objData2, shapes[1]);
 }
 
 function drawScene(deltaTime, sliderVals) {
   globalTime += deltaTime;
 
+  // Update light position
+  lightPosition = glMatrix.vec3.fromValues(
+    sliderVals.get("lightXVal"),
+    sliderVals.get("lightYVal"),
+    -sliderVals.get("lightZVal")
+  );
+  
   // Clear the color buffer with specified clear color
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-  // Draw models
-  for (let model of models) {
+  for (let shape of shapes) {
+    // Update Model Matrix
     let modelMatrix = glMatrix.mat4.create();
-
-    let objectWorldPos = model.position;
+    let objectWorldPos = shape.position;
     let rotationAxis = [1.0, 1.0, 0.0];
-    
-    // 7 matrices to position each sphere by end of lab
-    // scale -> rotation on axis to direction -> translate to distance -> rotate around sun
-    // Call in reverse order for stack
-    // glMatrix.mat4.rotate(modelMatrix, modelMatrix, globalTime*model.speed, model.orbitVector);  // orbit around center
-    glMatrix.mat4.translate(modelMatrix, modelMatrix, objectWorldPos);                            // translate object away from center
-    glMatrix.mat4.rotate(modelMatrix, modelMatrix, globalTime, rotationAxis);                     // rotate object on its own axis  
-    glMatrix.mat4.scale(modelMatrix, modelMatrix, model.scaleVector);                            // scale object to variable size
-    glMatrix.mat4.scale(modelMatrix, modelMatrix, boundingVector);                                // normalize object to bounds
 
+    // scale -> rotation on axis to direction -> translate to distance -> rotate around sun
+    // glMatrix.mat4.rotate(modelMatrix, modelMatrix, globalTime*models[0].speed, models[0].orbitVector);  // orbit around center
+    glMatrix.mat4.translate(modelMatrix, modelMatrix, objectWorldPos); // translate object away from center
+    // glMatrix.mat4.rotate(modelMatrix, modelMatrix, globalTime, rotationAxis); // rotate object on its own axis
+    glMatrix.mat4.scale(modelMatrix, modelMatrix, shape.scaleVector); // scale object to variable size
+    glMatrix.mat4.scale(modelMatrix, modelMatrix, shape.boundingVector); // normalize object to bounds
+
+    // Update View Matrix
     let viewMatrix = glMatrix.mat4.create();
-    cameraPos = [sliderVals.get("camXVal"), sliderVals.get("camYVal"), sliderVals.get("camZVal")];
-    let cameraFocus = [sliderVals.get("lookXVal"), sliderVals.get("lookYVal"), sliderVals.get("lookZVal")];
+    cameraPos = [
+      sliderVals.get("camXVal"),
+      sliderVals.get("camYVal"),
+      sliderVals.get("camZVal"),
+    ];
+    let cameraFocus = [
+      sliderVals.get("lookXVal"),
+      sliderVals.get("lookYVal"),
+      sliderVals.get("lookZVal"),
+    ];
     glMatrix.mat4.lookAt(viewMatrix, cameraPos, cameraFocus, [0.0, 1.0, 0.0]); // does up vector need to be changed? ortho to y?
 
-    modelViewMatrix = glMatrix.mat4.create();
-    glMatrix.mat4.mul(modelViewMatrix, viewMatrix, modelMatrix);
+    // Update Model View Matrix
+    shape.modelViewMatrix = glMatrix.mat4.create();
+    glMatrix.mat4.mul(shape.modelViewMatrix, viewMatrix, modelMatrix);
 
-    // Update light position
-    lightPosition = glMatrix.vec3.fromValues(sliderVals.get("lightXVal"), sliderVals.get("lightYVal"), -sliderVals.get("lightZVal"))
 
-    if (myDrawableInitialized){
-      myDrawable.draw();
-    };
-  };
-
+    if (shape.drawableInitialized) {
+      shape.myDrawable.draw();
+    }
+  }
 }
 
-function initializeMyObject(vertSource, fragSource, objData) {
 
-  myShader = new ShaderProgram(vertSource, fragSource); // this class is in shader.js
+let flag = true
+function initializeMyObject(vertSource, fragSource, objData, shape) {
+  
+  if(flag){
+    myShader = new ShaderProgram(vertSource, fragSource); // this class is in shader.js
+    shaders.push(myShader)
+    flag = false
+  } else {
+    myShader = shaders[0]
+  }
   parsedData = new OBJData(objData); // this class is in obj-loader.js
   let rawData = parsedData.getFlattenedDataFromModelAtIndex(0);
-  boundingVector = rawData.boundingVector
+  shape.boundingVector = rawData.boundingVector
   
   // rawData.uvs = getCubeUVs()
 
@@ -213,16 +237,18 @@ function initializeMyObject(vertSource, fragSource, objData) {
   let bufferMap = {
     'aVertexPosition': vertexPositionBuffer,
     'aVertexNormal': vertexNormalBuffer,
-    // 'aVertexTexCoord': vertexTexCoordBuffer,
+    'aVertexTexCoord': vertexTexCoordBuffer,
     // 'aBarycentricCoord': vertexBarycentricBuffer,
   };
 
-  // let img = "hd_power_t.png"
-  // let texture = generateTexture(img)
-  let cubemapDir = "../shared/resources/coit_tower/"
-  let texture = generateCubeMap(cubemapDir)
+  let img = "sd_ut_system_logo.png"
+  let texture = generateTexture(img)
+  // let cubemapDir = "../shared/resources/coit_tower/"
+  // let texture = generateCubeMap(cubemapDir)
 
-  myDrawable = new Drawable(myShader, bufferMap, null, rawData.vertices.length / 3);
+  shape.myDrawable = new Drawable(myShader, bufferMap, null, rawData.vertices.length / 3);
+  myDrawable = shape.myDrawable
+
 
   // Checkout the drawable class' draw function. It calls a uniform setup function every time it is drawn. 
   // Put your uniforms that change per frame in this setup function.
@@ -236,7 +262,7 @@ function initializeMyObject(vertSource, fragSource, objData) {
     gl.uniformMatrix4fv(
       myDrawable.uniformLocations.uModelViewMatrix,
       false,
-      modelViewMatrix
+      shape.modelViewMatrix
     );
     gl.uniform3fv(
       myDrawable.uniformLocations.uLightPosition,
@@ -251,7 +277,7 @@ function initializeMyObject(vertSource, fragSource, objData) {
       texture
     )
   };
-  myDrawableInitialized = true;
+  shape.drawableInitialized = true;
 }
 
 // After all the DOM has loaded, we can run the main function.
