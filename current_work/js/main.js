@@ -21,6 +21,8 @@ let currentShader = null
 let lastBufferMap = null
 let currentBufferMap = null
 
+let cubemapHTML = "Yokohama2"
+
 function main() {
   const canvas = document.getElementById('glCanvas');
   // Initialize the GL context
@@ -118,16 +120,18 @@ function setupUI(sliderDict) {
       };
     });
   });
+  let cubemap = document.getElementById("cubemaps");
+  cubemap.onchange = () => {
+    cubemapHTML = cubemap.value
+    setupScene()
+  }
   return sliderDict
 }
 
 // Async as it loads resources over the network.
 async function setupScene() {
-  let vertSource = await loadNetworkResourceAsText('../shared/resources/shaders/verts/texturePhong.vert');
-  let fragSource = await loadNetworkResourceAsText('../shared/resources/shaders/frags/texturePhong.frag');
-
-  let vertSource2 = await loadNetworkResourceAsText('../shared/resources/shaders/verts/textureGouraud.vert');
-  let fragSource2 = await loadNetworkResourceAsText('../shared/resources/shaders/frags/textureGouraud.frag');
+  let vertSource = await loadNetworkResourceAsText('../shared/resources/shaders/verts/textureCubemap.vert');
+  let fragSource = await loadNetworkResourceAsText('../shared/resources/shaders/frags/textureCubemap.frag');
 
   for(let shape of shapes) {
     let objData = await loadNetworkResourceAsText(shape.objDataPath);
@@ -260,18 +264,22 @@ function initializeMyObject(vertSource, fragSource, objData, shape) {
   // or the draw call will fail, possibly silently!
   // Checkout the vertex shaders in resources/shaders/verts/* to see how the shader uses attributes.
   // Checkout the Drawable constructor and draw function to see how it tells the GPU to bind these buffers for drawing.
+  let texture = null;
   let bufferMap = {
-    'aVertexPosition': vertexPositionBuffer,
-    'aVertexNormal': vertexNormalBuffer,
-    'aVertexTexCoord': vertexTexCoordBuffer,
-    // 'aBarycentricCoord': vertexBarycentricBuffer,
+    aVertexPosition: vertexPositionBuffer,
+    aVertexNormal: vertexNormalBuffer,
   };
 
-
-  let img = "sidewalk_Albedo.jpg"
-  let texture = generateTexture(img)
-  // let cubemapDir = "../shared/resources/coit_tower/"
-  // let texture = generateCubeMap(cubemapDir)
+  // Generate a cubemap or 2d texture
+  if (shape.getUsingCubemap()) {
+    let cubemapDir = `../shared/resources/${cubemapHTML}/`;
+    texture = generateCubeMap(cubemapDir);
+  } else {
+    // If not using a cubemap add TexCoordinates to attributes
+    bufferMap["aVertexTexCoord"] = vertexTexCoordBuffer;
+    let img = "sidewalk_Albedo.jpg";
+    texture = generateTexture(img);
+  }
 
   shape.myDrawable = new Drawable(shape.shaderProgram, bufferMap, null, rawData.vertices.length / 3);
   myDrawable = shape.myDrawable
