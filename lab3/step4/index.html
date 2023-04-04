@@ -22,13 +22,13 @@
       </div>
       <div>
         <label for="camY">Y:</label>
-        <input type="range" min="-30" max="30" value="9" step="0.1" class="slider" id="camY">
-        <input id="camYVal" name="camYVal" value="9" style="width: 50px;">
+        <input type="range" min="-30" max="30" value="2" step="0.1" class="slider" id="camY">
+        <input id="camYVal" name="camYVal" value="2" style="width: 50px;">
       </div>
       <div>
         <label for="camZ">Z:</label>
-        <input type="range" min="-30" max="30" value="20" step="0.1" class="slider" id="camZ">
-        <input id="camZVal" name="camZVal" value="20" style="width: 50px;">
+        <input type="range" min="-30" max="30" value="11" step="0.1" class="slider" id="camZ">
+        <input id="camZVal" name="camZVal" value="11" style="width: 50px;">
       </div>
     </div>
     <div class="cam_look_sliders" style="float: right; width: 50%;">
@@ -49,17 +49,17 @@
         <input id="lookZVal" name="lookZVal" value="0" style="width: 50px;">
       </div>
     </div>
-    <div class="light_look_sliders" style="float: right; width: 50%;">
+    <div class="light_sliders" style="float: right; width: 50%;">
       <p>Lighting Position:</p>
       <div>
         <label for="lightX">X:</label>
-        <input type="range" min="-30" max="30" value="0" step="0.1" class="slider" id="lightX">
-        <input id="lightXVal" name="lightXVal" value="0" style="width: 50px;">
+        <input type="range" min="-30" max="30" value="-20" step="0.1" class="slider" id="lightX">
+        <input id="lightXVal" name="lightXVal" value="-20" style="width: 50px;">
       </div>
       <div>
         <label for="lightY">Y:</label>
-        <input type="range" min="-30" max="30" value="0" step="0.1" class="slider" id="lightY">
-        <input id="lightYVal" name="lightYVal" value="0" style="width: 50px;">
+        <input type="range" min="-30" max="30" value="12" step="0.1" class="slider" id="lightY">
+        <input id="lightYVal" name="lightYVal" value="12" style="width: 50px;">
       </div>
       <div>
         <label for="lightZ">Z:</label>
@@ -70,6 +70,7 @@
   </div>
   <!-- If you add a file, make sure to include it here! -->
   <script src="js/helpers.js"></script>
+  <script src="js/normal-map-api.js"></script>
   <script src="js/model-data.js"></script>
   <script src="js/main.js"></script>
   <script src="js/shader.js"></script>

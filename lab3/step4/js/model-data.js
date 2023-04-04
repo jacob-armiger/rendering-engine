@@ -1,88 +1,83 @@
-class Model {
-    constructor () {
-        this.scaleVector = [1,1,1]
-        this.orbitVector = [0,0,0]
-        this.position = [0,0,0]
-        this.speed = 1
-    }
+class Shape {
+  constructor() {
+    this.textureIMG = "sd_ut_system_logo.png"
+    this.objDataPath = "../../shared/resources/models/sphere_with_vt.obj"
 
-    updateScale(scale) {
-        this.scaleVector = [scale, scale, scale]
-    }
+    this.position = [0,0,0]
+    this.scaleVector = [4,4,4]
+    this.boundingVector = [1,1,1]
 
-    // calcPos(time) {
-    //     // return [this.dist*Math.sin(time),0, this.dist*Math.cos(time)]
-    // }
+    this.rotationAxis = [0,1,0]
+    this.roationDegree = 10
+    this.rotateOnTime = false
+
+    this.modelViewMatrix = null
+
+    this.shaderProgram = null
+    this.bufferMap = null
+    this.parsedData = null
+
+    this.myDrawable = null
+    this.drawableInitialized = false
+  }
+
+  setTexImg(src) {
+    this.textureIMG = src
+  }
+
+  setObjDataPath(objFile) {
+    this.objDataPath = "../../shared/resources/models/" + objFile
+  }
+
+  setRotationValues(axis, degree, onTime) {
+    this.rotationAxis = axis
+    this.roationDegree = degree
+    this.rotateOnTime = onTime
+  }
+
+  setScaleValue(scalar) {
+    this.scaleVector = [scalar,scalar,scalar]
+  }
+
+  setPositionValue(x,y,z) {
+    this.position = [x,y,z]
+  }
+
+  setUseCubemap() {
+    this.useCubemap = true
+  }
+
+  getUsingCubemap() {
+    return this.useCubemap
+  }
 }
 
-// x = radius * cos(theta)
-// theta being 1/orbitalPeriod,
-// as a lower orbital period will go faster.
 
-// z = radius * sin(theta)
+function createShapeData() {
+  list = [];
 
-function createModelData() {
-    let ratio = 2.5           // This is NOT a hard coded value for object bounds. This is used for experimenting with object system sizes 
+  // let floor = new Shape();
+  // floor.setObjDataPath("floor.obj");
 
-    let sun = new Model() // 16 ratio
-    sun.updateScale(5*ratio)
-    sun.position = [0,0,0]
+  // floor.setPositionValue(0, -1.3, 0);
+  // floor.setScaleValue(20);
+  // floor.setRotationValues([1, 0, 0], -1.55, false);
 
-    let mercury = new Model()
-    mercury.updateScale(0.3*ratio)
-    mercury.position = [3.5,0,0]
-    mercury.orbitVector = [0,1,0]
-    mercury.speed = 1.47
+  // list.push(floor)
 
-    let venus = new Model()
-    venus.updateScale(0.9*ratio)
-    venus.position = [5,0,0]
-    venus.orbitVector = [0,-1,0]
-    venus.speed = 1.35
-    
-    let earth = new Model()
-    earth.updateScale(1*ratio)
-    earth.position = [7,0,0]
-    earth.orbitVector = [0,1,0]
-    earth.speed = 1.29
+  // let ball = new Shape();
+  // ball.setObjDataPath("sphere_with_vt.obj");
 
-    let mars = new Model() //0.5 ratio
-    mars.updateScale(0.5*ratio)
-    mars.position = [9,0,0]
-    mars.orbitVector = [0,1,0]
-    mars.speed = 1.24
+  // ball.setRotationValues([1, 1, 0], 0, true);
+  // ball.setPositionValue(3, 0, 0);
+  // list.push(ball)
 
-    let jupiter = new Model()
-    jupiter.updateScale(1.8*ratio)
-    jupiter.position = [11.5,0,0]
-    jupiter.orbitVector = [0,1,0]
-    jupiter.speed = 1.13
+  let cube = new Shape()
+  cube.setObjDataPath("box_with_vt.obj");
 
-    let saturn = new Model()
-    saturn.updateScale(1.7*ratio)
-    saturn.position = [15.3,0,0]
-    saturn.orbitVector = [0,1,0]
-    saturn.speed = 1.09
+  cube.setRotationValues([1, 1, 0], 0, true);
+  cube.setPositionValue(0,0,0)
+  list.push(cube)
 
-    let uranus = new Model()
-    uranus.updateScale(1.4*ratio)
-    uranus.position = [19,0,0]
-    uranus.orbitVector = [0,-1,0]
-    uranus.speed = 1.068
-
-    let neptune = new Model()
-    neptune.updateScale(1.3*ratio)
-    neptune.position = [22,0,0]
-    neptune.orbitVector = [0,1,0]
-    neptune.speed = 1.055
-
-    let pluto = new Model()
-    pluto.updateScale(0.3*ratio)
-    pluto.position = [24,0,0]
-    pluto.orbitVector = [0,1,0]
-    pluto.speed = 1.03
-
-    // let models = [sun, mercury,venus,earth,mars,jupiter,saturn,uranus,neptune,pluto]
-    let models = [sun]
-    return models
+  return list;
 }
