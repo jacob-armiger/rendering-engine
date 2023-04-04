@@ -126,9 +126,6 @@ async function setupScene() {
   let vertSource = await loadNetworkResourceAsText('../../shared/resources/shaders/verts/texturePhong.vert');
   let fragSource = await loadNetworkResourceAsText('../../shared/resources/shaders/frags/texturePhong.frag');
 
-  let vertSource2 = await loadNetworkResourceAsText('../../shared/resources/shaders/verts/textureGouraud.vert');
-  let fragSource2 = await loadNetworkResourceAsText('../../shared/resources/shaders/frags/textureGouraud.frag');
-
   for(let shape of shapes) {
     let objData = await loadNetworkResourceAsText(shape.objDataPath);
     initializeMyObject(vertSource, fragSource, objData, shape);
@@ -155,10 +152,10 @@ function drawScene(deltaTime, sliderVals) {
     // scale -> rotation on axis to direction -> translate to distance -> rotate around sun
     // glMatrix.mat4.rotate(modelMatrix, modelMatrix, globalTime*models[0].speed, models[0].orbitVector);  // orbit around center
     glMatrix.mat4.translate(modelMatrix, modelMatrix, objectWorldPos); // translate object away from center
-    if(shape.rotateOnTime) {
-      glMatrix.mat4.rotate(modelMatrix, modelMatrix, globalTime, shape.rotationAxis); // rotate object on its own axis
+    if(shape.rotateOnTime) { // rotate object on its own axis either continuously with time or not
+      glMatrix.mat4.rotate(modelMatrix, modelMatrix, globalTime, shape.rotationAxis); 
     } else {
-      glMatrix.mat4.rotate(modelMatrix, modelMatrix, shape.roationDegree, shape.rotationAxis); // rotate object on its own axis
+      glMatrix.mat4.rotate(modelMatrix, modelMatrix, shape.roationDegree, shape.rotationAxis);
     }
     glMatrix.mat4.scale(modelMatrix, modelMatrix, shape.scaleVector); // scale object to variable size
     glMatrix.mat4.scale(modelMatrix, modelMatrix, shape.boundingVector); // normalize object to bounds
@@ -180,7 +177,6 @@ function drawScene(deltaTime, sliderVals) {
     // Update Model View Matrix
     shape.modelViewMatrix = glMatrix.mat4.create();
     glMatrix.mat4.mul(shape.modelViewMatrix, viewMatrix, modelMatrix);
-
 
     if (shape.drawableInitialized) {
       shape.myDrawable.draw();
@@ -260,18 +256,17 @@ function initializeMyObject(vertSource, fragSource, objData, shape) {
   // or the draw call will fail, possibly silently!
   // Checkout the vertex shaders in resources/shaders/verts/* to see how the shader uses attributes.
   // Checkout the Drawable constructor and draw function to see how it tells the GPU to bind these buffers for drawing.
+  let texture = null;
   let bufferMap = {
-    'aVertexPosition': vertexPositionBuffer,
-    'aVertexNormal': vertexNormalBuffer,
-    'aVertexTexCoord': vertexTexCoordBuffer,
-    // 'aBarycentricCoord': vertexBarycentricBuffer,
+    aVertexPosition: vertexPositionBuffer,
+    aVertexNormal: vertexNormalBuffer,
   };
 
-
-  let img = "sidewalk_Albedo.jpg"
-  let texture = generateTexture(img)
-  // let cubemapDir = "../shared/resources/coit_tower/"
-  // let texture = generateCubeMap(cubemapDir)
+  bufferMap["aVertexTexCoord"] = vertexTexCoordBuffer;
+  let src = "sidewalk.jpg";
+  texture = generateTexture(src, "image");
+  // let src = "coit_tower/";
+  // texture = generateTexture(src, "cubemap");
 
   shape.myDrawable = new Drawable(shape.shaderProgram, bufferMap, null, rawData.vertices.length / 3);
   myDrawable = shape.myDrawable

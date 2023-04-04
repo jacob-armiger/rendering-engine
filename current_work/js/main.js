@@ -123,8 +123,8 @@ function setupUI(sliderDict) {
 
 // Async as it loads resources over the network.
 async function setupScene() {
-  let vertSource = await loadNetworkResourceAsText('../shared/resources/shaders/verts/textureCubemap.vert');
-  let fragSource = await loadNetworkResourceAsText('../shared/resources/shaders/frags/textureCubemap.frag');
+  let vertSource = await loadNetworkResourceAsText('../../shared/resources/shaders/verts/texturePhong.vert');
+  let fragSource = await loadNetworkResourceAsText('../../shared/resources/shaders/frags/texturePhong.frag');
 
   for(let shape of shapes) {
     let objData = await loadNetworkResourceAsText(shape.objDataPath);
@@ -262,9 +262,11 @@ function initializeMyObject(vertSource, fragSource, objData, shape) {
     aVertexNormal: vertexNormalBuffer,
   };
 
-  // bufferMap["aVertexTexCoord"] = vertexTexCoordBuffer;
-  let src = "coit_tower/";
-  texture = generateTexture(src, "cubemap");
+  bufferMap["aVertexTexCoord"] = vertexTexCoordBuffer;
+  let src = "sidewalk.jpg";
+  texture = generateTexture(src, "image");
+  // let src = "coit_tower/";
+  // texture = generateTexture(src, "cubemap");
 
   shape.myDrawable = new Drawable(shape.shaderProgram, bufferMap, null, rawData.vertices.length / 3);
   myDrawable = shape.myDrawable

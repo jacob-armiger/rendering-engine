@@ -102,96 +102,95 @@ function calculateVertexNormals(faces, vertices) {
 
 
 /**
- * generateTexture takes an img resource and applies it to a texture that can be used in a shader
- * @param {Object} img
+ * generateTexture takes different types of resources and applies it to a texture that can be used in a shader
+ * @param {String} src  this is an image file or cubemap folder
+ * @param {String} type "image", "cubemap", "dynamicCubemap"
  */
-function generateTexture(img) {
-  img = "../../shared/resources/images/" + img
-  var texture = gl.createTexture();
-
-  gl.bindTexture(gl.TEXTURE_2D, texture);
-  
-  // Fill the texture with a 1x1 blue pixel.
-  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE,
-    new Uint8Array([255, 55, 55 ,255]));
-
-  // Asynchronously load an image
-  let image = new Image();
-  image.src = img;
-  
-  image.addEventListener('load', function() {
-    // Now that the image has loaded make copy it to the texture.
-    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true)
+function generateTexture(src, type) {
+  let texture = gl.createTexture();
+  if(type == "image") {
+    src = "../../shared/resources/images/" + src
 
     gl.bindTexture(gl.TEXTURE_2D, texture);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, image.naturalWidth, image.naturalHeight, 0, gl.RGBA, gl.UNSIGNED_BYTE,image);
-    // gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image)
-    // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-    // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-    gl.generateMipmap(gl.TEXTURE_2D);
-  });
-
-  return texture;
-}
-
-/**
- * generateCubeMap takes a cubemap directory and creates a cubemap from it
- * @param {Object} cubemapDir
- */
-function generateCubeMap(cubemapDir) {
-  let texture = gl.createTexture();
-  gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
-
-  const faces = [
-    {
-      cubeSide: gl.TEXTURE_CUBE_MAP_POSITIVE_X,
-      src: cubemapDir + "posx.jpg",
-    },
-    {
-      cubeSide: gl.TEXTURE_CUBE_MAP_NEGATIVE_X,
-      src: cubemapDir + "negx.jpg",
-    },
-    {
-      cubeSide: gl.TEXTURE_CUBE_MAP_POSITIVE_Y,
-      src: cubemapDir + "posy.jpg",
-    },
-    {
-      cubeSide: gl.TEXTURE_CUBE_MAP_NEGATIVE_Y,
-      src: cubemapDir + "negy.jpg",
-    },
-    {
-      cubeSide: gl.TEXTURE_CUBE_MAP_POSITIVE_Z,
-      src: cubemapDir + "posz.jpg",
-    },
-    {
-      cubeSide: gl.TEXTURE_CUBE_MAP_NEGATIVE_Z,
-      src: cubemapDir + "negz.jpg",
-    },
-  ];
-
-  faces.forEach((face) => {
-    let {cubeSide, src} = face
-
-    // Fill the texture with a 1x1 blue pixel.
-    gl.texImage2D(cubeSide, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE,
-      new Uint8Array([0, 0, 255 ,255]));
     
+    // Fill the texture with a 1x1 blue pixel.
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE,
+      new Uint8Array([255, 55, 55 ,255]));
+
     // Asynchronously load an image
     let image = new Image();
     image.src = src;
     
     image.addEventListener('load', function() {
-      // Image now loaded
-      gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
-      gl.texImage2D(cubeSide, 0, gl.RGBA, 2048, 2048, 0, gl.RGBA, gl.UNSIGNED_BYTE, image);
-      gl.generateMipmap(gl.TEXTURE_CUBE_MAP);
-      });
-  });
+      // Now that the image has loaded make copy it to the texture.
+      gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true)
 
-  gl.generateMipmap(gl.TEXTURE_CUBE_MAP);
-  gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+      gl.bindTexture(gl.TEXTURE_2D, texture);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, image.naturalWidth, image.naturalHeight, 0, gl.RGBA, gl.UNSIGNED_BYTE,image);
+      // gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image)
+      // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+      // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+      // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+      // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+      gl.generateMipmap(gl.TEXTURE_2D);
+    });
+  } else if(type = "cubemap") {
+    src = "../../shared/resources/cubemaps/" + src
+    // shared/resources/cubemaps/coit_tower/negx.jpg
+    gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
+
+    const faces = [
+      {
+        cubeSide: gl.TEXTURE_CUBE_MAP_POSITIVE_X,
+        src: src + "posx.jpg",
+      },
+      {
+        cubeSide: gl.TEXTURE_CUBE_MAP_NEGATIVE_X,
+        src: src + "negx.jpg",
+      },
+      {
+        cubeSide: gl.TEXTURE_CUBE_MAP_POSITIVE_Y,
+        src: src + "posy.jpg",
+      },
+      {
+        cubeSide: gl.TEXTURE_CUBE_MAP_NEGATIVE_Y,
+        src: src + "negy.jpg",
+      },
+      {
+        cubeSide: gl.TEXTURE_CUBE_MAP_POSITIVE_Z,
+        src: src + "posz.jpg",
+      },
+      {
+        cubeSide: gl.TEXTURE_CUBE_MAP_NEGATIVE_Z,
+        src: src + "negz.jpg",
+      },
+    ];
+
+    faces.forEach((face) => {
+      let {cubeSide, src} = face
+
+      // Fill the texture with a 1x1 blue pixel.
+      gl.texImage2D(cubeSide, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE,
+        new Uint8Array([0, 0, 255 ,255]));
+      
+      // Asynchronously load an image
+      let image = new Image();
+      image.src = src;
+      
+      image.addEventListener('load', function() {
+        // Image now loaded
+        gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
+        gl.texImage2D(cubeSide, 0, gl.RGBA, 2048, 2048, 0, gl.RGBA, gl.UNSIGNED_BYTE, image);
+        gl.generateMipmap(gl.TEXTURE_CUBE_MAP);
+        });
+    });
+
+    gl.generateMipmap(gl.TEXTURE_CUBE_MAP);
+    gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+  } else if (type == "dynamicCubemap") {
+    // nothing
+  }
+
   return texture;
 }
 

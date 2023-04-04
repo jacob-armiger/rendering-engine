@@ -10,10 +10,10 @@ function getBmPos() {
       -1, -1, -1,   1, -1,  1,  -1, -1,  1,   1, -1, -1, // Bottom
     ];
     return verts
-  }
+}
   
   // Tangents
-  function getBmTan() {
+function getBmTan() {
     let tangs = [
         1,  0,  0,   1,  0,  0,   1,  0,  0,   1,  0,  0, // Front
         -1,  0,  0,  -1,  0,  0,  -1,  0,  0,  -1,  0,  0, // Back
@@ -23,10 +23,10 @@ function getBmPos() {
         1,  0,  0,   1,  0,  0,   1,  0,  0,   1,  0,  0, // Bottom
     ];
     return tangs
-  }
+}
   
     // Bitangents
-  function getBmBitan() {
+function getBmBitan() {
     let bitangs = [
         0, -1,  0,   0, -1,  0,   0, -1,  0,   0, -1,  0, // Front
         0, -1,  0,   0, -1,  0,   0, -1,  0,   0, -1,  0, // Back
@@ -36,10 +36,10 @@ function getBmPos() {
         0,  0, -1,   0,  0, -1,   0,  0, -1,   0,  0, -1, // Bot
     ];
     return bitangs
-  }
+}
   
   // UVs
-  function getBmUvs() {
+function getBmUvs() {
     let uvs = [
         0,  1,  1,  0,  0,  0,  1,  1, // Front
         1,  1,  0,  0,  1,  0,  0,  1, // Back
@@ -49,10 +49,10 @@ function getBmPos() {
         0,  1,  1,  0,  0,  0,  1,  1, // Bottom
     ];
     return uvs
-  }
+}
   
   // Indices
-  function getBmIndices() {
+function getBmIndices() {
     let indices = [
         0 , 1 , 2 ,    0 , 3 , 1 , // Front
         4 , 6 , 5 ,    4 , 5 , 7 , // Back
@@ -62,5 +62,11 @@ function getBmPos() {
         20, 21, 22,    20, 23, 21, // Bottom
     ];
     return indices
-  }
-  
+}
+
+function createNormalTextures() {
+    tex_norm = generateTexture("../../shared/toy_box_assets/bump_normal.png");
+    tex_diffuse = generateTexture("../../shared/toy_box_assets/bump_diffuse.png");
+    tex_depth = generateTexture("../../shared/toy_box_assets/bump_depth.png");
+    return [tex_norm, tex_diffuse, tex_depth]
+}
