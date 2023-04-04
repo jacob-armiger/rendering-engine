@@ -21,8 +21,6 @@ let currentShader = null
 let lastBufferMap = null
 let currentBufferMap = null
 
-let cubemapHTML = "Yokohama2"
-
 function main() {
   const canvas = document.getElementById('glCanvas');
   // Initialize the GL context
@@ -120,11 +118,6 @@ function setupUI(sliderDict) {
       };
     });
   });
-  let cubemap = document.getElementById("cubemaps");
-  cubemap.onchange = () => {
-    cubemapHTML = cubemap.value
-    setupScene()
-  }
   return sliderDict
 }
 
@@ -159,10 +152,10 @@ function drawScene(deltaTime, sliderVals) {
     // scale -> rotation on axis to direction -> translate to distance -> rotate around sun
     // glMatrix.mat4.rotate(modelMatrix, modelMatrix, globalTime*models[0].speed, models[0].orbitVector);  // orbit around center
     glMatrix.mat4.translate(modelMatrix, modelMatrix, objectWorldPos); // translate object away from center
-    if(shape.rotateOnTime) {
-      glMatrix.mat4.rotate(modelMatrix, modelMatrix, globalTime, shape.rotationAxis); // rotate object on its own axis
+    if(shape.rotateOnTime) { // rotate object on its own axis either continuously with time or not
+      glMatrix.mat4.rotate(modelMatrix, modelMatrix, globalTime, shape.rotationAxis); 
     } else {
-      glMatrix.mat4.rotate(modelMatrix, modelMatrix, shape.roationDegree, shape.rotationAxis); // rotate object on its own axis
+      glMatrix.mat4.rotate(modelMatrix, modelMatrix, shape.roationDegree, shape.rotationAxis);
     }
     glMatrix.mat4.scale(modelMatrix, modelMatrix, shape.scaleVector); // scale object to variable size
     glMatrix.mat4.scale(modelMatrix, modelMatrix, shape.boundingVector); // normalize object to bounds
@@ -184,7 +177,6 @@ function drawScene(deltaTime, sliderVals) {
     // Update Model View Matrix
     shape.modelViewMatrix = glMatrix.mat4.create();
     glMatrix.mat4.mul(shape.modelViewMatrix, viewMatrix, modelMatrix);
-
 
     if (shape.drawableInitialized) {
       shape.myDrawable.draw();
@@ -270,16 +262,9 @@ function initializeMyObject(vertSource, fragSource, objData, shape) {
     aVertexNormal: vertexNormalBuffer,
   };
 
-  // Generate a cubemap or 2d texture
-  if (shape.getUsingCubemap()) {
-    let cubemapDir = `../shared/resources/${cubemapHTML}/`;
-    texture = generateCubeMap(cubemapDir);
-  } else {
-    // If not using a cubemap add TexCoordinates to attributes
-    bufferMap["aVertexTexCoord"] = vertexTexCoordBuffer;
-    let img = "sidewalk_Albedo.jpg";
-    texture = generateTexture(img);
-  }
+  // bufferMap["aVertexTexCoord"] = vertexTexCoordBuffer;
+  let src = "coit_tower/";
+  texture = generateTexture(src, "cubemap");
 
   shape.myDrawable = new Drawable(shape.shaderProgram, bufferMap, null, rawData.vertices.length / 3);
   myDrawable = shape.myDrawable

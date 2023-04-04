@@ -2,7 +2,6 @@ class Shape {
   constructor() {
     this.textureIMG = "sd_ut_system_logo.png"
     this.objDataPath = "../shared/resources/models/sphere_with_vt.obj"
-    this.useCubemap = false
 
     this.position = [0,0,0]
     this.scaleVector = [4,4,4]
@@ -70,17 +69,15 @@ function createShapeData() {
   // ball.setObjDataPath("sphere_with_vt.obj");
 
   // ball.setRotationValues([1, 1, 0], 0, true);
-  // ball.setPositionValue(2, 0, 0);
+  // ball.setPositionValue(3, 0, 0);
   // list.push(ball)
 
   let cube = new Shape()
   cube.setObjDataPath("box_with_vt.obj");
-  cube.setUseCubemap()
 
   cube.setRotationValues([1, 1, 0], 0, true);
   cube.setPositionValue(0,0,0)
   list.push(cube)
 
-  // let shapes = [floor,ball, cube];
   return list;
 }
