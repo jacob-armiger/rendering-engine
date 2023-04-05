@@ -12,8 +12,6 @@ let lightPosition = null
 let cameraPos = null
 let shapes = createShapeData()
 
-let globalTextureID = 0
-
 function main() {
   const canvas = document.getElementById('glCanvas');
   // Initialize the GL context
@@ -231,7 +229,6 @@ function initializeMyObject(vertSource, fragSource, objData, shape) {
   // let vertexIndexBuffer = new ElementArrayData(rawData.indices);
 
   // In order to let our shader be aware of the vertex data, we need to bind these buffers to the attribute location inside of the vertex shader. The attributes in the shader must have the name specified in the following object or the draw call will fail, possibly silently!
-
   let bufferMap = {
     aVertexPosition: vertexPositionBuffer,
     aVertexNormal: vertexNormalBuffer,

@@ -1,13 +1,13 @@
 class Shape {
   constructor() {
-    this.textureIMG = ""
+    // Sources
     this.objDataPath = ""
-
     this.textureParams = {
       src: null,
       type: null,
     }
 
+    // World translation data
     this.position = [0,0,0]
     this.scaleVector = [4,4,4]
     this.boundingVector = [1,1,1]
@@ -63,34 +63,42 @@ class Shape {
 function createShapeData() {
   list = [];
 
-  // let floor = new Shape();
-  // floor.setObjDataPath("floor.obj");
-  // floor.setShaderSrc("textureGouraud")
-  // floor.setTexParams("hd_power_t.png")
+  let floor = new Shape();
+  floor.setObjDataPath("floor.obj");
+  floor.setShaderSrc("texturePhong")
+  floor.setTexParams("sidewalk.jpg", "image")
 
-  // floor.setPositionValue(0, -1.3, 0);
-  // floor.setScaleValue(20);
-  // floor.setRotationValues([1, 0, 0], -1.55, false);
+  floor.setPositionValue(0, -1.3, 0);
+  floor.setScaleValue(20);
+  floor.setRotationValues([1, 0, 0], -1.55, false);
 
-  // list.push(floor)
+  list.push(floor)
 
   let ball = new Shape();
   ball.setObjDataPath("sphere_with_vt.obj");
   ball.setShaderSrc("texturePhong")
-  ball.setTexParams("sidewalk.jpg", "image")
+  ball.setTexParams("hd_power_t.png", "image")
 
-  ball.setRotationValues([1, 1, 0], 0, true);
-  ball.setPositionValue(3, 0, 0);
+  ball.setRotationValues([0, -1, 0], 0, true);
+  ball.setPositionValue(2, 1, 4);
   list.push(ball)
 
   let cube = new Shape()
-  cube.setObjDataPath("sphere_with_vt.obj");
+  cube.setObjDataPath("box_with_vt.obj");
   cube.setShaderSrc("textureCubemap")
   cube.setTexParams("coit_tower/", "cubemap")
 
-  // cube.setRotationValues([1, 1, 0], 0, true);
-  cube.setPositionValue(0,0,0)
+  cube.setRotationValues([1, 1, 0], 0, true);
+  cube.setPositionValue(-2,7,-6)
   list.push(cube)
+
+  let cube2 = new Shape()
+  cube2.setObjDataPath("box_with_vt.obj");
+  cube2.setShaderSrc("phong300")
+
+  cube2.setRotationValues([0, 1, 0], -0.5, false);
+  cube2.setPositionValue(-2,0,0)
+  list.push(cube2)
 
   return list;
 }
