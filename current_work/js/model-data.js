@@ -3,6 +3,8 @@ class Shape {
     this.textureIMG = ""
     this.objDataPath = ""
 
+    this.textureInfo = 
+
     this.position = [0,0,0]
     this.scaleVector = [4,4,4]
     this.boundingVector = [1,1,1]
@@ -11,22 +13,17 @@ class Shape {
     this.roationDegree = 10
     this.rotateOnTime = false
 
+    // Info for shape's shader program
+    this.shaderVertSrc = null
+    this.shaderFragSrc = null
     this.modelViewMatrix = null
 
+    // Maintain instance of shader prgram
     this.shaderProgram = null
-    this.bufferMap = null
-    this.parsedData = null
 
+    // Maintain instance of drawable
     this.myDrawable = null
     this.drawableInitialized = false
-  }
-
-  setTexImg(src) {
-    this.textureIMG = src
-  }
-
-  setObjDataPath(objFile) {
-    this.objDataPath = "../../shared/resources/models/" + objFile
   }
 
   setRotationValues(axis, degree, onTime) {
@@ -43,37 +40,49 @@ class Shape {
     this.position = [x,y,z]
   }
 
-  setUseCubemap() {
-    this.useCubemap = true
+  setTexImg(src) {
+    this.textureIMG = src
   }
 
-  getUsingCubemap() {
-    return this.useCubemap
+  setObjDataPath(objFile) {
+    this.objDataPath = "../../shared/resources/models/" + objFile
   }
+
+  setShaderSrc(shaderName) {
+    this.shaderVertSrc = `../../shared/resources/shaders/verts/${shaderName}.vert`
+    this.shaderFragSrc = `../../shared/resources/shaders/frags/${shaderName}.frag`
+  }
+
 }
 
 
 function createShapeData() {
   list = [];
 
-  let floor = new Shape();
-  floor.setObjDataPath("floor.obj");
+  // let floor = new Shape();
+  // floor.setObjDataPath("floor.obj");
+  // floor.setShaderSrc("textureGouraud")
+  // floor.setTexImg("hd_power_t.png")
 
-  floor.setPositionValue(0, -1.3, 0);
-  floor.setScaleValue(20);
-  floor.setRotationValues([1, 0, 0], -1.55, false);
+  // floor.setPositionValue(0, -1.3, 0);
+  // floor.setScaleValue(20);
+  // floor.setRotationValues([1, 0, 0], -1.55, false);
 
-  list.push(floor)
+  // list.push(floor)
 
   let ball = new Shape();
-  ball.setObjDataPath("sphere_with_vt.obj");
+  ball.setObjDataPath("box_with_vt.obj");
+  ball.setShaderSrc("textureGouraud")
+  ball.setTexImg("sidewalk.jpg")
 
   ball.setRotationValues([1, 1, 0], 0, true);
   ball.setPositionValue(3, 0, 0);
   list.push(ball)
 
   let cube = new Shape()
-  cube.setObjDataPath("box_with_vt.obj");
+  cube.setObjDataPath("sphere_with_vt.obj");
+  cube.setShaderSrc("texturePhong")
+  cube.setTexImg("sidewalk.jpg")
 
   // cube.setRotationValues([1, 1, 0], 0, true);
   cube.setPositionValue(0,0,0)
