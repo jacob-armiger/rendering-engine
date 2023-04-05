@@ -236,13 +236,11 @@ function initializeMyObject(vertSource, fragSource, objData, shape) {
     aVertexPosition: vertexPositionBuffer,
     aVertexNormal: vertexNormalBuffer,
   };
-  bufferMap["aVertexTexCoord"] = vertexTexCoordBuffer;
+  if(shape.textureParams.type == "image") {
+    bufferMap["aVertexTexCoord"] = vertexTexCoordBuffer;
+  }
 
   shape.texture = generateTexture(shape.textureParams.src, shape.textureParams.type);
-
-  // let src = "coit_tower/";
-  // texture = generateTexture(src, "cubemap");
-
   shape.myDrawable = new Drawable(shape.shaderProgram, bufferMap, null, rawData.vertices.length / 3);
 
   // Checkout the drawable class' draw function. It calls a uniform setup function every time it is drawn. 
