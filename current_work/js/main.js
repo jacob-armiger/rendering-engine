@@ -178,8 +178,14 @@ function drawScene(deltaTime, sliderVals) {
 
     if (shape.drawableInitialized) {
       // NOTE: Changes texture for object but not sure why TEXTURE0 doesn't need to change
-      gl.activeTexture(gl.TEXTURE0);
-      gl.bindTexture(gl.TEXTURE_2D, shape.texture);
+      // Set active texture based on whether it's a cubemap or 2D texture
+      if(shape.textureParams.type == "image") {
+        gl.activeTexture(gl.TEXTURE0);
+        gl.bindTexture(gl.TEXTURE_2D, shape.texture);
+      } else if(shape.textureParams.type == "cubemap"){
+        gl.activeTexture(gl.TEXTURE0);
+        gl.bindTexture(gl.TEXTURE_CUBE_MAP, shape.texture);
+      }
       shape.myDrawable.draw();
     }
   }
@@ -232,7 +238,7 @@ function initializeMyObject(vertSource, fragSource, objData, shape) {
   };
   bufferMap["aVertexTexCoord"] = vertexTexCoordBuffer;
 
-  shape.texture = generateTexture(shape.textureIMG, "image");
+  shape.texture = generateTexture(shape.textureParams.src, shape.textureParams.type);
 
   // let src = "coit_tower/";
   // texture = generateTexture(src, "cubemap");
