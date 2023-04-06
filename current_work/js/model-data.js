@@ -23,6 +23,8 @@ class Shape {
 
     // Maintain instance of shader prgram
     this.shaderProgram = null
+    this.texture = null
+    this.targetTexture = null
 
     // Maintain instance of drawable
     this.myDrawable = null
@@ -77,28 +79,39 @@ function createShapeData() {
   let ball = new Shape();
   ball.setObjDataPath("sphere_with_vt.obj");
   ball.setShaderSrc("texturePhong")
-  ball.setTexParams("hd_power_t.png", "image")
+  ball.setTexParams("sidewalk.jpg", "image")
 
-  ball.setRotationValues([0, -1, 0], 0, true);
-  ball.setPositionValue(2, 1, 4);
+  ball.setRotationValues([0, 0, 0], 0, true);
+  ball.setPositionValue(4, 0, 0);
   list.push(ball)
+
+  // let ball2 = new Shape();
+  // ball2.setObjDataPath("sphere_with_vt.obj");
+  // ball2.setShaderSrc("textureCubemap")
+  // ball2.setTexParams("coit_tower/", "cubemap")
+
+  // ball2.setRotationValues([0, 0, 0], 0, true);
+  // ball2.setPositionValue(4, 3, 0);
+  // list.push(ball2)
 
   let cube = new Shape()
   cube.setObjDataPath("box_with_vt.obj");
-  cube.setShaderSrc("textureCubemap")
-  cube.setTexParams("coit_tower/", "cubemap")
+  cube.setShaderSrc("texture")
+  cube.setTexParams(null, null)
 
-  cube.setRotationValues([1, 1, 0], 0, true);
-  cube.setPositionValue(-2,7,-6)
+  // cube.setRotationValues([1, 1, 0], 0, true);
+  cube.setPositionValue(0,0,0)
   list.push(cube)
 
-  let cube2 = new Shape()
-  cube2.setObjDataPath("box_with_vt.obj");
-  cube2.setShaderSrc("phong300")
 
-  cube2.setRotationValues([0, 1, 0], -0.5, false);
-  cube2.setPositionValue(-2,0,0)
-  list.push(cube2)
+  // let cube2 = new Shape()
+  // cube2.setObjDataPath("box_with_vt.obj");
+  // cube2.setShaderSrc("texturePhong")
+  // cube2.setTexParams("hd_power_t.png", "image")
+
+  // // cube2.setRotationValues([1, 1, 0], 0, true);
+  // cube2.setPositionValue(0,4,0)
+  // list.push(cube2)
 
   return list;
 }
