@@ -1,7 +1,6 @@
 #version 300 es // These is an OpenGL ES 3.0 Shader!
 
 in vec3 aVertexPosition;
-in vec3 aVertexNormal;
 in vec2 aVertexTexCoord;
 
 out vec2 texCoord;
