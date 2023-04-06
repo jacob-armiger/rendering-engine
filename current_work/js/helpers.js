@@ -115,7 +115,7 @@ function generateTexture(src, type) {
     
     // Fill the texture with a 1x1 blue pixel.
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE,
-      new Uint8Array([255, 55, 55 ,255]));
+      new Uint8Array([0, 0, 255,255]));
 
     // Asynchronously load an image
     let image = new Image();
@@ -136,7 +136,8 @@ function generateTexture(src, type) {
     });
   } else if(type = "cubemap") {
     src = "../../shared/resources/cubemaps/" + src
-    // shared/resources/cubemaps/coit_tower/negx.jpg
+    
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false)
     gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
 
     const faces = [
