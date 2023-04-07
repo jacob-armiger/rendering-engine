@@ -17,10 +17,8 @@ cube.setObjDataPath("box_with_vt.obj");
 cube.setShaderSrc("texture")
 cube.setTexParams(null, null)
 
-// cube.setRotationValues([1, 1, 0], 0, true);
+cube.setRotationValues([0, 1, 0], 0, false);
 cube.setPositionValue(0,0,0)
-
-// let fb = null;
 
 function main() {
   const canvas = document.getElementById('glCanvas');
@@ -191,17 +189,17 @@ function drawScene(deltaTime, sliderVals) {
       // NOTE: Changes texture for object but not sure why TEXTURE0 doesn't need to change
       // Set active texture based on whether it's a cubemap or 2D texture
       if(shape.textureParams.type == "image") {
-        gl.activeTexture(gl.TEXTURE0);
+        // gl.activeTexture(gl.TEXTURE0);
         gl.bindTexture(gl.TEXTURE_2D, shape.texture);
       } else if(shape.textureParams.type == "cubemap"){
-        gl.activeTexture(gl.TEXTURE0);
+        // gl.activeTexture(gl.TEXTURE0);
         gl.bindTexture(gl.TEXTURE_CUBE_MAP, shape.texture);
       }
       shape.myDrawable.draw();
     }
   }
 
-  gl.activeTexture(gl.TEXTURE0);
+  // gl.activeTexture(gl.TEXTURE0);
   gl.bindTexture(gl.TEXTURE_2D, cube.texture);
   if(cube.drawableInitialized) {
     renderCube(cube, fb)
@@ -264,7 +262,7 @@ function initializeMyObject(vertSource, fragSource, objData, shape) {
     gl.generateMipmap(gl.TEXTURE_2D);
     shape.texture = texture
 
-    // // Create texture to render to
+    // Create texture to render to
     let targetTexture = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, targetTexture);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 256, 256, 0, gl.RGBA, gl.UNSIGNED_BYTE,null);
@@ -313,13 +311,19 @@ function initializeMyObject(vertSource, fragSource, objData, shape) {
 
 
 function renderCube(cube, fb) {
+  let fb_negx = gl.createFramebuffer()
+  let fb_negy = gl.createFramebuffer()
+  let fb_negz = gl.createFramebuffer()
+  let fb_posx = gl.createFramebuffer()
+  let fb_posy = gl.createFramebuffer()
+  let fb_posz = gl.createFramebuffer()
+
   // render to targetTexture by binding fb
   fb = gl.createFramebuffer()
   gl.bindFramebuffer(gl.FRAMEBUFFER, fb);
   const attachmentPoint = gl.COLOR_ATTACHMENT0;
   gl.framebufferTexture2D(
       gl.FRAMEBUFFER, attachmentPoint, gl.TEXTURE_2D, cube.targetTexture, 0);
-
 
   // gl.bindFramebuffer(gl.FRAMEBUFFER, fb)
   // render cube with empty texture
@@ -339,13 +343,10 @@ function renderCube(cube, fb) {
 
   /* DRAW SHAPES TO FRAMEBUFFER */
   for (let shape of shapes) {
-    // Set shape texture and set framebuffer back to canvas
+    // Transform shape
     let modelMatrix = glMatrix.mat4.create();
-    let objectWorldPos = shape.position;
 
-    // scale -> rotation on axis to direction -> translate to distance -> rotate around sun
-    // glMatrix.mat4.rotate(modelMatrix, modelMatrix, globalTime*models[0].speed, models[0].orbitVector);  // orbit around center
-    glMatrix.mat4.translate(modelMatrix, modelMatrix, objectWorldPos); // translate object away from center
+    glMatrix.mat4.translate(modelMatrix, modelMatrix, shape.position); // translate object away from center
     if(shape.rotateOnTime) { // rotate object on its own axis either continuously with time or not
       glMatrix.mat4.rotate(modelMatrix, modelMatrix, globalTime, shape.rotationAxis); 
     } else {
@@ -354,16 +355,14 @@ function renderCube(cube, fb) {
     glMatrix.mat4.scale(modelMatrix, modelMatrix, shape.scaleVector); // scale object to variable size
     glMatrix.mat4.scale(modelMatrix, modelMatrix, shape.boundingVector); // normalize object to bounds
 
-    // Update View Matrix
+    // Create view from cube's perpective
     let viewMatrix = glMatrix.mat4.create();
     cameraPos = [
-      sliderVals.get("camXVal"),
-      sliderVals.get("camYVal"),
-      sliderVals.get("camZVal"),
+      -4,0,0
     ];
     let cameraFocus = [
       0,
-      2,
+      1,
       0,
     ];
     glMatrix.mat4.lookAt(viewMatrix, cameraPos, cameraFocus, [0.0, 1.0, 0.0]); // does up vector need to be changed? ortho to y?

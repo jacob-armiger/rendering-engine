@@ -191,7 +191,7 @@ function generateTexture(src, type) {
   } else if (type == "dynamicCubemap") {
     // nothing
   }
-  gl.bindTexture(gl.TEXTURE_2D, null);
+  // gl.bindTexture(gl.TEXTURE_2D, null);
   return texture;
 }
 
