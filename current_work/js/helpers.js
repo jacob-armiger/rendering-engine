@@ -110,7 +110,7 @@ function generateTexture(src, type) {
   let texture = gl.createTexture();
   if(type == "image") {
     src = "../../shared/resources/images/" + src
-
+    
     gl.bindTexture(gl.TEXTURE_2D, texture);
     
     // Fill the texture with a 1x1 blue pixel.
@@ -134,7 +134,7 @@ function generateTexture(src, type) {
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
       // gl.generateMipmap(gl.TEXTURE_2D);
     });
-  } else if(type = "cubemap") {
+  } else if(type == "cubemap") {
     src = "../../shared/resources/cubemaps/" + src
     
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false)
@@ -191,7 +191,7 @@ function generateTexture(src, type) {
   } else if (type == "dynamicCubemap") {
     // nothing
   }
-
+  gl.bindTexture(gl.TEXTURE_2D, null);
   return texture;
 }
 

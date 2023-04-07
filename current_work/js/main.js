@@ -12,7 +12,15 @@ let lightPosition = null
 let cameraPos = null
 let shapes = createShapeData()
 
-let fb = null;
+let cube = new Shape()
+cube.setObjDataPath("box_with_vt.obj");
+cube.setShaderSrc("texture")
+cube.setTexParams(null, null)
+
+// cube.setRotationValues([1, 1, 0], 0, true);
+cube.setPositionValue(0,0,0)
+
+// let fb = null;
 
 function main() {
   const canvas = document.getElementById('glCanvas');
@@ -124,7 +132,13 @@ async function setupScene() {
     let objData = await loadNetworkResourceAsText(shape.objDataPath);
     initializeMyObject(vertSource, fragSource, objData, shape);
   }
+  let vertSource = await loadNetworkResourceAsText(cube.shaderVertSrc);
+  let fragSource = await loadNetworkResourceAsText(cube.shaderFragSrc);
+  let objData = await loadNetworkResourceAsText(cube.objDataPath);
+  initializeMyObject(vertSource, fragSource, objData, cube);
 }
+
+
 
 function drawScene(deltaTime, sliderVals) {
   globalTime += deltaTime;
@@ -135,14 +149,73 @@ function drawScene(deltaTime, sliderVals) {
     sliderVals.get("lightYVal"),
     -sliderVals.get("lightZVal")
   );
-  
+  let fb = null
   // Clear the color buffer with specified clear color
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+  // Set shape texture and set framebuffer back to canvas
+  // cube.targetTexture = targetTexture;
+  let modelMatrix = glMatrix.mat4.create();
+  let objectWorldPos = cube.position;
+
+  // scale -> rotation on axis to direction -> translate to distance -> rotate around sun
+  // glMatrix.mat4.rotate(modelMatrix, modelMatrix, globalTime*models[0].speed, models[0].orbitVector);  // orbit around center
+  glMatrix.mat4.translate(modelMatrix, modelMatrix, objectWorldPos); // translate object away from center
+  if(cube.rotateOnTime) { // rotate object on its own axis either continuously with time or not
+    glMatrix.mat4.rotate(modelMatrix, modelMatrix, globalTime, cube.rotationAxis); 
+  } else {
+    glMatrix.mat4.rotate(modelMatrix, modelMatrix, cube.roationDegree, cube.rotationAxis);
+  }
+  glMatrix.mat4.scale(modelMatrix, modelMatrix, cube.scaleVector); // scale object to variable size
+  glMatrix.mat4.scale(modelMatrix, modelMatrix, cube.boundingVector); // normalize object to bounds
+
+  // Update View Matrix
+  let viewMatrix = glMatrix.mat4.create();
+  cameraPos = [
+    sliderVals.get("camXVal"),
+    sliderVals.get("camYVal"),
+    sliderVals.get("camZVal"),
+  ];
+  let cameraFocus = [
+    0,
+    2,
+    0,
+  ];
+  glMatrix.mat4.lookAt(viewMatrix, cameraPos, cameraFocus, [0.0, 1.0, 0.0]); // does up vector need to be changed? ortho to y?
+
+  // Update Model View Matrix
+  cube.modelViewMatrix = glMatrix.mat4.create();
+  glMatrix.mat4.mul(cube.modelViewMatrix, viewMatrix, modelMatrix);
+  // render to targetTexture by binding fb
+  fb = gl.createFramebuffer()
+  gl.bindFramebuffer(gl.FRAMEBUFFER, fb);
+  const attachmentPoint = gl.COLOR_ATTACHMENT0;
+  gl.framebufferTexture2D(
+      gl.FRAMEBUFFER, attachmentPoint, gl.TEXTURE_2D, cube.targetTexture, 0);
+  gl.bindFramebuffer(gl.FRAMEBUFFER, fb)
+  // render cube with empty texture
+  gl.bindTexture(gl.TEXTURE_2D, cube.texture)
+  // Convert clip space to pixxels
+  gl.viewport(0,0, 256,256)
+  //clear the canvas(cube side) and depth buffer
+  gl.clearColor(0.7, 0.7, 0.9, 1.0);
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+  let aspect = 256/256
+  glMatrix.mat4.perspective(projectionMatrix,
+                   degreesToRadians(60),
+                   aspect,
+                   0.1,
+                   100.0);
+  if(cube.drawableInitialized)
+  cube.myDrawable.draw();
+  // gl.bindFramebuffer(gl.FRAMEBUFFER, null)
+
   for (let shape of shapes) {
     // Update Model Matrix
     let modelMatrix = glMatrix.mat4.create();
     let objectWorldPos = shape.position;
-
+    
     // scale -> rotation on axis to direction -> translate to distance -> rotate around sun
     // glMatrix.mat4.rotate(modelMatrix, modelMatrix, globalTime*models[0].speed, models[0].orbitVector);  // orbit around center
     glMatrix.mat4.translate(modelMatrix, modelMatrix, objectWorldPos); // translate object away from center
@@ -176,56 +249,19 @@ function drawScene(deltaTime, sliderVals) {
       // NOTE: Changes texture for object but not sure why TEXTURE0 doesn't need to change
       // Set active texture based on whether it's a cubemap or 2D texture
       if(shape.textureParams.type == "image") {
-        // gl.activeTexture(gl.TEXTURE0);
+        gl.activeTexture(gl.TEXTURE0);
         gl.bindTexture(gl.TEXTURE_2D, shape.texture);
       } else if(shape.textureParams.type == "cubemap"){
-        // gl.activeTexture(gl.TEXTURE0);
+        gl.activeTexture(gl.TEXTURE0);
         gl.bindTexture(gl.TEXTURE_CUBE_MAP, shape.texture);
-      } else if(shape.textureParams.src == null) {
-
-        // render to targetTexture by binding fb
-        gl.bindFramebuffer(gl.FRAMEBUFFER, fb)
-        // render cube with empty texture
-        gl.bindTexture(gl.TEXTURE_2D, shape.texture)
-        // Convert clip space to pixxels
-        gl.viewport(0,0, 256,256)
-        //clear the canvas(cube side) and depth buffer
-        gl.clearColor(0.7, 0.7, 0.9, 1.0);
-        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-        let aspect = 256/256
-        glMatrix.mat4.perspective(projectionMatrix,
-                         degreesToRadians(60),
-                         aspect,
-                         0.1,
-                         100.0);
-
-        shape.myDrawable.draw();
-
-        gl.activeTexture(gl.TEXTURE0)
-
-        // render to the canvas
-        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-    
-        // render the cube with the texture we just rendered to
-        gl.bindTexture(gl.TEXTURE_2D, shape.targetTexture);
-    
-        // Tell WebGL how to convert from clip space to pixels
-        gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-    
-        // Clear the canvas AND the depth buffer.
-        // gl.clearColor(0.7, 0.7, 0.9, 1.0);
-        // gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-        aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
-        glMatrix.mat4.perspective(projectionMatrix,
-                         degreesToRadians(60),
-                         aspect,
-                         0.1,
-                         100.0);
-
       }
       shape.myDrawable.draw();
     }
+  }
+  gl.activeTexture(gl.TEXTURE0);
+  gl.bindTexture(gl.TEXTURE_2D, cube.texture);
+  if(cube.drawableInitialized) {
+    renderCube(cube, fb)
   }
 }
 
@@ -283,11 +319,11 @@ function initializeMyObject(vertSource, fragSource, objData, shape) {
     let texture = gl.createTexture(); 
     gl.bindTexture(gl.TEXTURE_2D, texture);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE,
-      new Uint8Array([0, 0, 0,255]));
+      new Uint8Array([255, 0, 0,255]));
     gl.generateMipmap(gl.TEXTURE_2D);
     shape.texture = texture
 
-    // Create texture to render to
+    // // Create texture to render to
     let targetTexture = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, targetTexture);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 256, 256, 0, gl.RGBA, gl.UNSIGNED_BYTE,null);
@@ -295,19 +331,22 @@ function initializeMyObject(vertSource, fragSource, objData, shape) {
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.bindTexture(gl.TEXTURE_2D, null);
 
-    // Create and bind fb
-    fb = gl.createFramebuffer()
-    gl.bindFramebuffer(gl.FRAMEBUFFER, fb);
+    // // Create and bind fb
+    // fb = gl.createFramebuffer()
+    // gl.bindFramebuffer(gl.FRAMEBUFFER, fb);
+    // // gl.viewport(0,0, 256,256)
     
-    // attach the texture as the first color attachment
-    const attachmentPoint = gl.COLOR_ATTACHMENT0;
-    gl.framebufferTexture2D(
-        gl.FRAMEBUFFER, attachmentPoint, gl.TEXTURE_2D, targetTexture, 0);
+    // // attach the texture as the first color attachment
+    // const attachmentPoint = gl.COLOR_ATTACHMENT0;
+    // gl.framebufferTexture2D(
+    //     gl.FRAMEBUFFER, attachmentPoint, gl.TEXTURE_2D, targetTexture, 0);
 
-    // Set shape texture and set framebuffer back to canvas
+    // // Set shape texture and set framebuffer back to canvas
     shape.targetTexture = targetTexture;
-    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+    // gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+    // gl.viewport(0, 0, gl.canvas.width, gl.canvas.height)
   } else {
     shape.texture = generateTexture(shape.textureParams.src, shape.textureParams.type);
   }
@@ -342,6 +381,86 @@ function initializeMyObject(vertSource, fragSource, objData, shape) {
   };
   shape.drawableInitialized = true;
 }
+
+
+function renderCube(cube, fb) {// Update Model Matrix
+  // Create texture to render to
+  // let targetTexture = gl.createTexture();
+  // gl.bindTexture(gl.TEXTURE_2D, targetTexture);
+  // gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 256, 256, 0, gl.RGBA, gl.UNSIGNED_BYTE,null);
+  // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+  // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+  // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+  // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  // gl.bindTexture(gl.TEXTURE_2D, null);
+
+  // Create and bind fb
+  // fb = gl.createFramebuffer()
+  // gl.bindFramebuffer(gl.FRAMEBUFFER, fb);
+  // gl.viewport(0,0, 256,256)
+  
+  // attach the texture as the first color attachment
+  // const attachmentPoint = gl.COLOR_ATTACHMENT0;
+  // gl.framebufferTexture2D(
+  //     gl.FRAMEBUFFER, attachmentPoint, gl.TEXTURE_2D, targetTexture, 0);
+
+
+  // Update Model Matrix
+  modelMatrix = glMatrix.mat4.create();
+  objectWorldPos = cube.position;
+
+  // scale -> rotation on axis to direction -> translate to distance -> rotate around sun
+  // glMatrix.mat4.rotate(modelMatrix, modelMatrix, globalTime*models[0].speed, models[0].orbitVector);  // orbit around center
+  glMatrix.mat4.translate(modelMatrix, modelMatrix, objectWorldPos); // translate object away from center
+  if(cube.rotateOnTime) { // rotate object on its own axis either continuously with time or not
+    glMatrix.mat4.rotate(modelMatrix, modelMatrix, globalTime, cube.rotationAxis); 
+  } else {
+    glMatrix.mat4.rotate(modelMatrix, modelMatrix, cube.roationDegree, cube.rotationAxis);
+  }
+  glMatrix.mat4.scale(modelMatrix, modelMatrix, cube.scaleVector); // scale object to variable size
+  glMatrix.mat4.scale(modelMatrix, modelMatrix, cube.boundingVector); // normalize object to bounds
+
+  // Update View Matrix
+  viewMatrix = glMatrix.mat4.create();
+  cameraPos = [
+    sliderVals.get("camXVal"),
+    sliderVals.get("camYVal"),
+    sliderVals.get("camZVal"),
+  ];
+  cameraFocus = [
+    sliderVals.get("lookXVal"),
+    sliderVals.get("lookYVal"),
+    sliderVals.get("lookZVal"),
+  ];
+  glMatrix.mat4.lookAt(viewMatrix, cameraPos, cameraFocus, [0.0, 1.0, 0.0]); // does up vector need to be changed? ortho to y?
+
+  // Update Model View Matrix
+  cube.modelViewMatrix = glMatrix.mat4.create();
+  glMatrix.mat4.mul(cube.modelViewMatrix, viewMatrix, modelMatrix);
+  // gl.activeTexture(gl.TEXTURE0)
+
+  // render to the canvas
+  gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+
+  // render the cube with the texture we just rendered to
+  gl.bindTexture(gl.TEXTURE_2D, cube.targetTexture);
+
+  // Tell WebGL how to convert from clip space to pixels
+  gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+
+  // Clear the canvas AND the depth buffer.
+  // gl.clearColor(0.7, 0.7, 0.9, 1.0);
+  // gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+  aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
+  glMatrix.mat4.perspective(projectionMatrix,
+                   degreesToRadians(60),
+                   aspect,
+                   0.1,
+                   100.0);  
+  cube.myDrawable.draw();
+}
+
+
 
 // After all the DOM has loaded, we can run the main function.
 window.onload = main;

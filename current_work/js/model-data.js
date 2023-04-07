@@ -92,16 +92,16 @@ function createShapeData() {
 
   // ball2.setRotationValues([0, 0, 0], 0, true);
   // ball2.setPositionValue(4, 3, 0);
-  // list.push(ball2)
+  // // list.push(ball2)
 
-  let cube = new Shape()
-  cube.setObjDataPath("box_with_vt.obj");
-  cube.setShaderSrc("texture")
-  cube.setTexParams(null, null)
+  // let cube = new Shape()
+  // cube.setObjDataPath("box_with_vt.obj");
+  // cube.setShaderSrc("texture")
+  // cube.setTexParams(null, null)
 
-  // cube.setRotationValues([1, 1, 0], 0, true);
-  cube.setPositionValue(0,0,0)
-  list.push(cube)
+  // // cube.setRotationValues([1, 1, 0], 0, true);
+  // cube.setPositionValue(0,0,0)
+  // list.push(cube)
 
 
   // let cube2 = new Shape()
