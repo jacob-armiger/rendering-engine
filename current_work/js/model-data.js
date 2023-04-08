@@ -84,14 +84,14 @@ function createShapeData() {
   ball.setRotationValues([0, 0, 0], 0, true);
   ball.setPositionValue(4, 0, 0);
   list.push(ball)
-  let top = new Shape();
-  top.setObjDataPath("sphere_with_vt.obj");
-  top.setShaderSrc("texturePhong")
-  top.setTexParams("sidewalk.jpg", "image")
+  // let top = new Shape();
+  // top.setObjDataPath("sphere_with_vt.obj");
+  // top.setShaderSrc("texturePhong")
+  // top.setTexParams("sidewalk.jpg", "image")
 
-  top.setRotationValues([0, 0, 0], 0, true);
-  top.setPositionValue(0, 6, 0);
-  list.push(top)
+  // top.setRotationValues([0, 0, 0], 0, true);
+  // top.setPositionValue(0, 6, 0);
+  // list.push(top)
   // let front = new Shape();
   // front.setObjDataPath("sphere_with_vt.obj");
   // front.setShaderSrc("texturePhong")
@@ -110,24 +110,23 @@ function createShapeData() {
   // ball2.setPositionValue(4, 3, 0);
   // list.push(ball2)
 
-  // let cube = new Shape()
-  // cube.setObjDataPath("box_with_vt.obj");
-  // cube.setShaderSrc("texture")
-  // cube.setTexParams(null, null)
+  let cube = new Shape()
+  cube.setObjDataPath("sphere_with_vt.obj");
+  cube.setShaderSrc("textureCubemap")
+  cube.setTexParams(null, "dynamicCubemap")
+  
+  cube.setRotationValues([0, 1, 0], 0, false);
+  cube.setPositionValue(0,0,0)
+  list.push(cube)
 
-  // // cube.setRotationValues([1, 1, 0], 0, true);
-  // cube.setPositionValue(0,0,0)
-  // list.push(cube)
+  let cube2 = new Shape()
+  cube2.setObjDataPath("box_with_vt.obj");
+  cube2.setShaderSrc("texturePhong")
+  cube2.setTexParams("hd_power_t.png", "image")
 
-
-  // let cube2 = new Shape()
-  // cube2.setObjDataPath("box_with_vt.obj");
-  // cube2.setShaderSrc("texturePhong")
-  // cube2.setTexParams("hd_power_t.png", "image")
-
-  // // cube2.setRotationValues([1, 1, 0], 0, true);
-  // cube2.setPositionValue(0,4,0)
-  // list.push(cube2)
+  cube2.setRotationValues([1, 1, 0], 0, true);
+  cube2.setPositionValue(0,4,0)
+  list.push(cube2)
 
   return list;
 }
