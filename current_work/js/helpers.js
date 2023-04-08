@@ -215,7 +215,7 @@ function generateTexture(src, type) {
 
 /**
  * renderCube takes a shape meant to have a dynamic cubemap and creates the frames for it
- * @param {Obejct} shape  dynamicCubemap shape
+ * @param {Obejct} object  shape meant to have dynamicCubemap
  */
 function renderCube(object) {
   let sides = [
@@ -272,8 +272,9 @@ function renderCube(object) {
     }
   ]
   
-  // render to texture by binding fb
+  // Create frames for cubemap
   for(let i = 0; i< 6;i++) {
+  // render to texture by binding fb
     let fb = gl.createFramebuffer()
     gl.bindFramebuffer(gl.FRAMEBUFFER, fb);
     

@@ -65,11 +65,6 @@ function main() {
                    zNear,
                    zFar);
 
-
-  // Right now, in draw, the scene will not render until the drawable is prepared
-  // this allows us to acynchronously load content. If you are not familiar with async
-  // that is a-okay! This link below should explain more on that topic:
-  // https://blog.bitsrc.io/understanding-asynchronous-javascript-the-event-loop-74cd408419ff
   setupScene();
 }
 
@@ -114,8 +109,7 @@ function setupUI(sliderDict) {
 
 // Async as it loads resources over the network.
 async function setupScene() {
-
-
+  // These shapes are initialized in model-data.js
   for(let shape of shapes) {
     let vertSource = await loadNetworkResourceAsText(shape.shaderVertSrc);
     let fragSource = await loadNetworkResourceAsText(shape.shaderFragSrc);
@@ -123,7 +117,6 @@ async function setupScene() {
     initializeMyObject(vertSource, fragSource, objData, shape);
   }
 }
-
 
 
 function drawScene(deltaTime, sliderVals) {
@@ -187,7 +180,7 @@ function drawScene(deltaTime, sliderVals) {
         renderCube(shape)
         continue  // `renderCube` handles drawing of shape
       }
-      
+
       shape.myDrawable.draw();
     }
   }

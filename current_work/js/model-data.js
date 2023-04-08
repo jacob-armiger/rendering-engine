@@ -82,7 +82,7 @@ function createShapeData() {
   ball.setTexParams("sidewalk.jpg", "image")
 
   ball.setRotationValues([0, 0, 0], 0, true);
-  ball.setPositionValue(4, 0, 0);
+  ball.setPositionValue(4, 0, -3);
   list.push(ball)
   // let top = new Shape();
   // top.setObjDataPath("sphere_with_vt.obj");
