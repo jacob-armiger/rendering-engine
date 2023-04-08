@@ -188,6 +188,7 @@ function generateTexture(src, type) {
 
     gl.generateMipmap(gl.TEXTURE_CUBE_MAP);
     gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+    gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
   } else if (type == "dynamicCubemap") {
 
     // Create texture to render to
@@ -203,9 +204,9 @@ function generateTexture(src, type) {
 
     
     gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-    gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-    gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    // gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+    // gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    // gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
     gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
 
   }
@@ -232,42 +233,42 @@ function renderCube(object) {
       cubeSide: gl.TEXTURE_CUBE_MAP_NEGATIVE_Y,
     },
     {
-      cubeSide: gl.TEXTURE_CUBE_MAP_POSITIVE_Z,
+      cubeSide: gl.TEXTURE_CUBE_MAP_NEGATIVE_Z,
     },
     {
-      cubeSide: gl.TEXTURE_CUBE_MAP_NEGATIVE_Z,
+      cubeSide: gl.TEXTURE_CUBE_MAP_POSITIVE_Z,
     },
   ];
 
   let frames = [
     {
       //posx
-      look: [4,0,-1],
+      look: [10,0,0],
       up: [0,1,0]
     },
     {
       //negx
-      look: [-4,0,-1],
+      look: [-10,0,0],
       up: [0,1,0]
     },
     {
       //posy
-      look: [0,-8,-1],
+      look: [0,-12,0],
       up: [0,0,1]
     },
     {
       // negy
-      look: [0,8,-1],
+      look: [0,12,0],
       up: [0,0,-1]
     },
     {
       //posz
-      look: [0,0,1],
+      look: [0,0,-5],
       up: [0,1,0]
     },
     {
       //negz
-      look: [0,0,-1],
+      look: [0,0,5],
       up: [0,1,0]
     }
   ]

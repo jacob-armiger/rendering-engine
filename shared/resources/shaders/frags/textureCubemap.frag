@@ -23,6 +23,7 @@ out vec4 fragColor;
 void main() {
   // Normalize values
   vec3 norm = normalize(normal);
+  // vec3 V = normalize(viewVec - uCameraPosition);
   vec3 V = normalize(viewVec - uCameraPosition);
   vec3 reflection = reflect(V,norm);
   
