@@ -14,7 +14,6 @@ out vec3 viewVec;
 // Uniforms do not change from one shader invocation to the next, these are set "constant" values that can be read by vertex and fragment shader; if you want to use a uniform in the fragment shader then you must declare it at the top as well.
 uniform mat4 uModelViewMatrix;
 uniform mat4 uProjectionMatrix;
-uniform vec3 uCameraPosition;
 
 void main() {
   // Position of vertex in clip space

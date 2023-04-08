@@ -92,7 +92,7 @@ function createShapeData() {
 
   // ball2.setRotationValues([0, 0, 0], 0, true);
   // ball2.setPositionValue(4, 3, 0);
-  // // list.push(ball2)
+  // list.push(ball2)
 
   // let cube = new Shape()
   // cube.setObjDataPath("box_with_vt.obj");
