@@ -84,6 +84,22 @@ function createShapeData() {
   ball.setRotationValues([0, 0, 0], 0, true);
   ball.setPositionValue(4, 0, 0);
   list.push(ball)
+  let top = new Shape();
+  top.setObjDataPath("sphere_with_vt.obj");
+  top.setShaderSrc("texturePhong")
+  top.setTexParams("sidewalk.jpg", "image")
+
+  top.setRotationValues([0, 0, 0], 0, true);
+  top.setPositionValue(0, 6, 0);
+  list.push(top)
+  // let front = new Shape();
+  // front.setObjDataPath("sphere_with_vt.obj");
+  // front.setShaderSrc("texturePhong")
+  // front.setTexParams("sidewalk.jpg", "image")
+
+  // front.setRotationValues([0, 0, 0], 0, true);
+  // front.setPositionValue(0, 0, 6);
+  // list.push(front)
 
   // let ball2 = new Shape();
   // ball2.setObjDataPath("sphere_with_vt.obj");
