@@ -102,211 +102,285 @@ function calculateVertexNormals(faces, vertices) {
 
 
 /**
- * generateTexture takes an img resource and applies it to a texture that can be used in a shader
- * @param {Object} img
+ * generateTexture takes different types of resources and applies it to a texture that can be used in a shader
+ * @param {String} src  this is an image file or cubemap folder
+ * @param {String} type "image", "cubemap", "dynamicCubemap"
  */
-function generateTexture(img) {
-  img = "../../shared/resources/images/" + img
+function generateTexture(src, type) {
   let texture = gl.createTexture();
-
-  gl.bindTexture(gl.TEXTURE_2D, texture);
-  
-  // Fill the texture with a 1x1 blue pixel.
-  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE,
-    new Uint8Array([255, 55, 55 ,255]));
-
-  // Asynchronously load an image
-  let image = new Image();
-  image.src = img;
-  
-  image.addEventListener('load', function() {
-    // Now that the image has loaded make copy it to the texture.
-    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true)
-
-    gl.bindTexture(gl.TEXTURE_2D, texture);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, image.naturalWidth, image.naturalHeight, 0, gl.RGBA, gl.UNSIGNED_BYTE,image);
-    // gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image)
-    // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-    // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-    gl.generateMipmap(gl.TEXTURE_2D);
-  });
-
-  return texture;
-}
-
-/**
- * generateCubeMap takes a cubemap directory and creates a cubemap from it
- * @param {Object} cubemapDir
- */
-function generateCubeMap(cubemapDir) {
-  let texture = gl.createTexture();
-  gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
-
-  const faces = [
-    {
-      cubeSide: gl.TEXTURE_CUBE_MAP_POSITIVE_X,
-      src: cubemapDir + "posx.jpg",
-    },
-    {
-      cubeSide: gl.TEXTURE_CUBE_MAP_NEGATIVE_X,
-      src: cubemapDir + "negx.jpg",
-    },
-    {
-      cubeSide: gl.TEXTURE_CUBE_MAP_POSITIVE_Y,
-      src: cubemapDir + "posy.jpg",
-    },
-    {
-      cubeSide: gl.TEXTURE_CUBE_MAP_NEGATIVE_Y,
-      src: cubemapDir + "negy.jpg",
-    },
-    {
-      cubeSide: gl.TEXTURE_CUBE_MAP_POSITIVE_Z,
-      src: cubemapDir + "posz.jpg",
-    },
-    {
-      cubeSide: gl.TEXTURE_CUBE_MAP_NEGATIVE_Z,
-      src: cubemapDir + "negz.jpg",
-    },
-  ];
-
-  faces.forEach((face) => {
-    let {cubeSide, src} = face
-
-    // Fill the texture with a 1x1 blue pixel.
-    gl.texImage2D(cubeSide, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE,
-      new Uint8Array([0, 0, 255 ,255]));
+  if(type == "image") {
+    src = "../../shared/resources/images/" + src
     
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    
+    // Fill the texture with a 1x1 blue pixel.
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE,
+      new Uint8Array([0, 0, 255,255]));
+
     // Asynchronously load an image
     let image = new Image();
     image.src = src;
     
     image.addEventListener('load', function() {
-      // Image now loaded
-      gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
-      gl.texImage2D(cubeSide, 0, gl.RGBA, 2048, 2048, 0, gl.RGBA, gl.UNSIGNED_BYTE, image);
-      gl.generateMipmap(gl.TEXTURE_CUBE_MAP);
-      });
-  });
+      // Now that the image has loaded make copy it to the texture.
+      gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true)
 
-  gl.generateMipmap(gl.TEXTURE_CUBE_MAP);
-  gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+      gl.bindTexture(gl.TEXTURE_2D, texture);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, image.naturalWidth, image.naturalHeight, 0, gl.RGBA, gl.UNSIGNED_BYTE,image);
+      
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+      // gl.generateMipmap(gl.TEXTURE_2D);
+    });
+  } else if(type == "cubemap") {
+    src = "../../shared/resources/cubemaps/" + src
+    
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false)
+    gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
+
+    const faces = [
+      {
+        cubeSide: gl.TEXTURE_CUBE_MAP_POSITIVE_X,
+        src: src + "posx.jpg",
+      },
+      {
+        cubeSide: gl.TEXTURE_CUBE_MAP_NEGATIVE_X,
+        src: src + "negx.jpg",
+      },
+      {
+        cubeSide: gl.TEXTURE_CUBE_MAP_POSITIVE_Y,
+        src: src + "posy.jpg",
+      },
+      {
+        cubeSide: gl.TEXTURE_CUBE_MAP_NEGATIVE_Y,
+        src: src + "negy.jpg",
+      },
+      {
+        cubeSide: gl.TEXTURE_CUBE_MAP_POSITIVE_Z,
+        src: src + "posz.jpg",
+      },
+      {
+        cubeSide: gl.TEXTURE_CUBE_MAP_NEGATIVE_Z,
+        src: src + "negz.jpg",
+      },
+    ];
+
+    faces.forEach((face) => {
+      let {cubeSide, src} = face
+
+      // Fill the texture with a 1x1 blue pixel.
+      gl.texImage2D(cubeSide, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE,
+        new Uint8Array([0, 0, 255 ,255]));
+      
+      // Asynchronously load an image
+      let image = new Image();
+      image.src = src;
+      
+      image.addEventListener('load', function() {
+        // Image now loaded
+        gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
+        gl.texImage2D(cubeSide, 0, gl.RGBA, 2048, 2048, 0, gl.RGBA, gl.UNSIGNED_BYTE, image);
+        gl.generateMipmap(gl.TEXTURE_CUBE_MAP);
+        });
+    });
+
+    gl.generateMipmap(gl.TEXTURE_CUBE_MAP);
+    gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+  } else if (type == "dynamicCubemap") {
+
+    // Create texture to render to
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
+
+    gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
+    gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X, 0, gl.RGBA, 256, 256, 0, gl.RGBA, gl.UNSIGNED_BYTE,null);
+    gl.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_X, 0, gl.RGBA, 256, 256, 0, gl.RGBA, gl.UNSIGNED_BYTE,null);
+    gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_Y, 0, gl.RGBA, 256, 256, 0, gl.RGBA, gl.UNSIGNED_BYTE,null);
+    gl.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_Y, 0, gl.RGBA, 256, 256, 0, gl.RGBA, gl.UNSIGNED_BYTE,null);
+    gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_Z, 0, gl.RGBA, 256, 256, 0, gl.RGBA, gl.UNSIGNED_BYTE,null);
+    gl.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_Z, 0, gl.RGBA, 256, 256, 0, gl.RGBA, gl.UNSIGNED_BYTE,null);
+
+    
+    gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
+
+  }
   return texture;
 }
 
+
 /**
- * getCubeUVs gets the manually created uvs for the cube object
+ * renderCube takes a shape meant to have a dynamic cubemap and creates the frames for it
+ * @param {Obejct} object  shape meant to have dynamicCubemap
  */
-function getCubeUVs() {
-  uvs = [
-    // Front
-    0.0,  0.0,
-    1.0,  1.0,
-    1.0,  0.0,
-    0.0,  0.0,
-    0.0,  1.0,
-    1.0,  1.0,
-    // Right
-    0.0,  0.0,
-    1.0,  1.0,
-    1.0,  0.0,
-    0.0,  0.0,
-    0.0,  1.0,
-    1.0,  1.0,
-    // Top
-    0.0,  0.0,
-    1.0,  1.0,
-    1.0,  0.0,
-    0.0,  0.0,
-    0.0,  1.0,
-    1.0,  1.0,
-    // Left
-    0.0,  0.0,
-    0.0,  1.0,
-    1.0,  1.0,
-    0.0,  0.0,
-    1.0,  1.0,
-    1.0,  0.0,
-    // Bottom
-    0.0,  0.0,
-    0.0,  1.0,
-    1.0,  1.0,
-    0.0,  0.0,
-    1.0,  1.0,
-    1.0,  0.0,
-    // Back
-    0.0,  0.0,
-    0.0,  1.0,
-    1.0,  1.0,
-    0.0,  0.0,
-    1.0,  1.0,
-    1.0,  0.0,
+function renderCube(object) {
+  let sides = [
+    {
+      cubeSide: gl.TEXTURE_CUBE_MAP_POSITIVE_X,
+    },
+    {
+      cubeSide: gl.TEXTURE_CUBE_MAP_NEGATIVE_X,
+    },
+    {
+      cubeSide: gl.TEXTURE_CUBE_MAP_POSITIVE_Y,
+    },
+    {
+      cubeSide: gl.TEXTURE_CUBE_MAP_NEGATIVE_Y,
+    },
+    {
+      cubeSide: gl.TEXTURE_CUBE_MAP_POSITIVE_Z,
+    },
+    {
+      cubeSide: gl.TEXTURE_CUBE_MAP_NEGATIVE_Z,
+    },
+  ];
+
+  let frames = [
+    {
+      //posx
+      look: [4,0,-1],
+      up: [0,1,0]
+    },
+    {
+      //negx
+      look: [-4,0,-1],
+      up: [0,1,0]
+    },
+    {
+      //posy
+      look: [0,-8,-1],
+      up: [0,0,1]
+    },
+    {
+      // negy
+      look: [0,8,-1],
+      up: [0,0,-1]
+    },
+    {
+      //posz
+      look: [0,0,1],
+      up: [0,1,0]
+    },
+    {
+      //negz
+      look: [0,0,-1],
+      up: [0,1,0]
+    }
   ]
-  return uvs
-}
+  
+  // Create frames for cubemap
+  for(let i = 0; i< 6;i++) {
+  // render to texture by binding fb
+    let fb = gl.createFramebuffer()
+    gl.bindFramebuffer(gl.FRAMEBUFFER, fb);
+    
+    gl.framebufferTexture2D(
+        gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, sides[i].cubeSide, object.texture, 0);
 
-// Positions
-function getBmPos() {
-  let verts = [
-    -1, -1,  1,   1,  1,  1,  -1,  1,  1,   1, -1,  1, // Front
-    -1, -1, -1,   1,  1, -1,  -1,  1, -1,   1, -1, -1, // Back
-    1, -1, -1,   1,  1,  1,   1, -1,  1,   1,  1, -1, // Right
-    -1, -1, -1,  -1,  1,  1,  -1, -1,  1,  -1,  1, -1, // Left
-    -1,  1, -1,   1,  1,  1,  -1,  1,  1,   1,  1, -1, // Top
-    -1, -1, -1,   1, -1,  1,  -1, -1,  1,   1, -1, -1, // Bottom
-  ];
-  return verts
-}
+    // gl.bindFramebuffer(gl.FRAMEBUFFER, fb)
+    // render cube with empty texture
+    // gl.bindTexture(gl.TEXTURE_2D, cube.texture)
+    // // Convert clip space to pixxels
+    gl.viewport(0,0, 256,256)
+    //clear the canvas(cube side) and depth buffer
+    gl.clearColor(0.7, 0.7, 0.9, 1.0);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-// Tangents
-function getBmTan() {
-  let tangs = [
-      1,  0,  0,   1,  0,  0,   1,  0,  0,   1,  0,  0, // Front
-      -1,  0,  0,  -1,  0,  0,  -1,  0,  0,  -1,  0,  0, // Back
-      0,  0, -1,   0,  0, -1,   0,  0, -1,   0,  0, -1, // Right
-      0,  0,  1,   0,  0,  1,   0,  0,  1,   0,  0,  1, // Left
-      1,  0,  0,   1,  0,  0,   1,  0,  0,   1,  0,  0, // Top
-      1,  0,  0,   1,  0,  0,   1,  0,  0,   1,  0,  0, // Bottom
-  ];
-  return tangs
-}
+    let aspect = 256/256
+    glMatrix.mat4.perspective(projectionMatrix,
+                    degreesToRadians(90),
+                    aspect,
+                    0.1,
+                    100.0);
 
-  // Bitangents
-function getBmBitan() {
-  let bitangs = [
-      0, -1,  0,   0, -1,  0,   0, -1,  0,   0, -1,  0, // Front
-      0, -1,  0,   0, -1,  0,   0, -1,  0,   0, -1,  0, // Back
-      0, -1,  0,   0, -1,  0,   0, -1,  0,   0, -1,  0, // Right
-      0, -1,  0,   0, -1,  0,   0, -1,  0,   0, -1,  0, // Left
-      0,  0,  1,   0,  0,  1,   0,  0,  1,   0,  0,  1, // Top
-      0,  0, -1,   0,  0, -1,   0,  0, -1,   0,  0, -1, // Bot
-  ];
-  return bitangs
-}
+    /* DRAW SHAPES TO FRAMEBUFFER */
+    for (let shape of shapes) {
+      // Transform shape
+      let modelMatrix = glMatrix.mat4.create();
 
-// UVs
-function getBmUvs() {
-  let uvs = [
-      0,  1,  1,  0,  0,  0,  1,  1, // Front
-      1,  1,  0,  0,  1,  0,  0,  1, // Back
-      1,  1,  0,  0,  0,  1,  1,  0, // Right
-      0,  1,  1,  0,  1,  1,  0,  0, // Left
-      0,  0,  1,  1,  0,  1,  1,  0, // Top
-      0,  1,  1,  0,  0,  0,  1,  1, // Bottom
-  ];
-  return uvs
-}
+      glMatrix.mat4.translate(modelMatrix, modelMatrix, shape.position); // translate object away from center
+      if(shape.rotateOnTime) { // rotate object on its own axis either continuously with time or not
+        glMatrix.mat4.rotate(modelMatrix, modelMatrix, globalTime, shape.rotationAxis); 
+      } else {
+        glMatrix.mat4.rotate(modelMatrix, modelMatrix, shape.roationDegree, shape.rotationAxis);
+      }
+      glMatrix.mat4.scale(modelMatrix, modelMatrix, shape.scaleVector); // scale object to variable size
+      glMatrix.mat4.scale(modelMatrix, modelMatrix, shape.boundingVector); // normalize object to bounds
 
-// Indices
-function getBmIndices() {
-  let indices = [
-      0 , 1 , 2 ,    0 , 3 , 1 , // Front
-      4 , 6 , 5 ,    4 , 5 , 7 , // Back
-      8 , 9 , 10,    8 , 11, 9 , // Right
-      12, 14, 13,    12, 13, 15, // Left
-      16, 18, 17,    16, 17, 19, // Top
-      20, 21, 22,    20, 23, 21, // Bottom
+      // Create view from cube's perpective
+      let viewMatrix = glMatrix.mat4.create();
+      cameraPos = object.position
+      let cameraFocus = frames[i].look
+      let upDir = frames[i].up
+      
+      glMatrix.mat4.lookAt(viewMatrix, cameraPos, cameraFocus, upDir); // does up vector need to be changed? ortho to y?
+
+      // Update Model View Matrix
+      shape.modelViewMatrix = glMatrix.mat4.create();
+      glMatrix.mat4.mul(shape.modelViewMatrix, viewMatrix, modelMatrix);
+
+      if (shape.drawableInitialized) {
+        if(shape.textureParams.type == "image") {
+          gl.bindTexture(gl.TEXTURE_2D, shape.texture);
+        } else if(shape.textureParams.type == "cubemap"){
+          gl.bindTexture(gl.TEXTURE_CUBE_MAP, shape.texture);
+        }
+      }
+      if(shape.drawableInitialized) {
+        shape.myDrawable.draw()
+      }
+    }
+  }
+
+  /* DRAW OBJECT TO CANVAS*/
+  // Update Model Matrix
+  modelMatrix = glMatrix.mat4.create();
+
+  glMatrix.mat4.translate(modelMatrix, modelMatrix, object.position); // translate object away from center
+  if(object.rotateOnTime) { // rotate object on its own axis either continuously with time or not
+    glMatrix.mat4.rotate(modelMatrix, modelMatrix, globalTime, object.rotationAxis); 
+  } else {
+    glMatrix.mat4.rotate(modelMatrix, modelMatrix, object.roationDegree, object.rotationAxis);
+  }
+  glMatrix.mat4.scale(modelMatrix, modelMatrix, object.scaleVector); // scale object to variable size
+  glMatrix.mat4.scale(modelMatrix, modelMatrix, object.boundingVector); // normalize object to bounds
+
+  // Update View Matrix
+  viewMatrix = glMatrix.mat4.create();
+  cameraPos = [
+    sliderVals.get("camXVal"),
+    sliderVals.get("camYVal"),
+    sliderVals.get("camZVal"),
   ];
-  return indices
+  cameraFocus = [
+    sliderVals.get("lookXVal"),
+    sliderVals.get("lookYVal"),
+    sliderVals.get("lookZVal"),
+  ];
+  glMatrix.mat4.lookAt(viewMatrix, cameraPos, cameraFocus, [0.0, 1.0, 0.0]); // does up vector need to be changed? ortho to y?
+
+  // Update Model View Matrix
+  object.modelViewMatrix = glMatrix.mat4.create();
+  glMatrix.mat4.mul(object.modelViewMatrix, viewMatrix, modelMatrix);
+
+  // render to the canvas
+  gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+
+  // render the object with the texture we just rendered to
+  gl.bindTexture(gl.TEXTURE_CUBE_MAP, object.texture);
+
+  // Tell WebGL how to convert from clip space to pixels
+  gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+
+  aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
+  glMatrix.mat4.perspective(projectionMatrix,
+                   degreesToRadians(60),
+                   aspect,
+                   0.1,
+                   100.0);  
+  object.myDrawable.draw();
 }
