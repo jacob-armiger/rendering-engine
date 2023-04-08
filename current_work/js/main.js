@@ -12,8 +12,6 @@ let lightPosition = null
 let cameraPos = null
 let shapes = createShapeData()
 
-let fb = null;
-
 function main() {
   const canvas = document.getElementById('glCanvas');
   // Initialize the GL context
@@ -67,11 +65,6 @@ function main() {
                    zNear,
                    zFar);
 
-
-  // Right now, in draw, the scene will not render until the drawable is prepared
-  // this allows us to acynchronously load content. If you are not familiar with async
-  // that is a-okay! This link below should explain more on that topic:
-  // https://blog.bitsrc.io/understanding-asynchronous-javascript-the-event-loop-74cd408419ff
   setupScene();
 }
 
@@ -116,8 +109,7 @@ function setupUI(sliderDict) {
 
 // Async as it loads resources over the network.
 async function setupScene() {
-
-
+  // These shapes are initialized in model-data.js
   for(let shape of shapes) {
     let vertSource = await loadNetworkResourceAsText(shape.shaderVertSrc);
     let fragSource = await loadNetworkResourceAsText(shape.shaderFragSrc);
@@ -125,6 +117,7 @@ async function setupScene() {
     initializeMyObject(vertSource, fragSource, objData, shape);
   }
 }
+
 
 function drawScene(deltaTime, sliderVals) {
   globalTime += deltaTime;
@@ -135,14 +128,15 @@ function drawScene(deltaTime, sliderVals) {
     sliderVals.get("lightYVal"),
     -sliderVals.get("lightZVal")
   );
-  
+  let fb = null
   // Clear the color buffer with specified clear color
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
   for (let shape of shapes) {
     // Update Model Matrix
     let modelMatrix = glMatrix.mat4.create();
     let objectWorldPos = shape.position;
-
+    
     // scale -> rotation on axis to direction -> translate to distance -> rotate around sun
     // glMatrix.mat4.rotate(modelMatrix, modelMatrix, globalTime*models[0].speed, models[0].orbitVector);  // orbit around center
     glMatrix.mat4.translate(modelMatrix, modelMatrix, objectWorldPos); // translate object away from center
@@ -181,49 +175,12 @@ function drawScene(deltaTime, sliderVals) {
       } else if(shape.textureParams.type == "cubemap"){
         // gl.activeTexture(gl.TEXTURE0);
         gl.bindTexture(gl.TEXTURE_CUBE_MAP, shape.texture);
-      } else if(shape.textureParams.src == null) {
-
-        // render to targetTexture by binding fb
-        gl.bindFramebuffer(gl.FRAMEBUFFER, fb)
-        // render cube with empty texture
-        gl.bindTexture(gl.TEXTURE_2D, shape.texture)
-        // Convert clip space to pixxels
-        gl.viewport(0,0, 256,256)
-        //clear the canvas(cube side) and depth buffer
-        gl.clearColor(0.7, 0.7, 0.9, 1.0);
-        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-        let aspect = 256/256
-        glMatrix.mat4.perspective(projectionMatrix,
-                         degreesToRadians(60),
-                         aspect,
-                         0.1,
-                         100.0);
-
-        shape.myDrawable.draw();
-
-        gl.activeTexture(gl.TEXTURE0)
-
-        // render to the canvas
-        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-    
-        // render the cube with the texture we just rendered to
-        gl.bindTexture(gl.TEXTURE_2D, shape.targetTexture);
-    
-        // Tell WebGL how to convert from clip space to pixels
-        gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-    
-        // Clear the canvas AND the depth buffer.
-        // gl.clearColor(0.7, 0.7, 0.9, 1.0);
-        // gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-        aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
-        glMatrix.mat4.perspective(projectionMatrix,
-                         degreesToRadians(60),
-                         aspect,
-                         0.1,
-                         100.0);
-
+      } else if(shape.textureParams.type == "dynamicCubemap") {
+        gl.bindTexture(gl.TEXTURE_CUBE_MAP, shape.texture);
+        renderCube(shape)
+        continue  // `renderCube` handles drawing of shape
       }
+
       shape.myDrawable.draw();
     }
   }
@@ -239,8 +196,6 @@ function initializeMyObject(vertSource, fragSource, objData, shape) {
   parsedData = new OBJData(objData); // this class is in obj-loader.js
   rawData = parsedData.getFlattenedDataFromModelAtIndex(0);
   shape.boundingVector = rawData.boundingVector
-  
-  // rawData.uvs = getCubeUVs()
 
   // Generate Buffers on the GPU using the geometry data we pull from the obj
   let vertexPositionBuffer = new VertexArrayData( // this class is in vertex-data.js
@@ -271,46 +226,14 @@ function initializeMyObject(vertSource, fragSource, objData, shape) {
   // In order to let our shader be aware of the vertex data, we need to bind these buffers to the attribute location inside of the vertex shader. The attributes in the shader must have the name specified in the following object or the draw call will fail, possibly silently!
   let bufferMap = {
     aVertexPosition: vertexPositionBuffer,
+    aVertexNormal: vertexNormalBuffer
   };
-  if(shape.textureParams.type != null) {
-    bufferMap["aVertexNormal"] = vertexNormalBuffer;
-  }
-  if(shape.textureParams.type == "image" || shape.textureParams.type == null) {
+  if(shape.textureParams.type == "image") {
     bufferMap["aVertexTexCoord"] = vertexTexCoordBuffer;
   }
 
-  if(shape.textureParams.src == null) {
-    let texture = gl.createTexture(); 
-    gl.bindTexture(gl.TEXTURE_2D, texture);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE,
-      new Uint8Array([0, 0, 0,255]));
-    gl.generateMipmap(gl.TEXTURE_2D);
-    shape.texture = texture
+  shape.texture = generateTexture(shape.textureParams.src, shape.textureParams.type);
 
-    // Create texture to render to
-    let targetTexture = gl.createTexture();
-    gl.bindTexture(gl.TEXTURE_2D, targetTexture);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 256, 256, 0, gl.RGBA, gl.UNSIGNED_BYTE,null);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-
-    // Create and bind fb
-    fb = gl.createFramebuffer()
-    gl.bindFramebuffer(gl.FRAMEBUFFER, fb);
-    
-    // attach the texture as the first color attachment
-    const attachmentPoint = gl.COLOR_ATTACHMENT0;
-    gl.framebufferTexture2D(
-        gl.FRAMEBUFFER, attachmentPoint, gl.TEXTURE_2D, targetTexture, 0);
-
-    // Set shape texture and set framebuffer back to canvas
-    shape.targetTexture = targetTexture;
-    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-  } else {
-    shape.texture = generateTexture(shape.textureParams.src, shape.textureParams.type);
-  }
   shape.myDrawable = new Drawable(shape.shaderProgram, bufferMap, null, rawData.vertices.length / 3);
 
   // Checkout the drawable class' draw function. It calls a uniform setup function every time it is drawn. 
