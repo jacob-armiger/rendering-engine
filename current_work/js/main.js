@@ -167,20 +167,11 @@ function drawScene(deltaTime, sliderVals) {
     glMatrix.mat4.mul(shape.modelViewMatrix, viewMatrix, modelMatrix);
 
     if (shape.drawableInitialized) {
-      // NOTE: Changes texture for object but not sure why TEXTURE0 doesn't need to change
-      // Set active texture based on whether it's a cubemap or 2D texture
-      if(shape.textureParams.type == "image") {
-        // gl.activeTexture(gl.TEXTURE0);
-        gl.bindTexture(gl.TEXTURE_2D, shape.texture);
-      } else if(shape.textureParams.type == "cubemap"){
-        // gl.activeTexture(gl.TEXTURE0);
-        gl.bindTexture(gl.TEXTURE_CUBE_MAP, shape.texture);
-      } else if(shape.textureParams.type == "dynamicCubemap") {
-        gl.bindTexture(gl.TEXTURE_CUBE_MAP, shape.texture);
+      // Create extra framebuffer frames if dynamic cubemap 
+      if(shape.textureParams.type == "dynamicCubemap") {
         renderCube(shape)
         continue  // `renderCube` handles drawing of shape
       }
-
       shape.myDrawable.draw();
     }
   }
@@ -262,6 +253,22 @@ function initializeMyObject(vertSource, fragSource, objData, shape) {
       shape.myDrawable.uniformLocations.uTexture,
       shape.texture
     )
+    /* BIND APPROPRIATE TEXTURE TYPE */
+    if(shape.textureParams.type == "image") {
+      gl.activeTexture(gl.TEXTURE0);
+      gl.bindTexture(gl.TEXTURE_2D, shape.texture);
+      gl.uniform1i(
+        shape.myDrawable.uniformLocations.uTexture,
+        shape.texture
+      )
+    } else if(shape.textureParams.type == "cubemap" || shape.textureParams.type == "dynamicCubemap") {
+      gl.activeTexture(gl.TEXTURE0);
+      gl.bindTexture(gl.TEXTURE_CUBE_MAP, shape.texture);
+      gl.uniform1i(
+        shape.myDrawable.uniformLocations.uTexture,
+        shape.texture
+      )
+    }
   };
   shape.drawableInitialized = true;
 }
