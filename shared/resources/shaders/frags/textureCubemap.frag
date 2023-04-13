@@ -6,7 +6,7 @@
 
 // We need to tell the shader executable at what precision we want floats to be
 // medium precision is a good balance of speed and accuracy.
-precision mediump float;
+precision highp float;
 
 // This is a varying var written to by our vertex shader
 // since this is 3.0 we specify it in the fragment shader with "in"
@@ -17,15 +17,21 @@ in vec3 viewVec;
 // Typically we only output RGBA color, and that is what I will do here!
 uniform samplerCube uTexture;
 uniform vec3 uCameraPosition;
+uniform mat4 uModelViewMatrix;
 
 out vec4 fragColor;
 
 void main() {
   // Normalize values
   vec3 norm = normalize(normal);
-  // vec3 V = normalize(viewVec - uCameraPosition);
-  vec3 V = normalize(viewVec - uCameraPosition);
-  vec3 reflection = reflect(V,norm);
+
+  // Reflected(to-from)
+  vec3 incidentEye = normalize(viewVec - normalize(uCameraPosition));
+  // reflected takes input vector and normal vector
+  vec3 reflection = reflect(incidentEye, norm);
+
+  // convert from eye to world space
+  reflection = vec3(inverse(uModelViewMatrix) * vec4(reflection, 0.0));
   
   fragColor = texture(uTexture, reflection);
 }

@@ -140,7 +140,7 @@ function generateTexture(src, type) {
   } else if(type == "cubemap") {
     src = "../../shared/resources/cubemaps/" + src
     
-    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false)
+    // gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true)
     gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
 
     const faces = [
@@ -153,11 +153,11 @@ function generateTexture(src, type) {
         src: src + "negx.jpg",
       },
       {
-        cubeSide: gl.TEXTURE_CUBE_MAP_POSITIVE_Y,
+        cubeSide: gl.TEXTURE_CUBE_MAP_NEGATIVE_Y,
         src: src + "posy.jpg",
       },
       {
-        cubeSide: gl.TEXTURE_CUBE_MAP_NEGATIVE_Y,
+        cubeSide: gl.TEXTURE_CUBE_MAP_POSITIVE_Y,
         src: src + "negy.jpg",
       },
       {
@@ -195,7 +195,7 @@ function generateTexture(src, type) {
   } else if (type == "dynamicCubemap") {
 
     // Create texture to render to
-    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
+    // gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
 
     gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
     gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X, 0, gl.RGBA, 256, 256, 0, gl.RGBA, gl.UNSIGNED_BYTE,null);
@@ -224,10 +224,10 @@ function generateTexture(src, type) {
 function renderCube(object) {
   let sides = [
     {
-      cubeSide: gl.TEXTURE_CUBE_MAP_POSITIVE_X,
+      cubeSide: gl.TEXTURE_CUBE_MAP_NEGATIVE_X,
     },
     {
-      cubeSide: gl.TEXTURE_CUBE_MAP_NEGATIVE_X,
+      cubeSide: gl.TEXTURE_CUBE_MAP_POSITIVE_X,
     },
     {
       cubeSide: gl.TEXTURE_CUBE_MAP_POSITIVE_Y,
@@ -236,10 +236,10 @@ function renderCube(object) {
       cubeSide: gl.TEXTURE_CUBE_MAP_NEGATIVE_Y,
     },
     {
-      cubeSide: gl.TEXTURE_CUBE_MAP_NEGATIVE_Z,
+      cubeSide: gl.TEXTURE_CUBE_MAP_POSITIVE_Z,
     },
     {
-      cubeSide: gl.TEXTURE_CUBE_MAP_POSITIVE_Z,
+      cubeSide: gl.TEXTURE_CUBE_MAP_NEGATIVE_Z,
     },
   ];
 

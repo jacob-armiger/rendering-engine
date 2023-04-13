@@ -20,12 +20,10 @@ void main() {
   gl_Position = uProjectionMatrix * uModelViewMatrix * vec4(aVertexPosition, 1.0);
 
   // Transform vertexes into eye space
-//   vec4 vert = uModelViewMatrix * vec4(aVertexPosition, 1.0);
   viewVec = (uModelViewMatrix * vec4(aVertexPosition, 1.0)).xyz;
   // Reorient normals into eye space
-  // normal = vec3(uModelViewMatrix * vec4(aVertexNormal, 0.0));
-  normal = (mat3(uModelViewMatrix) * aVertexNormal);
+  normal = vec3(uModelViewMatrix * vec4(aVertexNormal, 0.0));
 
-  // Comment out for pregenerated cubemaps
+  // Fix upside down cubemaps
   viewVec  = -vec3(viewVec);
 }
