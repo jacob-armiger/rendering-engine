@@ -215,21 +215,48 @@ function initializeMyObject(vertSource, fragSource, objData, shape) {
   // let vertexIndexBuffer = new ElementArrayData(rawData.indices);
 
   // In order to let our shader be aware of the vertex data, we need to bind these buffers to the attribute location inside of the vertex shader. The attributes in the shader must have the name specified in the following object or the draw call will fail, possibly silently!
-  let bufferMap = {
-    aVertexPosition: vertexPositionBuffer,
-    aVertexNormal: vertexNormalBuffer
-  };
-  if(shape.textureParams.type == "image") {
-    bufferMap["aVertexTexCoord"] = vertexTexCoordBuffer;
+  let bufferMap = {};
+  // let tex_list = [];
+  let tex_norm = null;
+  let tex_diffuse = null;
+  let tex_depth = null;
+  let tex_reg = null;
+
+  if(shape.textureParams.type == "normalmap") {
+    // tex_list = createNormalTextures()
+
+    tex_norm = generateTexture("../../shared/resources/toy_box_assets/toy_box_normal.png", "normalmap");
+    tex_diffuse = generateTexture("../../shared/resources/toy_box_assets/toy_box_diffuse.png", "normalmap");
+    tex_depth = generateTexture("../../shared/resources/toy_box_assets/toy_box_disp.png", "normalmap");
+    tex_reg = generateTexture("../../shared/resources/toy_box_assets/hd_wood.png", "normalmap");
+
+    let {vertexTangBuffer, vertexBitangBuffer} = calcTangents(vertexPositionBuffer.data, vertexTexCoordBuffer.data);
+    
+    bufferMap["aVertexPosition"] = vertexPositionBuffer,
+    bufferMap["aVertexTexCoord"] = vertexTexCoordBuffer; // uvs
+    bufferMap["aVertexNormal"] = vertexNormalBuffer;
+
+    bufferMap["aVertexTang"] = vertexTangBuffer;
+    bufferMap["aVertexBitang"] = vertexBitangBuffer;
+
+    // shape.texture = generateTexture(shape.textureParams.src, shape.textureParams.type);
+    shape.myDrawable = new Drawable(shape.shaderProgram, bufferMap, null, rawData.vertices.length / 3);
+  } else {
+    let bufferMap = {
+      aVertexPosition: vertexPositionBuffer,
+      aVertexNormal: vertexNormalBuffer
+    };
+    if(shape.textureParams.type == "image") {
+      bufferMap["aVertexTexCoord"] = vertexTexCoordBuffer;
+    }
+    shape.texture = generateTexture(shape.textureParams.src, shape.textureParams.type);
+    shape.myDrawable = new Drawable(shape.shaderProgram, bufferMap, null, rawData.vertices.length / 3);
   }
 
-  shape.texture = generateTexture(shape.textureParams.src, shape.textureParams.type);
-
-  shape.myDrawable = new Drawable(shape.shaderProgram, bufferMap, null, rawData.vertices.length / 3);
 
   // Checkout the drawable class' draw function. It calls a uniform setup function every time it is drawn. 
   // Put your uniforms that change per frame in this setup function.
-  shape.myDrawable.uniformLocations = shape.shaderProgram.getUniformLocations(['uModelViewMatrix', 'uProjectionMatrix', 'uLightPosition', 'uCameraPosition', 'uTexture']);
+  shape.myDrawable.uniformLocations = shape.shaderProgram.getUniformLocations(['uModelViewMatrix', 'uProjectionMatrix', 'uLightPosition', 'uCameraPosition', 'uTexture', 'uTexNorm', 'uTexDiffuse', 'uTexDepth', 'uTexReg']);
   shape.myDrawable.uniformSetup = () => {
     gl.uniformMatrix4fv(
       shape.myDrawable.uniformLocations.uProjectionMatrix,
@@ -267,6 +294,32 @@ function initializeMyObject(vertSource, fragSource, objData, shape) {
       gl.uniform1i(
         shape.myDrawable.uniformLocations.uTexture,
         shape.texture
+      )
+    }
+    if(shape.textureParams.type == "normalmap") {
+      gl.activeTexture(gl.TEXTURE0);
+      gl.bindTexture(gl.TEXTURE_2D, tex_norm);
+      gl.uniform1i(
+        shape.myDrawable.uniformLocations.uTexNorm,
+        0
+      )
+      gl.activeTexture(gl.TEXTURE1);
+      gl.bindTexture(gl.TEXTURE_2D, tex_diffuse);
+      gl.uniform1i(
+        shape.myDrawable.uniformLocations.uTexDiffuse,
+        1
+      )
+      gl.activeTexture(gl.TEXTURE2);
+      gl.bindTexture(gl.TEXTURE_2D, tex_depth);
+      gl.uniform1i(
+        shape.myDrawable.uniformLocations.uTexDepth,
+        2
+      )
+      gl.activeTexture(gl.TEXTURE3);
+      gl.bindTexture(gl.TEXTURE_2D, tex_reg);
+      gl.uniform1i(
+        shape.myDrawable.uniformLocations.uTexReg,
+        3
       )
     }
   };

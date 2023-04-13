@@ -108,8 +108,8 @@ function calculateVertexNormals(faces, vertices) {
  */
 function generateTexture(src, type) {
   let texture = gl.createTexture();
-  if(type == "image") {
-    src = "../../shared/resources/images/" + src
+  if(type == "image" || type == "normalmap") {
+    if(type == "image") {src = "../../shared/resources/images/" + src}
     
     gl.bindTexture(gl.TEXTURE_2D, texture);
     
@@ -132,7 +132,7 @@ function generateTexture(src, type) {
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-      // gl.generateMipmap(gl.TEXTURE_2D);
+      gl.generateMipmap(gl.TEXTURE_2D);
     });
   } else if(type == "cubemap") {
     src = "../../shared/resources/cubemaps/" + src

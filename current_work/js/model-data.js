@@ -85,50 +85,59 @@ function createShapeData() {
   // ball.setPositionValue(4, 0, 0);
   // list.push(ball)
 
-  let top = new Shape();
-  top.setObjDataPath("box_with_vt.obj");
-  top.setShaderSrc("texturePhong")
-  top.setTexParams("hd_power_t.png", "image")
+  // let top = new Shape();
+  // top.setObjDataPath("box_with_vt.obj");
+  // top.setShaderSrc("texturePhong")
+  // top.setTexParams("hd_power_t.png", "image")
 
-  top.setRotationValues([0, 0, 0], 0, true);
-  top.setPositionValue(0, 6, 0);
-  list.push(top)
+  // top.setRotationValues([0, 0, 0], 0, true);
+  // top.setPositionValue(0, 6, 0);
+  // list.push(top)
 
-  let front = new Shape();
-  front.setObjDataPath("sphere_with_vt.obj");
-  front.setShaderSrc("texturePhong")
-  front.setTexParams("sidewalk.jpg", "image")
+  // let front = new Shape();
+  // front.setObjDataPath("sphere_with_vt.obj");
+  // front.setShaderSrc("texturePhong")
+  // front.setTexParams("sidewalk.jpg", "image")
 
-  front.setRotationValues([0, 0, 0], 0, true);
-  front.setPositionValue(0, 0, 6);
-  list.push(front)
+  // front.setRotationValues([0, 0, 0], 0, true);
+  // front.setPositionValue(0, 2, -1);
+  // list.push(front)
 
-  let ball2 = new Shape();
-  ball2.setObjDataPath("sphere_with_vt.obj");
-  ball2.setShaderSrc("textureCubemap")
-  ball2.setTexParams("coit_tower/", "cubemap")
+  // let ball2 = new Shape();
+  // ball2.setObjDataPath("sphere_with_vt.obj");
+  // ball2.setShaderSrc("textureCubemap")
+  // ball2.setTexParams("coit_tower/", "cubemap")
 
-  ball2.setRotationValues([0, 0, 0], 0, true);
-  ball2.setPositionValue(4, 3, 0);
-  list.push(ball2)
+  // ball2.setRotationValues([0, 0, 0], 0, true);
+  // ball2.setPositionValue(4, 3, 0);
+  // list.push(ball2)
 
-  let cube = new Shape()
-  cube.setObjDataPath("sphere_with_vt.obj");
-  cube.setShaderSrc("textureCubemap")
-  cube.setTexParams(null, "dynamicCubemap")
+  // let cube = new Shape()
+  // cube.setObjDataPath("sphere_with_vt.obj");
+  // cube.setShaderSrc("textureCubemap")
+  // cube.setTexParams(null, "dynamicCubemap")
   
-  cube.setRotationValues([0, 1, 0], 0, false);
-  cube.setPositionValue(0,0,0)
-  list.push(cube)
+  // cube.setRotationValues([0, 1, 0], 0, false);
+  // cube.setPositionValue(0,0,0)
+  // list.push(cube)
 
-  // let cube2 = new Shape()
-  // cube2.setObjDataPath("box_with_vt.obj");
-  // cube2.setShaderSrc("texturePhong")
-  // cube2.setTexParams("../toy_box_assets/hd_wood.png", "image")
+  let cube2 = new Shape()
+  cube2.setObjDataPath("box_with_vt.obj");
+  cube2.setShaderSrc("textureNormMap")
+  cube2.setTexParams("hd_wood.png", "normalmap")
 
-  // // cube2.setRotationValues([1, 1, 0], 0, true);
-  // cube2.setPositionValue(0,1,0)
-  // list.push(cube2)
+  // cube2.setRotationValues([1, 1, 0], 0, true);
+  cube2.setPositionValue(0,1,0)
+  list.push(cube2)
+
+  // let cube3 = new Shape()
+  // cube3.setObjDataPath("box_with_vt.obj");
+  // cube3.setShaderSrc("texturePhong")
+  // cube3.setTexParams("sidewalk.jpg", "image")
+  
+  // cube3.setRotationValues([0, 1, 0], 0, true);
+  // cube3.setPositionValue(-4,0,0)
+  // list.push(cube3)
 
   return list;
 }
