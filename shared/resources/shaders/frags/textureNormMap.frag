@@ -30,32 +30,31 @@ uniform sampler2D uTexDepth;
 uniform sampler2D uTexReg;
 
 void main() {
-  // Discard fragments with low opacity
-  vec4 texColor = texture(uTexReg, texCoord);
+
+  // Create light and viewing vector
+  vec3 lightVec = normalize(tangLightPos - tangFragPos);
+  vec3 viewVec = normalize(tangViewPos - tangFragPos);
+  
+  // Normal map
   vec3 normal = texture(uTexNorm, texCoord).rgb;
   normal = normalize(normal * 2.0 - 1.0);
 
-  vec3 lightVec = normalize(tangLightPos - tangFragPos);
-  vec3 viewVec = normalize(tangViewPos - tangFragPos);
-
-  // Normalize values
-  // vec3 norm = normalize(normal);
-  vec3 L = normalize(lightVec);
-  vec3 V = normalize(viewVec);
-  vec3 halfAngle = normalize(L + V);
-
-  // Get cosine between vectors with dot product
-  float NdotL = clamp(dot(L, normal), 0.0, 1.0);
-  float NdotH = clamp(dot(halfAngle, normal), 0.0, 1.0);
-  
+  // Specular calculation
+  vec3 halfAngle = normalize(lightVec + viewVec);
+  float NdotH = clamp(dot(halfAngle, normal), 0.0, 1.0); // doproduct calcs cosine between vectors
   float shininess = 80.0;
-  // Calculate lighting components:       vec3(color) * intensity
-  vec3 ambient =                          texColor.xyz * 0.4;
-  vec3 diffuse  = NdotL *                 texColor.xyz * 0.4;
+
+  // Diffuse calculations
+  vec4 texColor = texture(uTexDiffuse, texCoord);
+  float NdotL = clamp(dot(lightVec, normal), 0.0, 1.0);
+  
+  // Adjust lighting components:          vec3(color)       * intensity
+  vec3 ambient  =                         texColor.rgb      * 0.5;
+  vec3 diffuse  = NdotL *                 texColor.rgb      * 0.4;
   vec3 specular = pow(NdotH, shininess) * vec3(1.0,1.0,1.0) * 0.5;
 
   // Lighting for fragment
-  vec4 lighting = vec4(diffuse + specular + ambient, 1.0);
+  vec4 lighting = vec4(diffuse + ambient, 1.0);
   vec4 color = vec4(lighting);
 
   fragColor = color;

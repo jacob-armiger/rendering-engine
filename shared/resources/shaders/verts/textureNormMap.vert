@@ -35,20 +35,12 @@ void main() {
   vec3 t = normalize(vec3(uModelViewMatrix * vec4(aVertexTang, 0.0)));
   vec3 b = normalize(vec3(uModelViewMatrix * vec4(aVertexBitang, 0.0)));
   vec3 n = normalize(vec3(uModelViewMatrix * vec4(aVertexNormal, 0.0)));
-  mat3 tbn = mat3(t, b, n);
+  mat3 tbn = transpose(mat3(t, b, n));
 
+  // Convert lighting variables to tangent space
   tangLightPos = tbn * uLightPosition;
   tangViewPos = tbn * uCameraPosition;
   tangFragPos = tbn * vec3(uModelViewMatrix * vec4(aVertexPosition, 1.0));
-  // tangFragPos = -vec3(tangFragPos);
-
-  // Transform vertexes into eye space
-  // vec4 vert = uModelViewMatrix * vec4(aVertexPosition, 1.0);
-  // Reorient normals into eye space
-  // normal = vec3(uModelViewMatrix * vec4(aVertexNormal, 0.0));
-
-  // lightVec = vec3(vec4(uLightPosition, 1.0) - vert);
-  // viewVec  = -vec3(vert);
 
   // Pass texCoord to the fragment shader
   texCoord = aVertexTexCoord;

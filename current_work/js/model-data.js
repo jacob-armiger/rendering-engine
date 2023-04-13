@@ -126,7 +126,7 @@ function createShapeData() {
   cube2.setShaderSrc("textureNormMap")
   cube2.setTexParams("hd_wood.png", "normalmap")
 
-  // cube2.setRotationValues([1, 1, 0], 0, true);
+  cube2.setRotationValues([0, 1, 0], 0, true);
   cube2.setPositionValue(0,1,0)
   list.push(cube2)
 
