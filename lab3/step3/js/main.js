@@ -217,7 +217,7 @@ function initializeMyObject(vertSource, fragSource, objData) {
     // 'aBarycentricCoord': vertexBarycentricBuffer,
   };
 
-  let img = "hd_power_t.png"
+  let img = "sd_power_t.png"
   let texture = generateTexture(img)
   // let cubemapDir = "../shared/resources/coit_tower/"
   // let texture = generateCubeMap(cubemapDir)

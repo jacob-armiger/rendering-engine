@@ -216,7 +216,7 @@ function initializeMyObject(vertSource, fragSource, objData) {
     // 'aBarycentricCoord': vertexBarycentricBuffer,
   };
 
-  let img = "hd_power_t.png"
+  let img = "sd_power_t.png"
   let texture = generateTexture(img)
 
   myDrawable = new Drawable(myShader, bufferMap, null, rawData.vertices.length / 3);
