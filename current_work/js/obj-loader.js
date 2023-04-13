@@ -192,6 +192,8 @@ class OBJData {
     let textureData = [];
     let normalData = [];
     let vertexData = [];
+    let tangentData = [];
+    let bitangentData = [];
     faces.forEach(face => {
       // A face can have 3+ vertices.
       // Since we want triangles, we turn the face into a fan of triangles.
@@ -224,16 +226,23 @@ class OBJData {
       }
     });
 
+    // Calculate tangent/bitangent data
+    if(textureData.length > 1 && vertexData.length > 1) {
+      ({tangentData, bitangentData} = calcTangents(vertexData, textureData));
+    }
+
     if (normalData.length < 1) console.warn("No normal data loaded for model.");
     if (vertexData.length < 1) console.warn("No vertex data loaded for model.");
-    // if (textureData.length < 1) console.warn("No texture data loaded for model.");
+    if (textureData.length < 1) console.warn("No texture data loaded for model.");
 
     return {
       uvs: textureData,
       normals: normalData,
       vertices: vertexData,
-      barycentricCoords: barycentricCoords,
       boundingVector: scalingVector,
+      tangents: tangentData,
+      bitangents: bitangentData,
+      barycentricCoords: barycentricCoords,
     }
   }
 

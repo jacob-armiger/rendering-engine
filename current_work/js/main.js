@@ -5,7 +5,6 @@ var gl = null;
 var modelViewMatrix = null;
 var projectionMatrix = null;
 var globalTime = 0.0;
-var parsedData = null;
 
 // These global variables apply to the entire scene for the duration of the program
 let lightPosition = null
@@ -128,7 +127,7 @@ function drawScene(deltaTime, sliderVals) {
     sliderVals.get("lightYVal"),
     -sliderVals.get("lightZVal")
   );
-  let fb = null
+
   // Clear the color buffer with specified clear color
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
@@ -179,15 +178,15 @@ function drawScene(deltaTime, sliderVals) {
 
 
 function initializeMyObject(vertSource, fragSource, objData, shape) {
+  // Assign shader information to shape
+  shape.shaderProgram = new ShaderProgram(vertSource, fragSource)  // NOTE: can optimize for redundant shaders but don't really need to 
+
   let rawData = null
-
-  // NOTE: can optimize for redundant shaders but don't really need to 
-  shape.shaderProgram = new ShaderProgram(vertSource, fragSource)
-
-  parsedData = new OBJData(objData); // this class is in obj-loader.js
+  let parsedData = new OBJData(objData); // this class is in obj-loader.js
   rawData = parsedData.getFlattenedDataFromModelAtIndex(0);
-  shape.boundingVector = rawData.boundingVector
 
+  // Set bounding Vector
+  shape.boundingVector = rawData.boundingVector
   // Generate Buffers on the GPU using the geometry data we pull from the obj
   let vertexPositionBuffer = new VertexArrayData( // this class is in vertex-data.js
     rawData.vertices, // What is the data?
@@ -204,6 +203,16 @@ function initializeMyObject(vertSource, fragSource, objData, shape) {
     gl.FLOAT,
     2
   );
+  let vertexTangBuffer = new VertexArrayData (
+    rawData.tangents,
+    gl.FLOAT,
+    3
+  );
+  let vertexBitangBuffer = new VertexArrayData (
+    rawData.bitangents,
+    gl.FLOAT,
+    3
+  );
   /* let vertexBarycentricBuffer = new VertexArrayData (
     rawData.barycentricCoords,
     gl.FLOAT,
@@ -215,44 +224,30 @@ function initializeMyObject(vertSource, fragSource, objData, shape) {
   // let vertexIndexBuffer = new ElementArrayData(rawData.indices);
 
   // In order to let our shader be aware of the vertex data, we need to bind these buffers to the attribute location inside of the vertex shader. The attributes in the shader must have the name specified in the following object or the draw call will fail, possibly silently!
-  let bufferMap = {};
-  // let tex_list = [];
-  let tex_norm = null;
-  let tex_diffuse = null;
-  let tex_depth = null;
-  let tex_reg = null;
+  let bufferMap = {
+    aVertexPosition: vertexPositionBuffer,
+    aVertexNormal: vertexNormalBuffer
+  };
 
+  // Textures used for normalmaps. Declared here for scope.
+  let {normalTex, diffuseTex, depthTex, regTex} = {};
+
+  // Conditionally create textures and set buffermap
   if(shape.textureParams.type == "normalmap") {
-    // tex_list = createNormalTextures()
-
-    tex_norm = generateTexture("../../shared/resources/toy_box_assets/toy_box_normal.png", "normalmap");
-    tex_diffuse = generateTexture("../../shared/resources/toy_box_assets/toy_box_diffuse.png", "normalmap");
-    tex_depth = generateTexture("../../shared/resources/toy_box_assets/toy_box_disp.png", "normalmap");
-    tex_reg = generateTexture("../../shared/resources/toy_box_assets/hd_wood.png", "normalmap");
-
-    let {vertexTangBuffer, vertexBitangBuffer} = calcTangents(vertexPositionBuffer.data, vertexTexCoordBuffer.data);
-    
-    bufferMap["aVertexPosition"] = vertexPositionBuffer,
     bufferMap["aVertexTexCoord"] = vertexTexCoordBuffer; // uvs
-    bufferMap["aVertexNormal"] = vertexNormalBuffer;
-
     bufferMap["aVertexTang"] = vertexTangBuffer;
     bufferMap["aVertexBitang"] = vertexBitangBuffer;
+    ({normalTex, diffuseTex, depthTex, regTex} = createNormalTextures());
 
-    // shape.texture = generateTexture(shape.textureParams.src, shape.textureParams.type);
-    shape.myDrawable = new Drawable(shape.shaderProgram, bufferMap, null, rawData.vertices.length / 3);
   } else {
-    let bufferMap = {
-      aVertexPosition: vertexPositionBuffer,
-      aVertexNormal: vertexNormalBuffer
-    };
     if(shape.textureParams.type == "image") {
       bufferMap["aVertexTexCoord"] = vertexTexCoordBuffer;
     }
     shape.texture = generateTexture(shape.textureParams.src, shape.textureParams.type);
-    shape.myDrawable = new Drawable(shape.shaderProgram, bufferMap, null, rawData.vertices.length / 3);
   }
 
+  // Set shape's drawable
+  shape.myDrawable = new Drawable(shape.shaderProgram, bufferMap, null, rawData.vertices.length / 3);
 
   // Checkout the drawable class' draw function. It calls a uniform setup function every time it is drawn. 
   // Put your uniforms that change per frame in this setup function.
@@ -298,25 +293,25 @@ function initializeMyObject(vertSource, fragSource, objData, shape) {
     }
     if(shape.textureParams.type == "normalmap") {
       gl.activeTexture(gl.TEXTURE0);
-      gl.bindTexture(gl.TEXTURE_2D, tex_norm);
+      gl.bindTexture(gl.TEXTURE_2D, normalTex);
       gl.uniform1i(
         shape.myDrawable.uniformLocations.uTexNorm,
         0
       )
       gl.activeTexture(gl.TEXTURE1);
-      gl.bindTexture(gl.TEXTURE_2D, tex_diffuse);
+      gl.bindTexture(gl.TEXTURE_2D, diffuseTex);
       gl.uniform1i(
         shape.myDrawable.uniformLocations.uTexDiffuse,
         1
       )
       gl.activeTexture(gl.TEXTURE2);
-      gl.bindTexture(gl.TEXTURE_2D, tex_depth);
+      gl.bindTexture(gl.TEXTURE_2D, depthTex);
       gl.uniform1i(
         shape.myDrawable.uniformLocations.uTexDepth,
         2
       )
       gl.activeTexture(gl.TEXTURE3);
-      gl.bindTexture(gl.TEXTURE_2D, tex_reg);
+      gl.bindTexture(gl.TEXTURE_2D, regTex);
       gl.uniform1i(
         shape.myDrawable.uniformLocations.uTexReg,
         3

@@ -12,8 +12,8 @@ function createNormalTextures() {
 
 /**
  * calcTangents calculates the tangents and bitangents of an object
- * @param {Object} vertVecs
- * @param {Object} uvVecs
+ * @param {Array} vertVecs
+ * @param {Array} uvVecs
  */
 function calcTangents(vertVecs, uvVecs) {
     // There are 3 values(x,y,z) per vertex and 3 vertices per triangle
@@ -90,8 +90,8 @@ function calcTangents(vertVecs, uvVecs) {
     }
     
     return {
-      vertexTangBuffer: new VertexArrayData(tangents, gl.FLOAT, 3),
-      vertexBitangBuffer: new VertexArrayData(bitangents, gl.FLOAT, 3),
+      tangentData: tangents,
+      bitangentData: bitangents,
     };
 
 }
