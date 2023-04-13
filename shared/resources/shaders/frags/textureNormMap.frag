@@ -33,8 +33,9 @@ void main() {
 
   // Create light and viewing vector
   vec3 lightVec = normalize(tangLightPos - tangFragPos);
-  vec3 viewVec = normalize(tangViewPos - tangFragPos);
-  
+  vec3 viewVec = normalize(tangFragPos);
+  // vec3 viewVec = normalize(tangViewPos - tangFragPos);
+
   // Normal map
   vec3 normal = texture(uTexNorm, texCoord).rgb;
   normal = normalize(normal * 2.0 - 1.0);
@@ -45,11 +46,11 @@ void main() {
   float shininess = 80.0;
 
   // Diffuse calculations
-  vec4 texColor = texture(uTexDiffuse, texCoord);
+  vec4 texColor = (texture(uTexDiffuse, texCoord));
   float NdotL = clamp(dot(lightVec, normal), 0.0, 1.0);
   
   // Adjust lighting components:          vec3(color)       * intensity
-  vec3 ambient  =                         texColor.rgb      * 0.5;
+  vec3 ambient  =                         texColor.rgb      * 0.6;
   vec3 diffuse  = NdotL *                 texColor.rgb      * 0.4;
   vec3 specular = pow(NdotH, shininess) * vec3(1.0,1.0,1.0) * 0.5;
 
