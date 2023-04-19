@@ -1,11 +1,9 @@
 class Shape {
   constructor() {
     // Sources
-    this.objDataPath = ""
-    this.textureParams = {
-      src: null,
-      type: null,
-    }
+    this.objPath = ""
+    this.shader = null
+    this.shaderType = null
 
     // World translation data
     this.position = [0,0,0]
@@ -46,12 +44,12 @@ class Shape {
   }
 
   setTexParams(src, type) {
-    this.textureParams.src = src
-    this.textureParams.type = type
+    this.shader = src
+    this.shaderType = type
   }
 
-  setObjDataPath(objFile) {
-    this.objDataPath = "../../shared/resources/models/" + objFile
+  setObj(objFile) {
+    this.objPath = "../../shared/resources/models/" + objFile
   }
 
   setShaderSrc(shaderName) {
@@ -66,7 +64,7 @@ function createShapeData() {
   list = [];
 
   let floor = new Shape();
-  floor.setObjDataPath("floor.obj");
+  floor.setObj("floor.obj");
   floor.setShaderSrc("texturePhong");
   floor.setTexParams("sidewalk.jpg", "image");
   floor.setPositionValue(0, -1.3, 0);
@@ -75,7 +73,7 @@ function createShapeData() {
   list.push(floor);
 
   let rockball = new Shape();
-  rockball.setObjDataPath("sphere_with_vt.obj");
+  rockball.setObj("sphere_with_vt.obj");
   rockball.setShaderSrc("texturePhong");
   rockball.setTexParams("sidewalk.jpg", "image");
   // rockball.setRotationValues([0, 0, 0], 0, true);
@@ -83,7 +81,7 @@ function createShapeData() {
   list.push(rockball);
 
   let powerT = new Shape();
-  powerT.setObjDataPath("box_with_vt.obj");
+  powerT.setObj("box_with_vt.obj");
   powerT.setShaderSrc("texturePhong");
   powerT.setTexParams("hd_power_t.png", "image");
   powerT.setRotationValues([1, 1, 0], 0, true);
@@ -91,25 +89,25 @@ function createShapeData() {
   list.push(powerT);
 
   let coitBall = new Shape();
-  coitBall.setObjDataPath("sphere_with_vt.obj");
+  coitBall.setObj("sphere_with_vt.obj");
   coitBall.setShaderSrc("textureCubemap");
   coitBall.setTexParams("coit_tower/", "cubemap");
-  coitBall.setRotationValues([0, 0, 0], 0, true);
+  coitBall.setRotationValues([0, 1, 0], 0, false);
   coitBall.setPositionValue(4, 3, 0);
   list.push(coitBall);
 
-  let cube = new Shape();
-  cube.setObjDataPath("sphere_with_vt.obj");
-  cube.setShaderSrc("textureCubemap");
-  cube.setTexParams(null, "dynamicCubemap");
-  cube.setRotationValues([0, 1, 0], 0, false);
-  cube.setPositionValue(0, 0, 0);
-  list.push(cube);
+  let reflectiveBall = new Shape();
+  reflectiveBall.setObj("sphere_with_vt.obj");
+  reflectiveBall.setShaderSrc("textureCubemap");
+  reflectiveBall.setTexParams(null, "dynamicCubemap");
+  reflectiveBall.setRotationValues([0, 1, 0], 0, false);
+  reflectiveBall.setPositionValue(0, 0, 0);
+  list.push(reflectiveBall);
 
   let bumpyCube = new Shape()
-  bumpyCube.setObjDataPath("box_with_vt.obj");
+  bumpyCube.setObj("box_with_vt.obj");
   bumpyCube.setShaderSrc("textureNormMap")
-  bumpyCube.setTexParams("hd_wood.png", "normalmap")
+  bumpyCube.setTexParams("toy_box", "normalmap")
   // bumpyCube.setRotationValues([0, 1, 0], 0, true);
   bumpyCube.setPositionValue(-5,1,0)
   list.push(bumpyCube)

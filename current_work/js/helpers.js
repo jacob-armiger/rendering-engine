@@ -219,10 +219,10 @@ function generateTexture(src, type) {
 
 
 /**
- * renderCube takes a shape meant to have a dynamic cubemap and creates the frames for it
+ * renderDynamicShape takes a shape meant to have a dynamic cubemap and creates the frames for it
  * @param {Obejct} object  shape meant to have dynamicCubemap
  */
-function renderCube(object) {
+function renderDynamicShape(object) {
   let sides = [
     {
       cubeSide: gl.TEXTURE_CUBE_MAP_NEGATIVE_X,
@@ -329,9 +329,9 @@ function renderCube(object) {
       glMatrix.mat4.mul(shape.modelViewMatrix, viewMatrix, modelMatrix);
 
       if (shape.drawableInitialized) {
-        if(shape.textureParams.type == "image") {
+        if(shape.shaderType == "image") {
           gl.bindTexture(gl.TEXTURE_2D, shape.texture);
-        } else if(shape.textureParams.type == "cubemap"){
+        } else if(shape.shaderType == "cubemap"){
           gl.bindTexture(gl.TEXTURE_CUBE_MAP, shape.texture);
         }
       }

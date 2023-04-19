@@ -112,7 +112,7 @@ async function setupScene() {
   for(let shape of shapes) {
     let vertSource = await loadNetworkResourceAsText(shape.shaderVertSrc);
     let fragSource = await loadNetworkResourceAsText(shape.shaderFragSrc);
-    let objData = await loadNetworkResourceAsText(shape.objDataPath);
+    let objData = await loadNetworkResourceAsText(shape.objPath);
     initializeMyObject(vertSource, fragSource, objData, shape);
   }
 }
@@ -167,9 +167,9 @@ function drawScene(deltaTime, sliderVals) {
 
     if (shape.drawableInitialized) {
       // Create extra framebuffer frames if dynamic cubemap 
-      if(shape.textureParams.type == "dynamicCubemap") {
-        renderCube(shape)
-        continue  // `renderCube` handles drawing of shape
+      if(shape.shaderType == "dynamicCubemap") {
+        renderDynamicShape(shape)
+        continue  // `renderDynamicShape` handles drawing of shape
       }
       shape.myDrawable.draw();
     }
@@ -233,17 +233,17 @@ function initializeMyObject(vertSource, fragSource, objData, shape) {
   let {normalTex, diffuseTex, depthTex, regTex} = {};
 
   // Conditionally create textures and set buffermap
-  if(shape.textureParams.type == "normalmap") {
+  if(shape.shaderType == "normalmap") {
     bufferMap["aVertexTexCoord"] = vertexTexCoordBuffer; // uvs
     bufferMap["aVertexTang"] = vertexTangBuffer;
     bufferMap["aVertexBitang"] = vertexBitangBuffer;
-    ({normalTex, diffuseTex, depthTex, regTex} = createNormalTextures(shape.textureParams.src));
+    ({normalTex, diffuseTex, depthTex, regTex} = createNormalTextures(shape.shader));
 
   } else {
-    if(shape.textureParams.type == "image") {
+    if(shape.shaderType == "image") {
       bufferMap["aVertexTexCoord"] = vertexTexCoordBuffer;
     }
-    shape.texture = generateTexture(shape.textureParams.src, shape.textureParams.type);
+    shape.texture = generateTexture(shape.shader, shape.shaderType);
   }
 
   // Set shape's drawable
@@ -276,14 +276,14 @@ function initializeMyObject(vertSource, fragSource, objData, shape) {
       shape.texture
     )
     /* BIND APPROPRIATE TEXTURE TYPE */
-    if(shape.textureParams.type == "image") {
+    if(shape.shaderType == "image") {
       gl.activeTexture(gl.TEXTURE0);
       gl.bindTexture(gl.TEXTURE_2D, shape.texture);
       gl.uniform1i(
         shape.myDrawable.uniformLocations.uTexture,
         shape.texture
       )
-    } else if(shape.textureParams.type == "cubemap" || shape.textureParams.type == "dynamicCubemap") {
+    } else if(shape.shaderType == "cubemap" || shape.shaderType == "dynamicCubemap") {
       gl.activeTexture(gl.TEXTURE0);
       gl.bindTexture(gl.TEXTURE_CUBE_MAP, shape.texture);
       gl.uniform1i(
@@ -291,7 +291,7 @@ function initializeMyObject(vertSource, fragSource, objData, shape) {
         shape.texture
       )
     }
-    if(shape.textureParams.type == "normalmap") {
+    if(shape.shaderType == "normalmap") {
       gl.activeTexture(gl.TEXTURE0);
       gl.bindTexture(gl.TEXTURE_2D, normalTex);
       gl.uniform1i(
