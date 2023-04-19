@@ -237,7 +237,7 @@ function initializeMyObject(vertSource, fragSource, objData, shape) {
     bufferMap["aVertexTexCoord"] = vertexTexCoordBuffer; // uvs
     bufferMap["aVertexTang"] = vertexTangBuffer;
     bufferMap["aVertexBitang"] = vertexBitangBuffer;
-    ({normalTex, diffuseTex, depthTex, regTex} = createNormalTextures());
+    ({normalTex, diffuseTex, depthTex, regTex} = createNormalTextures(shape.textureParams.src));
 
   } else {
     if(shape.textureParams.type == "image") {

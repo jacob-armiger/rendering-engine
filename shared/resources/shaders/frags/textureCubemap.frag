@@ -31,6 +31,10 @@ void main() {
   vec3 reflection = reflect(incidentEye, norm);
 
   // convert from eye to world space
+  /* If this line is NOT commented out: Objects can rotate fine, but reflection follows camera */
+  /* If this line IS commented out: Relflection follows rotation, but still objects reflect fine */
+  /* It doesn't seem like this shader really works with a cube but it does work better
+     in the lab3/step4 version*/
   reflection = vec3(inverse(uModelViewMatrix) * vec4(reflection, 0.0));
   
   fragColor = texture(uTexture, reflection);

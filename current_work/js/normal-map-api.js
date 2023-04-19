@@ -2,11 +2,11 @@
 /**
  * createNormalTextures generates textures from normalmap source
  */
-function createNormalTextures() {
-    tex_norm = generateTexture("../../shared/resources/toy_box_assets/toy_box_normal.png", "normalmap");
-    tex_diffuse = generateTexture("../../shared/resources/toy_box_assets/toy_box_diffuse.png", "normalmap");
-    tex_depth = generateTexture("../../shared/resources/toy_box_assets/toy_box_disp.png", "normalmap");
-    tex_reg = generateTexture("../../shared/resources/toy_box_assets/hd_wood.png", "normalmap");
+function createNormalTextures(assetGroup) {
+    tex_norm = generateTexture(`../../shared/resources/grouped_assets/${assetGroup}/normal.png`, "normalmap");
+    tex_diffuse = generateTexture(`../../shared/resources/grouped_assets/${assetGroup}/diffuse.png`, "normalmap");
+    tex_depth = generateTexture(`../../shared/resources/grouped_assets/${assetGroup}/height.png`, "normalmap");
+    tex_reg = generateTexture(`../../shared/resources/grouped_assets/${assetGroup}/hd_wood.png`, "normalmap");
     return {normalTex: tex_norm, diffuseTex: tex_diffuse, depthTex: tex_depth, regTex: tex_reg}
 }
 
