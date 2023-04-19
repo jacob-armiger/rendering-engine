@@ -174,10 +174,11 @@ class OBJData {
     let bbox = model.boundingBox
     
     // Create normalized scaling vector based on box bounds
-    let scalingVector = createBoundingVector(bbox)
+    let scalingVector = calculateBoundingVector(bbox)
 
     // If model does not have vertex normals, calculate them here.
     if(vertexNormals < 1) {
+      console.log("Calculating tex coords")
       vertexNormals = calculateVertexNormals(faces,vertices)
     }
     if(textureCoords < 1) {
@@ -228,7 +229,7 @@ class OBJData {
 
     // Calculate tangent/bitangent data
     if(textureData.length > 1 && vertexData.length > 1) {
-      ({tangentData, bitangentData} = calcTangents(vertexData, textureData));
+      ({tangentData, bitangentData} = calculateTangents(vertexData, textureData));
     }
 
     if (normalData.length < 1) console.warn("No normal data loaded for model.");
