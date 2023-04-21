@@ -9,7 +9,7 @@ in vec3 aVertexNormal;
 //In OpenGL vayring is replaced by in/out (vertex shader creates it as 'out', fragment uses it as an 'in')
 // out vec3 outColor;
 out vec3 normal;
-out vec3 viewVec;
+out vec3 position;
 
 // Uniforms do not change from one shader invocation to the next, these are set "constant" values that can be read by vertex and fragment shader; if you want to use a uniform in the fragment shader then you must declare it at the top as well.
 uniform mat4 uModelViewMatrix;
@@ -20,10 +20,10 @@ void main() {
   gl_Position = uProjectionMatrix * uModelViewMatrix * vec4(aVertexPosition, 1.0);
 
   // Transform vertexes into eye space
-  viewVec = (uModelViewMatrix * vec4(aVertexPosition, 1.0)).xyz;
+  position = (uModelViewMatrix * vec4(aVertexPosition, 1.0)).xyz;
   // Reorient normals into eye space
   normal = vec3(uModelViewMatrix * vec4(aVertexNormal, 0.0));
 
-  // Fix upside down cubemaps
-  viewVec  = -vec3(viewVec);
+  // Uncomment to fix upside down cubemap
+  // position  = -vec3(position);
 }
