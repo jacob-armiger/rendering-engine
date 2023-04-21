@@ -14,8 +14,9 @@ let shapes = createShapeData()
 function main() {
   const canvas = document.getElementById('glCanvas');
   // Initialize the GL context
-  // gl = canvas.getContext('webgl2', { preserveDrawingBuffer: true });
   gl = canvas.getContext('webgl2');
+  // Makes images not upside down
+  gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
 
   // Only continue if WebGL is available and working
   if (gl === null) {
@@ -24,7 +25,7 @@ function main() {
   }
 
   // Set clear color to whatever color this is and fully opaque
-  gl.clearColor(0.7, 0.7, 0.9, 1.0);
+  gl.clearColor(0.0, 0.0, 0.0, 1.0);
   // Clear the depth buffer
   gl.clearDepth(1.0);
   // Enable the depth function to draw nearer things over farther things
