@@ -6,9 +6,8 @@
 function generateTexture(src, type) {
   let texture = gl.createTexture();
   if(type == "image" || type == "normalmap") {
-    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false)
+    
     if(type == "image") {
-      gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true)
       src = "../../shared/resources/images/" + src
     }
     
@@ -28,10 +27,10 @@ function generateTexture(src, type) {
       gl.bindTexture(gl.TEXTURE_2D, texture);
       gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, image.naturalWidth, image.naturalHeight, 0, gl.RGBA, gl.UNSIGNED_BYTE,image);
       
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
       // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-      // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-      // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
       // gl.generateMipmap(gl.TEXTURE_2D);
       gl.bindTexture(gl.TEXTURE_2D, null);
     });
@@ -39,7 +38,6 @@ function generateTexture(src, type) {
     src = "../../shared/resources/cubemaps/" + src
     
     gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
-    // gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true)
 
     const faces = [
       {
@@ -93,8 +91,6 @@ function generateTexture(src, type) {
   } else if (type == "dynamicCubemap") {
 
     // Create texture to render to
-    // gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-
     gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
     gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X, 0, gl.RGBA, 256, 256, 0, gl.RGBA, gl.UNSIGNED_BYTE,null);
     gl.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_X, 0, gl.RGBA, 256, 256, 0, gl.RGBA, gl.UNSIGNED_BYTE,null);
@@ -104,7 +100,7 @@ function generateTexture(src, type) {
     gl.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_Z, 0, gl.RGBA, 256, 256, 0, gl.RGBA, gl.UNSIGNED_BYTE,null);
 
     
-    gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
     // gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
     // gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
     // gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
@@ -119,11 +115,14 @@ function generateTexture(src, type) {
  * @param assetGroup the name of the folder that contains the assets needed
  */
 function createNormalTextures(assetGroup) {
-  tex_norm = generateTexture(`../../shared/resources/grouped_assets/${assetGroup}/normal.png`, "normalmap");
-  tex_diffuse = generateTexture(`../../shared/resources/grouped_assets/${assetGroup}/diffuse.png`, "normalmap");
-  tex_depth = generateTexture(`../../shared/resources/grouped_assets/${assetGroup}/height.png`, "normalmap");
-  tex_reg = generateTexture(`../../shared/resources/grouped_assets/${assetGroup}/hd_wood.png`, "normalmap");
-  return {normalTex: tex_norm, diffuseTex: tex_diffuse, depthTex: tex_depth, regTex: tex_reg}
+  
+  tex_norm = generateTexture(`../../shared/resources/grouped_assets/${assetGroup}/normal.jpg`, "normalmap");
+  tex_diffuse = generateTexture(`../../shared/resources/grouped_assets/${assetGroup}/diffuse.jpg`, "normalmap");
+  tex_specular = generateTexture(`../../shared/resources/grouped_assets/${assetGroup}/specular.jpg`, "normalmap")
+  // tex_depth = generateTexture(`../../shared/resources/grouped_assets/${assetGroup}/height.png`, "normalmap");
+  // tex_reg = generateTexture(`../../shared/resources/grouped_assets/${assetGroup}/hd_wood.png`, "normalmap");
+  // return {normalTex: tex_norm, diffuseTex: tex_diffuse, depthTex: tex_depth, regTex: tex_reg}
+  return {normalTex: tex_norm, diffuseTex: tex_diffuse}
 }
 
 /**
@@ -133,10 +132,10 @@ function createNormalTextures(assetGroup) {
 function renderDynamicShape(object) {
   let sides = [
     {
-      cubeSide: gl.TEXTURE_CUBE_MAP_NEGATIVE_X,
+      cubeSide: gl.TEXTURE_CUBE_MAP_POSITIVE_X,
     },
     {
-      cubeSide: gl.TEXTURE_CUBE_MAP_POSITIVE_X,
+      cubeSide: gl.TEXTURE_CUBE_MAP_NEGATIVE_X,
     },
     {
       cubeSide: gl.TEXTURE_CUBE_MAP_POSITIVE_Y,
@@ -155,32 +154,32 @@ function renderDynamicShape(object) {
   let frames = [
     {
       //posx
-      look: [10,0,0],
+      look: [1,0,0],
       up: [0,1,0]
     },
     {
       //negx
-      look: [-10,0,0],
+      look: [-1,0,0],
       up: [0,1,0]
     },
     {
       //posy
-      look: [0,-12,0],
-      up: [0,0,1]
-    },
-    {
-      // negy
-      look: [0,12,0],
+      look: [0,1,0],
       up: [0,0,-1]
     },
     {
+      // negy
+      look: [0,-1,0],
+      up: [0,0,1]
+    },
+    {
       //posz
-      look: [0,0,-5],
+      look: [0,0,1],
       up: [0,1,0]
     },
     {
       //negz
-      look: [0,0,5],
+      look: [0,0,-1],
       up: [0,1,0]
     }
   ]
@@ -200,13 +199,13 @@ function renderDynamicShape(object) {
     // // Convert clip space to pixxels
     gl.viewport(0,0, 256,256)
     //clear the canvas(cube side) and depth buffer
-    gl.clearColor(0.7, 0.7, 0.9, 1.0);
+    gl.clearColor(0.0, 0.0, 0.0, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     let aspect = 256/256
     glMatrix.mat4.perspective(projectionMatrix,
-                    degreesToRadians(90),
-                    aspect,
+                    degreesToRadians(-90),
+                    1.0,
                     0.1,
                     100.0);
 
