@@ -26,8 +26,8 @@ in vec3 tangFragPos;
 out vec4 fragColor;
 uniform sampler2D uTexNorm;
 uniform sampler2D uTexDiffuse;
-uniform sampler2D uTexDepth;
-uniform sampler2D uTexReg;
+uniform sampler2D uTexAmbient;
+uniform sampler2D uTexRough;
 
 void main() {
 
@@ -50,12 +50,12 @@ void main() {
   float NdotL = clamp(dot(lightVec, normal), 0.0, 1.0);
   
   // Adjust lighting components:          vec3(color)       * intensity
-  vec3 ambient  =                         texColor.rgb      * 0.6;
-  vec3 diffuse  = NdotL *                 texColor.rgb      * 0.4;
+  vec3 ambient  =                         texColor.rgb      * 0.2;
+  vec3 diffuse  = NdotL *                 texColor.rgb      * 0.7;
   vec3 specular = pow(NdotH, shininess) * vec3(1.0,1.0,1.0) * 0.5;
 
   // Lighting for fragment
-  vec4 lighting = vec4(diffuse + ambient, 1.0);
+  vec4 lighting = vec4(diffuse + ambient + specular, 1.0);
   vec4 color = vec4(lighting);
 
   fragColor = color;

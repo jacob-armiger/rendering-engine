@@ -118,11 +118,13 @@ function createNormalTextures(assetGroup) {
   
   tex_norm = generateTexture(`../../shared/resources/grouped_assets/${assetGroup}/normal.jpg`, "normalmap");
   tex_diffuse = generateTexture(`../../shared/resources/grouped_assets/${assetGroup}/diffuse.jpg`, "normalmap");
-  tex_specular = generateTexture(`../../shared/resources/grouped_assets/${assetGroup}/specular.jpg`, "normalmap")
+  tex_specular = generateTexture(`../../shared/resources/grouped_assets/${assetGroup}/specular.jpg`, "normalmap");
+  tex_ambient = generateTexture(`../../shared/resources/grouped_assets/${assetGroup}/ambient.jpg`, "normalmap");
+  tex_rough = generateTexture(`../../shared/resources/grouped_assets/${assetGroup}/roughness.jpg`, "normalmap");
   // tex_depth = generateTexture(`../../shared/resources/grouped_assets/${assetGroup}/height.png`, "normalmap");
   // tex_reg = generateTexture(`../../shared/resources/grouped_assets/${assetGroup}/hd_wood.png`, "normalmap");
   // return {normalTex: tex_norm, diffuseTex: tex_diffuse, depthTex: tex_depth, regTex: tex_reg}
-  return {normalTex: tex_norm, diffuseTex: tex_diffuse}
+  return {normalTex: tex_norm, diffuseTex: tex_diffuse, ambientTex: tex_ambient, roughTex: tex_rough};
 }
 
 /**
@@ -199,7 +201,7 @@ function renderDynamicShape(object) {
     // // Convert clip space to pixxels
     gl.viewport(0,0, 256,256)
     //clear the canvas(cube side) and depth buffer
-    gl.clearColor(0.0, 0.0, 0.0, 1.0);
+    gl.clearColor(0.2, 0.4, 0.6, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     let aspect = 256/256
