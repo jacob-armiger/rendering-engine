@@ -70,11 +70,12 @@ function createShapeData() {
   let floor0 = new Shape();
   floor0.setObj("plane.obj");
   floor0.setShaderSrc("textureNormmap");
-  floor0.setTexParams("marble_tile", "normalmap");
+  floor0.setTexParams("stone", "normalmap");
   floor0.setPositionValue(0, -3, 0);
   floor0.scaleByAxis(40,1,40);
   list.push(floor0);
-  /* ----------------------- */
+
+  /* ------------------------------ */
   // let column = new Shape();
   // column.setObj("column.obj");
   // column.setShaderSrc("texturePhong");
