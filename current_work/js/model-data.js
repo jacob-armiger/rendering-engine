@@ -6,6 +6,9 @@ class Shape {
     this.shaderType = null
 
     // World translation data
+    this.animate = false
+    this.animateSpeed = 1
+
     this.position = [0,0,0]
     this.scaleVector = [4,4,4]
     this.boundingVector = [1,1,1]
@@ -71,83 +74,96 @@ function createShapeData() {
   floor0.setObj("plane.obj");
   floor0.setShaderSrc("textureNormmap");
   floor0.setTexParams("stone", "normalmap");
-  floor0.setPositionValue(0, -3, 0);
+  floor0.setPositionValue(0, -2.7, 0);
   floor0.scaleByAxis(40,1,40);
   list.push(floor0);
 
-  /* ------------------------------ */
-  // let column = new Shape();
-  // column.setObj("column.obj");
-  // column.setShaderSrc("texturePhong");
-  // column.setTexParams("sidewalk.jpg", "image");
-  // column.setPositionValue(2.2, -2.2, 2.2);
-  // // column.scaleObject(7);
-  // column.setRotationValues([1, 0, 0], 0, false);
-  // list.push(column);
+  /* -------------SCENE----------------- */
+  let reflectiveBall = new Shape();
+  reflectiveBall.setObj("sphere_with_vt.obj");
+  reflectiveBall.setShaderSrc("textureCubemap");
+  reflectiveBall.setTexParams(null, "dynamicCubemap");
+  reflectiveBall.setRotationValues([0, 1, 0], 0, false);
+  reflectiveBall.scaleObject(8);
+  reflectiveBall.setPositionValue(0, 0, 0);
+  list.push(reflectiveBall);
+  
+  let column = new Shape();
+  column.setObj("column.obj");
+  column.setShaderSrc("texturePhong");
+  column.setTexParams("sidewalk.jpg", "image");
+  column.setPositionValue(2.2, -2.4, 2.2);
+  // column.scaleObject(7);
+  column.setRotationValues([1, 0, 0], 0, false);
+  list.push(column);
 
-  // let fallingColumn = new Shape();
-  // fallingColumn.setObj("column.obj");
-  // fallingColumn.setShaderSrc("texturePhong");
-  // fallingColumn.setTexParams("sidewalk.jpg", "image");
-  // fallingColumn.setPositionValue(2.2, 1.5, -2.2);
-  // // fallingColumn.scaleObject(7);
-  // fallingColumn.setRotationValues([1, 1, 1], 0.6, false);
-  // list.push(fallingColumn);
+  let fallingColumn = new Shape();
+  fallingColumn.animate = true
+  fallingColumn.animateSpeed = getRandomDec()
+  fallingColumn.setObj("column.obj");
+  fallingColumn.setShaderSrc("texturePhong");
+  fallingColumn.setTexParams("sidewalk.jpg", "image");
+  fallingColumn.setPositionValue(3, 1.5, -2.5);
+  // fallingColumn.scaleObject(7);
+  fallingColumn.setRotationValues([1, 1, 0], -0.6, true);
+  list.push(fallingColumn);
 
-  // let reflectiveBall = new Shape();
-  // reflectiveBall.setObj("sphere_with_vt.obj");
-  // reflectiveBall.setShaderSrc("textureCubemap");
-  // reflectiveBall.setTexParams(null, "dynamicCubemap");
-  // reflectiveBall.setRotationValues([0, 1, 0], 0, false);
-  // reflectiveBall.scaleObject(8);
-  // reflectiveBall.setPositionValue(0, 0, 0);
-  // list.push(reflectiveBall);
+  let apollo = new Shape();
+  apollo.animate = true
+  apollo.animateSpeed = getRandomDec()
+  apollo.setObj("apollo.obj");
+  apollo.setShaderSrc("texturePhong");
+  apollo.setTexParams("sidewalk.jpg", "image");
+  apollo.setRotationValues([1, 1, 1], 0, true);
+  apollo.setPositionValue(0, 0, -5);
+  list.push(apollo);
 
-  // let apollo = new Shape();
-  // apollo.setObj("apollo.obj");
-  // apollo.setShaderSrc("texturePhong");
-  // apollo.setTexParams("sidewalk.jpg", "image");
-  // apollo.setRotationValues([0, 1, 0], 0, false);
-  // // apollo.scaleObject(3);
-  // apollo.setPositionValue(0, 0, -5);
-  // list.push(apollo);
+  let powerT = new Shape();
+  powerT.animate = true
+  powerT.animateSpeed = getRandomDec()
+  powerT.setObj("box_with_vt.obj");
+  powerT.setShaderSrc("texturePhong");
+  powerT.setTexParams("hd_power_t.png", "image");
+  powerT.setRotationValues([1, 1, 0], 0.3, true);
+  powerT.setPositionValue(4, 0, 0);
+  powerT.scaleObject(1);
+  list.push(powerT);
+
+  for(let i = 0; i < 30; i++) {
+    let block = new Shape();
+    block.animate = true
+    block.animateSpeed = getRandomDec()
+    block.setObj("box_with_vt.obj");
+    block.setShaderSrc("texturePhong");
+    block.setTexParams("sidewalk.jpg", "image");
+    block.setRotationValues([1, 1, 1], 0, true);
+    block.setPositionValue(getRandomInt(2, 8), 0, getRandomInt(-8, 8));
+    block.scaleObject(1);
+    list.push(block);
+  }
+  for(let i = 0; i < 30; i++) {
+    let block = new Shape();
+    block.animate = true
+    block.animateSpeed = getRandomDec()
+    block.setObj("box_with_vt.obj");
+    block.setShaderSrc("texturePhong");
+    block.setTexParams("sidewalk.jpg", "image");
+    block.setRotationValues([1, 1, 1], 0, true);
+    block.setPositionValue(getRandomInt(-8, -2), 0, getRandomInt(-8, 8));
+    block.scaleObject(1);
+    list.push(block);
+  }
+  /* --------------SCENE---------------- */
 
 
-  // let block1 = new Shape();
-  // block1.setObj("box_with_vt.obj");
-  // block1.setShaderSrc("texturePhong");
-  // block1.setTexParams("sidewalk.jpg", "image");
-  // block1.setRotationValues([1, 1, 0], 0.3, false);
-  // block1.setPositionValue(0, 6, 0);
-  // block1.scaleObject(1);
-  // list.push(block1);
-  // let block2 = new Shape();
-  // block2.setObj("box_with_vt.obj");
-  // block2.setShaderSrc("texturePhong");
-  // block2.setTexParams("sidewalk.jpg", "image");
-  // block2.setRotationValues([0, 1, 1], 0.5, false);
-  // block2.setPositionValue(0, 5, 1);
-  // block2.scaleObject(1);
-  // list.push(block2);
-
-  // let powerT = new Shape();
-  // powerT.setObj("box_with_vt.obj");
-  // powerT.setShaderSrc("texturePhong");
-  // powerT.setTexParams("hd_power_t.png", "image");
-  // powerT.setRotationValues([1, 1, 0], 0.3, true);
-  // powerT.setPositionValue(4, 0, 0);
-  // powerT.scaleObject(1);
-  // list.push(powerT);
-   /* ------------------------------ */
-
-
-  let rockball = new Shape();
-  rockball.setObj("sphere_with_vt.obj");
-  rockball.setShaderSrc("texturePhong");
-  rockball.setTexParams("sidewalk.jpg", "image");
-  // rockball.setRotationValues([0, 0, 0], 0, true);
-  rockball.setPositionValue(1, 0, -1);
-  list.push(rockball);
+  // let rockball = new Shape();
+  // rockball.setObj("sphere_with_vt.obj");
+  // rockball.setShaderSrc("texturePhong");
+  // rockball.setTexParams("sidewalk.jpg", "image");
+  // // rockball.setRotationValues([0, 0, 0], 0, true);
+  // rockball.animate = true
+  // rockball.setPositionValue(0, 0 ,0);
+  // list.push(rockball);
 
   // let coitBall = new Shape();
   // coitBall.setObj("sphere_with_vt.obj");
