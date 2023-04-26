@@ -35,8 +35,12 @@ class Shape {
     this.rotateOnTime = onTime
   }
 
-  setScaleValue(scalar) {
+  scaleObject(scalar) {
     this.scaleVector = [scalar,scalar,scalar]
+  }
+  
+  scaleByAxis(x,y,z) {
+    this.scaleVector = [x,y,z]
   }
 
   setPositionValue(x,y,z) {
@@ -68,10 +72,11 @@ function createShapeData() {
   // floor0.setShaderSrc("textureNormmap");
   // floor0.setTexParams("marble_tile", "normalmap");
   // floor0.setPositionValue(0, -1.3, 0);
-  // floor0.setScaleValue(20);
+  // floor0.scaleObject(20);
   // floor0.setRotationValues([1, 0, 0], -1.55, false);
   // list.push(floor0);
 
+   /* ------------------------------ */
   // let floor = new Shape();
   // floor.setObj("slab2.obj");
   // floor.setShaderSrc("textureNormmap");
@@ -113,7 +118,7 @@ function createShapeData() {
   // column.setShaderSrc("texturePhong");
   // column.setTexParams("sidewalk.jpg", "image");
   // column.setPositionValue(2.2, -2.2, 2.2);
-  // // column.setScaleValue(7);
+  // // column.scaleObject(7);
   // column.setRotationValues([1, 0, 0], 0, false);
   // list.push(column);
 
@@ -122,7 +127,7 @@ function createShapeData() {
   // fallingColumn.setShaderSrc("texturePhong");
   // fallingColumn.setTexParams("sidewalk.jpg", "image");
   // fallingColumn.setPositionValue(2.2, 1.5, -2.2);
-  // // fallingColumn.setScaleValue(7);
+  // // fallingColumn.scaleObject(7);
   // fallingColumn.setRotationValues([1, 1, 1], 0.6, false);
   // list.push(fallingColumn);
 
@@ -131,7 +136,7 @@ function createShapeData() {
   // reflectiveBall.setShaderSrc("textureCubemap");
   // reflectiveBall.setTexParams(null, "dynamicCubemap");
   // reflectiveBall.setRotationValues([0, 1, 0], 0, false);
-  // reflectiveBall.setScaleValue(8);
+  // reflectiveBall.scaleObject(8);
   // reflectiveBall.setPositionValue(0, 0, 0);
   // list.push(reflectiveBall);
 
@@ -140,7 +145,7 @@ function createShapeData() {
   // apollo.setShaderSrc("texturePhong");
   // apollo.setTexParams("sidewalk.jpg", "image");
   // apollo.setRotationValues([0, 1, 0], 0, false);
-  // // apollo.setScaleValue(3);
+  // // apollo.scaleObject(3);
   // apollo.setPositionValue(0, 0, -5);
   // list.push(apollo);
 
@@ -151,7 +156,7 @@ function createShapeData() {
   // block1.setTexParams("sidewalk.jpg", "image");
   // block1.setRotationValues([1, 1, 0], 0.3, false);
   // block1.setPositionValue(0, 6, 0);
-  // block1.setScaleValue(1);
+  // block1.scaleObject(1);
   // list.push(block1);
   // let block2 = new Shape();
   // block2.setObj("box_with_vt.obj");
@@ -159,7 +164,7 @@ function createShapeData() {
   // block2.setTexParams("sidewalk.jpg", "image");
   // block2.setRotationValues([0, 1, 1], 0.5, false);
   // block2.setPositionValue(0, 5, 1);
-  // block2.setScaleValue(1);
+  // block2.scaleObject(1);
   // list.push(block2);
 
   // let powerT = new Shape();
@@ -168,16 +173,17 @@ function createShapeData() {
   // powerT.setTexParams("hd_power_t.png", "image");
   // powerT.setRotationValues([1, 1, 0], 0.3, true);
   // powerT.setPositionValue(4, 0, 0);
-  // powerT.setScaleValue(1);
+  // powerT.scaleObject(1);
   // list.push(powerT);
+   /* ------------------------------ */
 
   let floor0 = new Shape();
-  floor0.setObj("floor.obj");
-  floor0.setShaderSrc("texturePhong");
-  floor0.setTexParams("sidewalk.jpg", "image");
-  floor0.setPositionValue(0, -1.3, 0);
-  floor0.setScaleValue(20);
-  floor0.setRotationValues([1, 0, 0], -1.55, false);
+  floor0.setObj("plane.obj");
+  floor0.setShaderSrc("textureNormmap");
+  floor0.setTexParams("marble_tile", "normalmap");
+  floor0.setPositionValue(0, -1.5, 0);
+  floor0.scaleByAxis(40,1,40);
+  // floor0.setRotationValues([1, 0, 0], -1.55, false);
   list.push(floor0);
 
   let rockball = new Shape();
