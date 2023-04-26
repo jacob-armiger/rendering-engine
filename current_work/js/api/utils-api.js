@@ -27,7 +27,7 @@ function generateTexture(src, type) {
       gl.bindTexture(gl.TEXTURE_2D, texture);
       gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, image.naturalWidth, image.naturalHeight, 0, gl.RGBA, gl.UNSIGNED_BYTE,image);
       
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_NEAREST);
       // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR_MIPMAP_LINEAR);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
@@ -124,7 +124,7 @@ function createNormalTextures(assetGroup) {
   // tex_depth = generateTexture(`../../shared/resources/grouped_assets/${assetGroup}/height.png`, "normalmap");
   // tex_reg = generateTexture(`../../shared/resources/grouped_assets/${assetGroup}/hd_wood.png`, "normalmap");
   // return {normalTex: tex_norm, diffuseTex: tex_diffuse, depthTex: tex_depth, regTex: tex_reg}
-  return {normalTex: tex_norm, diffuseTex: tex_diffuse, ambientTex: tex_ambient, roughTex: tex_rough};
+  return {normalTex: tex_norm, diffuseTex: tex_diffuse, specularTex: tex_specular, ambientTex: tex_ambient, roughTex: tex_rough};
 }
 
 /**

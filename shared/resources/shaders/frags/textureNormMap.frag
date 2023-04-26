@@ -27,7 +27,7 @@ out vec4 fragColor;
 uniform sampler2D uTexNorm;
 uniform sampler2D uTexDiffuse;
 uniform sampler2D uTexAmbient;
-uniform sampler2D uTexRough;
+uniform sampler2D uTexSpecular;
 
 void main() {
 
@@ -51,7 +51,7 @@ void main() {
   
   // Adjust lighting components:          vec3(color)       * intensity
   vec3 ambient  =                         texColor.rgb      * 0.2;
-  vec3 diffuse  = NdotL *                 texColor.rgb      * 0.7;
+  vec3 diffuse  = NdotL *                 texColor.rgb      * 0.5;
   vec3 specular = pow(NdotH, shininess) * vec3(1.0,1.0,1.0) * 0.5;
 
   // Lighting for fragment

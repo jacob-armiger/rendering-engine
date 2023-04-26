@@ -231,14 +231,14 @@ function initializeMyObject(vertSource, fragSource, objData, shape) {
   };
 
   // Textures used for normalmaps. Declared here for scope.
-  let {normalTex, diffuseTex, ambientTex, roughTex} = {};
+  let {normalTex, diffuseTex, ambientTex, specularTex} = {};
 
   // Conditionally create textures and set buffermap
   if(shape.shaderType == "normalmap") {
     bufferMap["aVertexTexCoord"] = vertexTexCoordBuffer; // uvs
     bufferMap["aVertexTang"] = vertexTangBuffer;
     bufferMap["aVertexBitang"] = vertexBitangBuffer;
-    ({normalTex, diffuseTex, ambientTex, roughTex} = createNormalTextures(shape.shader));
+    ({normalTex, diffuseTex, ambientTex, specularTex} = createNormalTextures(shape.shader));
 
   } else {
     if(shape.shaderType == "image") {
@@ -252,7 +252,7 @@ function initializeMyObject(vertSource, fragSource, objData, shape) {
 
   // Checkout the drawable class' draw function. It calls a uniform setup function every time it is drawn. 
   // Put your uniforms that change per frame in this setup function.
-  shape.myDrawable.uniformLocations = shape.shaderProgram.getUniformLocations(['uModelViewMatrix', 'uProjectionMatrix', 'uLightPosition', 'uCameraPosition', 'uTexture', 'uTexNorm', 'uTexDiffuse', 'uTexAmbient', 'uTexRough']);
+  shape.myDrawable.uniformLocations = shape.shaderProgram.getUniformLocations(['uModelViewMatrix', 'uProjectionMatrix', 'uLightPosition', 'uCameraPosition', 'uTexture', 'uTexNorm', 'uTexDiffuse', 'uTexAmbient', 'uTexSpecular']);
   shape.myDrawable.uniformSetup = () => {
     gl.uniformMatrix4fv(
       shape.myDrawable.uniformLocations.uProjectionMatrix,
@@ -308,13 +308,13 @@ function initializeMyObject(vertSource, fragSource, objData, shape) {
       gl.activeTexture(gl.TEXTURE2);
       gl.bindTexture(gl.TEXTURE_2D, ambientTex);
       gl.uniform1i(
-        shape.myDrawable.uniformLocations.uTexAmient,
+        shape.myDrawable.uniformLocations.uTexAmbient,
         2
       )
       gl.activeTexture(gl.TEXTURE3);
-      gl.bindTexture(gl.TEXTURE_2D, roughTex);
+      gl.bindTexture(gl.TEXTURE_2D, specularTex);
       gl.uniform1i(
-        shape.myDrawable.uniformLocations.uTexReg,
+        shape.myDrawable.uniformLocations.uTexSpecular,
         3
       )
     }
