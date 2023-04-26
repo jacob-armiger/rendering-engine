@@ -67,52 +67,14 @@ class Shape {
 function createShapeData() {
   list = [];
 
-  // let floor0 = new Shape();
-  // floor0.setObj("floor.obj");
-  // floor0.setShaderSrc("textureNormmap");
-  // floor0.setTexParams("marble_tile", "normalmap");
-  // floor0.setPositionValue(0, -1.3, 0);
-  // floor0.scaleObject(20);
-  // floor0.setRotationValues([1, 0, 0], -1.55, false);
-  // list.push(floor0);
-
-   /* ------------------------------ */
-  // let floor = new Shape();
-  // floor.setObj("slab2.obj");
-  // floor.setShaderSrc("textureNormmap");
-  // floor.setTexParams("marble_tile", "normalmap");
-  // // floor.setPositionValue(0, -2.5, 0);
-  // floor.setPositionValue(1.4, -2.5, 1.4);
-  // floor.setRotationValues([1, 0, 0], 0, false);
-  // list.push(floor);
-
-  // let floor2 = new Shape();
-  // floor2.setObj("slab2.obj");
-  // floor2.setShaderSrc("textureNormmap");
-  // floor2.setTexParams("marble_tile", "normalmap");
-  // // floor2.setPositionValue(2.8, -2.5, 0);
-  // floor2.setPositionValue(-1.4, -2.5, -1.4);
-  // floor2.setRotationValues([1, 0, 0], 0, false);
-  // list.push(floor2);
-
-  // let floor3 = new Shape();
-  // floor3.setObj("slab2.obj");
-  // floor3.setShaderSrc("textureNormmap");
-  // floor3.setTexParams("marble_tile", "normalmap");
-  // // floor3.setPositionValue(0, -2.5, 2.8);
-  // floor3.setPositionValue(-1.4, -2.5, 1.4);
-  // floor3.setRotationValues([1, 0, 0], 0, false);
-  // list.push(floor3);
-
-  // let floor4 = new Shape();
-  // floor4.setObj("slab2.obj");
-  // floor4.setShaderSrc("textureNormmap");
-  // floor4.setTexParams("marble_tile", "normalmap");
-  // // floor4.setPositionValue(2.8, -2.5, 2.8);
-  // floor4.setPositionValue(1.4, -2.5, -1.4);
-  // floor4.setRotationValues([1, 0, 0], 0, false);
-  // list.push(floor4);
-
+  let floor0 = new Shape();
+  floor0.setObj("plane.obj");
+  floor0.setShaderSrc("textureNormmap");
+  floor0.setTexParams("marble_tile", "normalmap");
+  floor0.setPositionValue(0, -3, 0);
+  floor0.scaleByAxis(40,1,40);
+  list.push(floor0);
+  /* ----------------------- */
   // let column = new Shape();
   // column.setObj("column.obj");
   // column.setShaderSrc("texturePhong");
@@ -177,21 +139,13 @@ function createShapeData() {
   // list.push(powerT);
    /* ------------------------------ */
 
-  let floor0 = new Shape();
-  floor0.setObj("plane.obj");
-  floor0.setShaderSrc("textureNormmap");
-  floor0.setTexParams("marble_tile", "normalmap");
-  floor0.setPositionValue(0, -1.5, 0);
-  floor0.scaleByAxis(40,1,40);
-  // floor0.setRotationValues([1, 0, 0], -1.55, false);
-  list.push(floor0);
 
   let rockball = new Shape();
   rockball.setObj("sphere_with_vt.obj");
   rockball.setShaderSrc("texturePhong");
   rockball.setTexParams("sidewalk.jpg", "image");
   // rockball.setRotationValues([0, 0, 0], 0, true);
-  rockball.setPositionValue(1, 0, 0);
+  rockball.setPositionValue(1, 0, -1);
   list.push(rockball);
 
   // let coitBall = new Shape();
