@@ -215,8 +215,11 @@ function renderDynamicShape(object) {
     for (let shape of shapes) {
       // Transform shape
       let modelMatrix = glMatrix.mat4.create();
-
-      glMatrix.mat4.translate(modelMatrix, modelMatrix, shape.position); // translate object away from center
+    if(shape.animate) { // translate object away from center
+      glMatrix.mat4.translate(modelMatrix, modelMatrix, [shape.position[0], Math.tan(shape.animateSpeed * globalTime) * -9,shape.position[2]]); 
+    } else {
+      glMatrix.mat4.translate(modelMatrix, modelMatrix, shape.position); 
+    }
       if(shape.rotateOnTime) { // rotate object on its own axis either continuously with time or not
         glMatrix.mat4.rotate(modelMatrix, modelMatrix, globalTime, shape.rotationAxis); 
       } else {
@@ -305,6 +308,24 @@ function renderDynamicShape(object) {
  */
 function degreesToRadians(degrees) {
   return (degrees * Math.PI) / 180;
+}
+
+/**
+ * getRandomDec generate random decimal between 0.2 and 1.2
+ */
+function getRandomDec() {
+  let num = Math.random() + 0.2
+  // console.log(num)
+  return num;
+}
+
+/**
+ * getRandomInt generate random integer within min/max value
+ * @param {Integer} min smallest value wanted
+ * @param {Integer} max greatest value wanted
+ */
+function getRandomInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
 /**

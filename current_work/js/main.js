@@ -71,19 +71,19 @@ function main() {
 function setupUI(sliderDict) {
   // in index.html we need to setup some callback functions for the sliders
   // right now just have them report the values beside the slider.
-  let sliders = ['cam', 'look', 'light'];
-  let dims = ['X', 'Y', 'Z'];
+  let sliders = ["cam", "look", "light"];
+  let dims = ["X", "Y", "Z"];
 
   // for cam and look UI..
-  sliders.forEach(controlType => {
+  sliders.forEach((controlType) => {
     // for x, y, z control slider...
-    dims.forEach(dimension => {
+    dims.forEach((dimension) => {
       let slideID = `${controlType}${dimension}`;
       console.log(`Setting up control for ${slideID}`);
       let slider = document.getElementById(slideID);
       let sliderVal = document.getElementById(`${slideID}Val`);
       // Initialize dictionary values
-      sliderDict.set(sliderVal.id, sliderVal.value)
+      sliderDict.set(sliderVal.id, sliderVal.value);
 
       // These are called "callback functions", essentially when the input
       // value for the slider or the field beside the slider change,
@@ -93,18 +93,18 @@ function setupUI(sliderDict) {
         sliderVal.value = newVal;
 
         // update slider dictionary on slider change
-        sliderDict.set(sliderVal.id, sliderVal.value)
+        sliderDict.set(sliderVal.id, sliderVal.value);
       };
       sliderVal.oninput = () => {
         let newVal = sliderVal.value;
         slider.value = newVal;
 
         // update slider dictionary on input change
-        sliderDict.set(sliderVal.id, sliderVal.value)
+        sliderDict.set(sliderVal.id, sliderVal.value);
       };
     });
   });
-  return sliderDict
+  return sliderDict;
 }
 
 // Async as it loads resources over the network.
@@ -136,17 +136,40 @@ function drawScene(deltaTime, sliderVals) {
     // Update Model Matrix
     let modelMatrix = glMatrix.mat4.create();
     let objectWorldPos = shape.position;
-    
+
     // scale -> rotation on axis to direction -> translate to distance -> rotate around sun
     // glMatrix.mat4.rotate(modelMatrix, modelMatrix, globalTime*models[0].speed, models[0].orbitVector);  // orbit around center
-    glMatrix.mat4.translate(modelMatrix, modelMatrix, objectWorldPos); // translate object away from center
-    if(shape.rotateOnTime) { // rotate object on its own axis either continuously with time or not
-      glMatrix.mat4.rotate(modelMatrix, modelMatrix, globalTime, shape.rotationAxis); 
+    
+    // TRANSLATE object away from center
+    if (shape.animate) {
+      glMatrix.mat4.translate(modelMatrix, modelMatrix, [
+        shape.position[0],
+        Math.tan(shape.animateSpeed * globalTime) * -9,
+        shape.position[2],
+      ]);
     } else {
-      glMatrix.mat4.rotate(modelMatrix, modelMatrix, shape.roationDegree, shape.rotationAxis);
+      glMatrix.mat4.translate(modelMatrix, modelMatrix, objectWorldPos);
     }
-    glMatrix.mat4.scale(modelMatrix, modelMatrix, shape.scaleVector); // scale object to variable size
-    glMatrix.mat4.scale(modelMatrix, modelMatrix, shape.boundingVector); // normalize object to bounds
+    // ROTATE object on its own axis either continuously with time or not
+    if (shape.rotateOnTime) {
+      glMatrix.mat4.rotate(
+        modelMatrix,
+        modelMatrix,
+        globalTime,
+        shape.rotationAxis
+      );
+    } else {
+      glMatrix.mat4.rotate(
+        modelMatrix,
+        modelMatrix,
+        shape.roationDegree,
+        shape.rotationAxis
+      );
+    }
+    // SCALE object to variable size
+    glMatrix.mat4.scale(modelMatrix, modelMatrix, shape.scaleVector);
+    // NORMALIZE object to bounds
+    glMatrix.mat4.scale(modelMatrix, modelMatrix, shape.boundingVector);
 
     // Update View Matrix
     let viewMatrix = glMatrix.mat4.create();
@@ -167,10 +190,10 @@ function drawScene(deltaTime, sliderVals) {
     glMatrix.mat4.mul(shape.modelViewMatrix, viewMatrix, modelMatrix);
 
     if (shape.drawableInitialized) {
-      // Create extra framebuffer frames if dynamic cubemap 
-      if(shape.shaderType == "dynamicCubemap") {
-        renderDynamicShape(shape)
-        continue  // `renderDynamicShape` handles drawing of shape
+      // Create extra framebuffer frames if dynamic cubemap
+      if (shape.shaderType == "dynamicCubemap") {
+        renderDynamicShape(shape);
+        continue;  // `renderDynamicShape` handles drawing of shape
       }
       shape.myDrawable.draw();
     }
