@@ -248,24 +248,14 @@ function renderDynamicShape(object) {
 
     /* DRAW SHAPES TO FRAMEBUFFER */
     for (let shape of shapes) {
-      // Transform shape
       let modelMatrix = glMatrix.mat4.create();
-    if(shape.animate) { // translate object away from center
-      glMatrix.mat4.translate(modelMatrix, modelMatrix, [shape.position[0], Math.tan(shape.animateSpeed * globalTime) * -12,shape.position[2]]); 
-    } else {
-      glMatrix.mat4.translate(modelMatrix, modelMatrix, shape.position); 
-    }
-      if(shape.rotateOnTime) { // rotate object on its own axis either continuously with time or not
-        glMatrix.mat4.rotate(modelMatrix, modelMatrix, globalTime, shape.rotationAxis); 
-      } else {
-        glMatrix.mat4.rotate(modelMatrix, modelMatrix, shape.roationDegree, shape.rotationAxis);
-      }
-      glMatrix.mat4.scale(modelMatrix, modelMatrix, shape.scaleVector); // scale object to variable size
-      glMatrix.mat4.scale(modelMatrix, modelMatrix, shape.boundingVector); // normalize object to bounds
+      
+      // Transform shape
+      transformObject(shape, modelMatrix);
 
       // Create view from cube's perpective
       let viewMatrix = glMatrix.mat4.create();
-      cameraPos = object.position
+      let cameraPos = object.position
       let cameraFocus = frames[i].look
       let upDir = frames[i].up
       
