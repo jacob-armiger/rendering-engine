@@ -39,8 +39,8 @@ void main() {
   
   float shininess = 80.0;
   // Calculate lighting components:       vec3(color) * intensity
-  vec3 ambient =                          texColor.xyz * 0.4;
-  vec3 diffuse  = NdotL *                 texColor.xyz * 0.4;
+  vec3 ambient =                          texColor.xyz * 0.2;
+  vec3 diffuse  = NdotL *                 texColor.xyz * 0.5;
   vec3 specular = pow(NdotH, shininess) * vec3(1.0,1.0,1.0) * 0.5;
 
 

@@ -74,11 +74,11 @@ function createShapeData() {
   floor0.setObj("plane.obj");
   floor0.setShaderSrc("textureNormmap");
   floor0.setTexParams("stone", "normalmap");
-  floor0.setPositionValue(0, -2.7, 0);
-  floor0.scaleByAxis(40,1,40);
+  floor0.setPositionValue(0, -2.7, -3);
+  floor0.scaleByAxis(20,1,20);
   list.push(floor0);
 
-  /* -------------SCENE----------------- */
+  // /* -------------SCENE----------------- */
   let reflectiveBall = new Shape();
   reflectiveBall.setObj("sphere_with_vt.obj");
   reflectiveBall.setShaderSrc("textureCubemap");
@@ -89,34 +89,69 @@ function createShapeData() {
   list.push(reflectiveBall);
   
   let column = new Shape();
-  column.setObj("column.obj");
+  column.setObj("objColumn.obj");
   column.setShaderSrc("texturePhong");
-  column.setTexParams("sidewalk.jpg", "image");
-  column.setPositionValue(2.2, -2.4, 2.2);
-  // column.scaleObject(7);
-  column.setRotationValues([1, 0, 0], 0, false);
+  column.setTexParams("marble.jpg", "image");
+  column.setPositionValue(2.2, -2.4, -2.2);
+  column.scaleObject(6);
+  column.setRotationValues([0, 1, 0], 2, false);
   list.push(column);
+  
+  let column2 = new Shape();
+  column2.setObj("objColumn.obj");
+  column2.setShaderSrc("texturePhong");
+  column2.setTexParams("marble.jpg", "image");
+  column2.setPositionValue(-2.2, -2.4, -2.2);
+  column2.scaleObject(6);
+  column2.setRotationValues([0, 1, 0], 2, false);
+  list.push(column2);
+
+  let column3 = new Shape();
+  column3.setObj("objColumn.obj");
+  column3.setShaderSrc("texturePhong");
+  column3.setTexParams("marble.jpg", "image");
+  column3.setPositionValue(-2.2, -2.4, -6);
+  column3.scaleObject(6);
+  column3.setRotationValues([0, 1, 0], 2, false);
+  list.push(column3);
+
+  let column4 = new Shape();
+  column4.setObj("objColumn.obj");
+  column4.setShaderSrc("texturePhong");
+  column4.setTexParams("marble.jpg", "image");
+  column4.setPositionValue(2.2, -2.4, -6);
+  column4.scaleObject(6);
+  column4.setRotationValues([0, 1, 0], 2, false);
+  list.push(column4);
 
   let fallingColumn = new Shape();
   fallingColumn.animate = true
   fallingColumn.animateSpeed = getRandomDec()
-  fallingColumn.setObj("column.obj");
+  fallingColumn.setObj("objColumn.obj");
   fallingColumn.setShaderSrc("texturePhong");
   fallingColumn.setTexParams("sidewalk.jpg", "image");
-  fallingColumn.setPositionValue(3, 1.5, -2.5);
+  fallingColumn.setPositionValue(-6, 0, 5);
   // fallingColumn.scaleObject(7);
-  fallingColumn.setRotationValues([1, 1, 0], -0.6, true);
+  fallingColumn.setRotationValues([1, 1, 0], 0, true);
   list.push(fallingColumn);
 
-  let apollo = new Shape();
-  apollo.animate = true
-  apollo.animateSpeed = getRandomDec()
-  apollo.setObj("apollo.obj");
-  apollo.setShaderSrc("texturePhong");
-  apollo.setTexParams("sidewalk.jpg", "image");
-  apollo.setRotationValues([1, 1, 1], 0, true);
-  apollo.setPositionValue(0, 0, -5);
-  list.push(apollo);
+  // let apollo = new Shape();
+  // apollo.animate = true
+  // apollo.animateSpeed = getRandomDec()
+  // apollo.setObj("apollo.obj");
+  // apollo.setShaderSrc("texturePhong");
+  // apollo.setTexParams("sidewalk.jpg", "image");
+  // apollo.setRotationValues([1, 1, 1], 0, true);
+  // apollo.setPositionValue(4, 0, 5);
+  // list.push(apollo);
+
+  // let mars = new Shape();
+  // mars.setObj("mars.obj");
+  // mars.setShaderSrc("phong300");
+  // mars.setTexParams(null, null);
+  // mars.setRotationValues([1, 0, 0], 3.2, false);
+  // mars.setPositionValue(-1, 1, -4);
+  // list.push(mars);
 
   let powerT = new Shape();
   powerT.animate = true
@@ -125,11 +160,11 @@ function createShapeData() {
   powerT.setShaderSrc("texturePhong");
   powerT.setTexParams("hd_power_t.png", "image");
   powerT.setRotationValues([1, 1, 0], 0.3, true);
-  powerT.setPositionValue(4, 0, 0);
+  powerT.setPositionValue(0, 0, 5);
   powerT.scaleObject(1);
   list.push(powerT);
 
-  for(let i = 0; i < 30; i++) {
+  for(let i = 0; i < 60; i++) {
     let block = new Shape();
     block.animate = true
     block.animateSpeed = getRandomDec()
@@ -137,22 +172,22 @@ function createShapeData() {
     block.setShaderSrc("texturePhong");
     block.setTexParams("sidewalk.jpg", "image");
     block.setRotationValues([1, 1, 1], 0, true);
-    block.setPositionValue(getRandomInt(2, 8), 0, getRandomInt(-8, 8));
+    block.setPositionValue(getRandomInt(-8, 8), 0, getRandomInt(5, 8));
     block.scaleObject(1);
     list.push(block);
   }
-  for(let i = 0; i < 30; i++) {
-    let block = new Shape();
-    block.animate = true
-    block.animateSpeed = getRandomDec()
-    block.setObj("box_with_vt.obj");
-    block.setShaderSrc("texturePhong");
-    block.setTexParams("sidewalk.jpg", "image");
-    block.setRotationValues([1, 1, 1], 0, true);
-    block.setPositionValue(getRandomInt(-8, -2), 0, getRandomInt(-8, 8));
-    block.scaleObject(1);
-    list.push(block);
-  }
+  // for(let i = 0; i < 30; i++) {
+  //   let block = new Shape();
+  //   block.animate = true
+  //   block.animateSpeed = getRandomDec()
+  //   block.setObj("box_with_vt.obj");
+  //   block.setShaderSrc("texturePhong");
+  //   block.setTexParams("sidewalk.jpg", "image");
+  //   block.setRotationValues([1, 1, 1], 0, true);
+  //   block.setPositionValue(getRandomInt(-8, -3), 0, getRandomInt(-8, 8));
+  //   block.scaleObject(1);
+  //   list.push(block);
+  // }
   /* --------------SCENE---------------- */
 
 

@@ -216,7 +216,7 @@ function renderDynamicShape(object) {
       // Transform shape
       let modelMatrix = glMatrix.mat4.create();
     if(shape.animate) { // translate object away from center
-      glMatrix.mat4.translate(modelMatrix, modelMatrix, [shape.position[0], Math.tan(shape.animateSpeed * globalTime) * -9,shape.position[2]]); 
+      glMatrix.mat4.translate(modelMatrix, modelMatrix, [shape.position[0], Math.tan(shape.animateSpeed * globalTime) * -12,shape.position[2]]); 
     } else {
       glMatrix.mat4.translate(modelMatrix, modelMatrix, shape.position); 
     }
@@ -314,7 +314,7 @@ function degreesToRadians(degrees) {
  * getRandomDec generate random decimal between 0.2 and 1.2
  */
 function getRandomDec() {
-  let num = Math.random() + 0.2
+  let num = Math.random() + 0.15
   // console.log(num)
   return num;
 }

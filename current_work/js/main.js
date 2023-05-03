@@ -144,7 +144,7 @@ function drawScene(deltaTime, sliderVals) {
     if (shape.animate) {
       glMatrix.mat4.translate(modelMatrix, modelMatrix, [
         shape.position[0],
-        Math.tan(shape.animateSpeed * globalTime) * -9,
+        Math.tan(shape.animateSpeed * globalTime) * -12,
         shape.position[2],
       ]);
     } else {
