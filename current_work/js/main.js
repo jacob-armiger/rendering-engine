@@ -122,35 +122,35 @@ async function setupScene() {
 function drawScene(deltaTime, sliderVals) {
   globalTime += deltaTime;
 
-  // Update light position
+  // Clear the color buffer with specified clear color
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+  
+  // Update light position when user moves light
   lightPosition = glMatrix.vec3.fromValues(
     sliderVals.get("lightXVal"),
     sliderVals.get("lightYVal"),
     -sliderVals.get("lightZVal")
   );
 
-  // Clear the color buffer with specified clear color
-  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+  // Update View Matrix when user moves camera
+  let viewMatrix = glMatrix.mat4.create();
+  cameraPos = [
+    sliderVals.get("camXVal"),
+    sliderVals.get("camYVal"),
+    sliderVals.get("camZVal"),
+  ];
+  let cameraFocus = [
+    sliderVals.get("lookXVal"),
+    sliderVals.get("lookYVal"),
+    sliderVals.get("lookZVal"),
+  ];
+  glMatrix.mat4.lookAt(viewMatrix, cameraPos, cameraFocus, [0.0, 1.0, 0.0]); // does up vector need to be changed? ortho to y?
+
 
   for (let shape of shapes) {
-    // Update Model Matrix
+    // Model matrix is used to transform object in world space
     let modelMatrix = glMatrix.mat4.create();
-    
     transformObject(shape, modelMatrix);
-
-    // Update View Matrix
-    let viewMatrix = glMatrix.mat4.create();
-    cameraPos = [
-      sliderVals.get("camXVal"),
-      sliderVals.get("camYVal"),
-      sliderVals.get("camZVal"),
-    ];
-    let cameraFocus = [
-      sliderVals.get("lookXVal"),
-      sliderVals.get("lookYVal"),
-      sliderVals.get("lookZVal"),
-    ];
-    glMatrix.mat4.lookAt(viewMatrix, cameraPos, cameraFocus, [0.0, 1.0, 0.0]); // does up vector need to be changed? ortho to y?
 
     // Update Model View Matrix
     shape.modelViewMatrix = glMatrix.mat4.create();
