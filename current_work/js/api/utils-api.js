@@ -1,3 +1,6 @@
+/* --------------------------- 
+  FUNCTIONS TO HANDLE TEXTURES
+  --------------------------*/
 /**
  * generateTexture takes different types of resources and applies it to a texture that can be used in a shader
  * @param {String} src  this is an image file or cubemap folder
@@ -128,8 +131,40 @@ function createNormalTextures(assetGroup) {
 }
 
 /**
+ * generateDepthMap creates a depth map
+ */
+function generateDepthMap() {
+  // Create 2D texture to use as Frame buffer's depth buffer
+  const depthTexture = gl.createTexture();
+  const depthTextureSize = 512;
+  gl.bindTexture(gl.TEXTURE_2D, depthTexture);
+  gl.texImage2D(
+      gl.TEXTURE_2D,      // target
+      0,                  // mip level
+      gl.DEPTH_COMPONENT32F, // internal format
+      depthTextureSize,   // width
+      depthTextureSize,   // height
+      0,                  // border
+      gl.DEPTH_COMPONENT, // format
+      gl.FLOAT,           // type
+      null);   
+
+  // Create framebuffer object
+  let fb = gl.createFramebuffer()
+  gl.bindFramebuffer(gl.FRAMEBUFFER, fb);
+  // Attach depthTexture to framebuffer
+  gl.framebufferTexture2D(
+      gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.TEXTURE_2D, depthTexture, 0);
+}
+
+
+
+/* ----------------------------------------------------
+  FUNCTIONS TO HANDLE OBJECT RENDERING AND MULTI-PASSES 
+  ---------------------------------------------------*/
+/**
  * renderDynamicShape takes a shape meant to have a dynamic cubemap and creates the frames for it
- * @param {Obejct} object  shape meant to have dynamicCubemap
+ * @param {Object} object  shape meant to have dynamicCubemap
  */
 function renderDynamicShape(object) {
   let sides = [
@@ -302,6 +337,51 @@ function renderDynamicShape(object) {
   object.myDrawable.draw();
 }
 
+/**
+ * transformObject takes a shape meant to have a dynamic cubemap and creates the frames for it
+ * @param {Object} shape  shape to be translated/rotated/animated/scaled
+ * @param {mat4} modelMatrix the matrix used to tranform object in world space
+ */
+function transformObject(shape, modelMatrix) {
+  // scale -> rotation on axis to direction -> translate to distance -> rotate around sun
+  // glMatrix.mat4.rotate(modelMatrix, modelMatrix, globalTime*models[0].speed, models[0].orbitVector);  // orbit around center
+  // TRANSLATE object away from center
+  if (shape.animate) {
+    glMatrix.mat4.translate(modelMatrix, modelMatrix, [
+      shape.position[0],
+      Math.tan(shape.animateSpeed * globalTime) * -12,
+      shape.position[2],
+    ]);
+  } else {
+    glMatrix.mat4.translate(modelMatrix, modelMatrix, shape.position);
+  }
+  // ROTATE object on its own axis either continuously with time or not
+  if (shape.rotateOnTime) {
+    glMatrix.mat4.rotate(
+      modelMatrix,
+      modelMatrix,
+      globalTime,
+      shape.rotationAxis
+    );
+  } else {
+    glMatrix.mat4.rotate(
+      modelMatrix,
+      modelMatrix,
+      shape.roationDegree,
+      shape.rotationAxis
+    );
+  }
+  // SCALE object to variable size
+  glMatrix.mat4.scale(modelMatrix, modelMatrix, shape.scaleVector);
+  // NORMALIZE object to bounds
+  glMatrix.mat4.scale(modelMatrix, modelMatrix, shape.boundingVector);
+}
+
+
+
+/* ------------------------ 
+  FUNCTIONS TO HANDLE MISC. 
+  -----------------------*/
 /**
  * degreesToRadians as the name implies
  * @param {Number} degrees The degrees to convert to radians

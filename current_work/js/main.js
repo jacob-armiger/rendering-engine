@@ -135,41 +135,8 @@ function drawScene(deltaTime, sliderVals) {
   for (let shape of shapes) {
     // Update Model Matrix
     let modelMatrix = glMatrix.mat4.create();
-    let objectWorldPos = shape.position;
-
-    // scale -> rotation on axis to direction -> translate to distance -> rotate around sun
-    // glMatrix.mat4.rotate(modelMatrix, modelMatrix, globalTime*models[0].speed, models[0].orbitVector);  // orbit around center
     
-    // TRANSLATE object away from center
-    if (shape.animate) {
-      glMatrix.mat4.translate(modelMatrix, modelMatrix, [
-        shape.position[0],
-        Math.tan(shape.animateSpeed * globalTime) * -12,
-        shape.position[2],
-      ]);
-    } else {
-      glMatrix.mat4.translate(modelMatrix, modelMatrix, objectWorldPos);
-    }
-    // ROTATE object on its own axis either continuously with time or not
-    if (shape.rotateOnTime) {
-      glMatrix.mat4.rotate(
-        modelMatrix,
-        modelMatrix,
-        globalTime,
-        shape.rotationAxis
-      );
-    } else {
-      glMatrix.mat4.rotate(
-        modelMatrix,
-        modelMatrix,
-        shape.roationDegree,
-        shape.rotationAxis
-      );
-    }
-    // SCALE object to variable size
-    glMatrix.mat4.scale(modelMatrix, modelMatrix, shape.scaleVector);
-    // NORMALIZE object to bounds
-    glMatrix.mat4.scale(modelMatrix, modelMatrix, shape.boundingVector);
+    transformObject(shape, modelMatrix);
 
     // Update View Matrix
     let viewMatrix = glMatrix.mat4.create();
