@@ -9,6 +9,16 @@ var globalTime = 0.0;
 // These global variables apply to the entire scene for the duration of the program
 let lightPosition = null
 let cameraPos = null
+
+let lightViewMatrix = null
+let lightProjectionMatrix = null
+let depthTexture = null
+let depthFrameBuffer = null
+
+let colorShader = null
+let vertSrc = null
+let fragSrc = null
+
 let shapes = createShapeData()
 
 function main() {
@@ -109,6 +119,16 @@ function setupUI(sliderDict) {
 
 // Async as it loads resources over the network.
 async function setupScene() {
+
+  // Create depth buffer
+  let depthObjects = generateDepthMap();
+  depthTexture = depthObjects[0];
+  depthFrameBuffer = depthObjects[1];
+
+  vertSrc = await loadNetworkResourceAsText('/shared/resources/shaders/verts/simple.vert');
+  fragSrc = await loadNetworkResourceAsText('/shared/resources/shaders/frags/simple.frag');
+  depthShader = new ShaderProgram(vertSrc, fragSrc)
+
   // These shapes are initialized in model-data.js
   for(let shape of shapes) {
     let vertSource = await loadNetworkResourceAsText(shape.shaderVertSrc);
@@ -131,7 +151,6 @@ function drawScene(deltaTime, sliderVals) {
     sliderVals.get("lightYVal"),
     -sliderVals.get("lightZVal")
   );
-
   // Update View Matrix when user moves camera
   let viewMatrix = glMatrix.mat4.create();
   cameraPos = [
@@ -144,6 +163,36 @@ function drawScene(deltaTime, sliderVals) {
     sliderVals.get("lookYVal"),
     sliderVals.get("lookZVal"),
   ];
+
+  // Create view matrix from light perspective
+  lightViewMatrix = glMatrix.mat4.create();
+  glMatrix.mat4.lookAt(lightViewMatrix, lightPosition, [0.0,0.0,0.0], [0.0, 1.0, 0.0]);
+
+  // DRAW TO DEPTH BUFFER
+  gl.bindFramebuffer(gl.FRAMEBUFFER, depthFrameBuffer);
+  gl.viewport(0, 0, 512, 512);
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+  for (let shape of shapes) {
+    // Model matrix is used to transform object in world space
+    let modelMatrix = glMatrix.mat4.create();
+    transformObject(shape, modelMatrix);
+
+    // Create Model View Matrix (world to camera space)
+    shape.modelViewMatrix = glMatrix.mat4.create();
+    glMatrix.mat4.mul(shape.modelViewMatrix, viewMatrix, modelMatrix);
+
+    if (shape.depthDrawableInitialized) {
+      shape.depthDrawable.draw();
+    }
+  }
+
+  // DRAW TO CANVAS
+  gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+  gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+  gl.clearColor(0, 0, 0, 1);
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+  // lookat() creates matrix that transforms vertices from world space to camera space
   glMatrix.mat4.lookAt(viewMatrix, cameraPos, cameraFocus, [0.0, 1.0, 0.0]); // does up vector need to be changed? ortho to y?
 
 
@@ -152,7 +201,7 @@ function drawScene(deltaTime, sliderVals) {
     let modelMatrix = glMatrix.mat4.create();
     transformObject(shape, modelMatrix);
 
-    // Update Model View Matrix
+    // Create Model View Matrix (world to camera space)
     shape.modelViewMatrix = glMatrix.mat4.create();
     glMatrix.mat4.mul(shape.modelViewMatrix, viewMatrix, modelMatrix);
 
@@ -170,7 +219,7 @@ function drawScene(deltaTime, sliderVals) {
 
 function initializeMyObject(vertSource, fragSource, objData, shape) {
   // Assign shader information to shape
-  shape.shaderProgram = new ShaderProgram(vertSource, fragSource)  // NOTE: can optimize for redundant shaders but don't really need to 
+  shape.shaderProgram = new ShaderProgram(vertSource, fragSource)  // NOTE: could optimize for redundant shaders
 
   let rawData = null
   let parsedData = new OBJData(objData); // this class is in obj-loader.js
@@ -239,10 +288,28 @@ function initializeMyObject(vertSource, fragSource, objData, shape) {
 
   // Set shape's drawable
   shape.myDrawable = new Drawable(shape.shaderProgram, bufferMap, null, rawData.vertices.length / 3);
+  shape.depthDrawable = new Drawable(depthShader, {}, null, rawData.vertices.length / 3);
+
+
+  shape.depthDrawable.uniformLocations = depthShader.getUniformLocations(["uLightViewMatrix", "uProjectionMatrix",]);
+  shape.depthDrawable.uniformSetup = () => {
+    gl.uniformMatrix4fv(
+      shape.depthDrawable.uniformLocations.uProjectionMatrix,
+      false,
+      projectionMatrix
+    );
+    gl.uniformMatrix4fv(
+      shape.depthDrawable.uniformLocations.uLightViewMatrix,
+      false,
+      lightViewMatrix
+    );
+
+    shape.depthDrawableInitialized = true;
+  };
 
   // Checkout the drawable class' draw function. It calls a uniform setup function every time it is drawn. 
   // Put your uniforms that change per frame in this setup function.
-  shape.myDrawable.uniformLocations = shape.shaderProgram.getUniformLocations(['uModelViewMatrix', 'uProjectionMatrix', 'uLightPosition', 'uCameraPosition', 'uTexture', 'uTexNorm', 'uTexDiffuse', 'uTexAmbient', 'uTexSpecular']);
+  shape.myDrawable.uniformLocations = shape.shaderProgram.getUniformLocations(['uModelViewMatrix', 'uProjectionMatrix', 'uLightPosition', 'uCameraPosition', 'uTexture', 'uProjectedTexture', 'uTexNorm', 'uTexDiffuse', 'uTexAmbient', 'uTexSpecular']);
   shape.myDrawable.uniformSetup = () => {
     gl.uniformMatrix4fv(
       shape.myDrawable.uniformLocations.uProjectionMatrix,
@@ -265,6 +332,10 @@ function initializeMyObject(vertSource, fragSource, objData, shape) {
     gl.uniform1i(
       shape.myDrawable.uniformLocations.uTexture,
       shape.texture
+    )
+    gl.uniform1i(
+      shape.myDrawable.uniformLocations.uProjectedTexture,
+      depthTexture
     )
     /* BIND APPROPRIATE TEXTURE TYPE */
     if(shape.shaderType == "image") {
