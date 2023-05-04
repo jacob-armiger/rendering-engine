@@ -6,6 +6,11 @@ in vec3 normal;
 in vec3 lightVec;
 in vec3 viewVec;
 
+in vec2 texCoord;
+uniform sampler2D uTexture;
+
+uniform sampler2D uProjectedTexture;
+
 out vec4 fragColor;
 
 void main() {

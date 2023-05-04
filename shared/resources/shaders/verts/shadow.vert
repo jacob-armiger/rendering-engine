@@ -2,7 +2,9 @@
 
 in vec3 aVertexPosition;
 in vec3 aVertexNormal;
+in vec2 aVertexTexCoord;
 
+out vec2 texCoord;
 out vec3 normal;
 out vec3 lightVec;
 out vec3 viewVec;
@@ -21,5 +23,8 @@ void main() {
   normal = vec3(uModelViewMatrix * vec4(aVertexNormal, 0.0));
 
   lightVec = vec3(vec4(uLightPosition, 1.0) - vert);
-  viewVec  = -vec3(vert);
+  viewVec  = -vec3(vert);  
+  
+  // Pass texCoord to the fragment shader
+  texCoord = aVertexTexCoord;
 }
