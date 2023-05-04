@@ -157,6 +157,8 @@ function generateDepthMap() {
   // Attach depthTexture to framebuffer
   gl.framebufferTexture2D(
       gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.TEXTURE_2D, depthTexture, 0);
+
+  return [depthTexture, fb];
 }
 
 
