@@ -29,7 +29,9 @@ class Shape {
 
     // Maintain instance of drawable
     this.myDrawable = null
+    this.depthDrawable = null
     this.drawableInitialized = false
+    this.depthDrawableInitialized = false
   }
 
   setRotationValues(axis, degree, onTime) {
