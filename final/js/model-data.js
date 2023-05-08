@@ -72,7 +72,7 @@ function createShapeData() {
 
   let floor0 = new Shape();
   floor0.setObj("plane.obj");
-  floor0.setShaderSrc("textureNormmap");
+  floor0.setShaderSrc("textureNormMap");
   floor0.setTexParams("stone", "normalmap");
   floor0.setPositionValue(0, -2.7, -3);
   floor0.scaleByAxis(20,1,20);

@@ -178,7 +178,7 @@ class OBJData {
 
     // If model does not have vertex normals, calculate them here.
     if(vertexNormals < 1) {
-      console.log("Calculating tex coords")
+      console.log("Calculating Vertex Normals")
       vertexNormals = calculateVertexNormals(faces,vertices)
     }
     if(textureCoords < 1) {
