@@ -1,4 +1,4 @@
-class ShaderProgram {
+export class ShaderProgram {
   vertexSource = null;
   fragmentSource = null;
   vertexShader = null;

@@ -169,3 +169,8 @@ function calculateBoundingVector(bbox) {
   
   }
   
+export {
+    calculateBoundingVector,
+    calculateVertexNormals,
+    calculateTangents,
+}

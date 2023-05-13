@@ -1,4 +1,6 @@
-class OBJData {
+import { calculateTangents, calculateBoundingVector, calculateVertexNormals } from "./api/obj-calc-api.js";
+
+export class OBJData {
   constructor(fileContents) {
     this.fileContents = fileContents;
     this.parse(this.fileContents);

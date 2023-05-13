@@ -1,3 +1,5 @@
+import { getRandomDec, getRandomInt} from "/js/api/utils-api.js"
+
 class Shape {
   constructor() {
     // Sources
@@ -70,7 +72,7 @@ class Shape {
 
 
 function createShapeData() {
-  list = [];
+  let list = [];
 
   let floor0 = new Shape();
   floor0.setObj("plane.obj");
@@ -137,23 +139,23 @@ function createShapeData() {
   fallingColumn.setRotationValues([1, 1, 0], 0, true);
   list.push(fallingColumn);
 
-  let apollo = new Shape();
-  apollo.animate = true
-  apollo.animateSpeed = getRandomDec()
-  apollo.setObj("apollo.obj");
-  apollo.setShaderSrc("texturePhong");
-  apollo.setTexParams("sidewalk.jpg", "image");
-  apollo.setRotationValues([1, 1, 1], 0, true);
-  apollo.setPositionValue(4, 0, 5);
-  list.push(apollo);
+//   let apollo = new Shape();
+//   apollo.animate = true
+//   apollo.animateSpeed = getRandomDec()
+//   apollo.setObj("apollo.obj");
+//   apollo.setShaderSrc("texturePhong");
+//   apollo.setTexParams("sidewalk.jpg", "image");
+//   apollo.setRotationValues([1, 1, 1], 0, true);
+//   apollo.setPositionValue(4, 0, 5);
+//   list.push(apollo);
 
-  let mars = new Shape();
-  mars.setObj("mars.obj");
-  mars.setShaderSrc("phong300");
-  mars.setTexParams(null, null);
-  mars.setRotationValues([1, 0, 0], 3.2, false);
-  mars.setPositionValue(-1, 1, -4);
-  list.push(mars);
+//   let mars = new Shape();
+//   mars.setObj("mars.obj");
+//   mars.setShaderSrc("phong300");
+//   mars.setTexParams(null, null);
+//   mars.setRotationValues([1, 0, 0], 3.2, false);
+//   mars.setPositionValue(-1, 1, -4);
+//   list.push(mars);
 
   let powerT = new Shape();
   powerT.animate = true
@@ -220,4 +222,8 @@ function createShapeData() {
   // list.push(bumpyCube)
 
   return list;
+}
+
+export {
+    createShapeData
 }
