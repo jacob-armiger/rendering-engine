@@ -78,3 +78,8 @@ class ElementArrayData {
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.bufferID);
   }
 }
+
+export {
+    VertexArrayData,
+    ElementArrayData,
+}

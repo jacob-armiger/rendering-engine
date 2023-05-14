@@ -1,10 +1,26 @@
+import { ShaderProgram } from "./shader.js";
+import { OBJData } from "./obj-loader.js";
+import { VertexArrayData } from "./vertex-data.js";
+import { createShapeData } from "./model-data.js";
+import { Drawable } from "./drawable.js";
+import {
+    createNormalTextures,
+    generateTexture,
+    renderDynamicShape,
+    generateDepthMap,
+    transformObject,
+    loadNetworkResourceAsText,
+    degreesToRadians,
+} from "./api/utils-api.js";
+import * as glMatrix from "/node_modules/gl-matrix/esm/index.js"
+
 // Ideally, we like to avoid global vars, a GL context lives as long as the window does
 // So this is a case where it is understandable to have it in global space.
-var gl = null;
-// The rest is here simply because it made debugging easier...
+window.gl = null;
+window.globalTime = 0.0;
+
 var modelViewMatrix = null;
 var projectionMatrix = null;
-var globalTime = 0.0;
 
 // These global variables apply to the entire scene for the duration of the program
 let lightPosition = null;
@@ -14,6 +30,7 @@ let lightViewMatrix = null;
 let lightProjectionMatrix = null;
 let depthTexture = null;
 let depthFrameBuffer = null;
+let depthShader = null;
 
 let colorShader = null;
 let vertSrc = null;
@@ -43,7 +60,7 @@ function main() {
     gl.enable(gl.DEPTH_TEST);
 
     // Setup Controls
-    sliderVals = new Map();
+    let sliderVals = new Map();
     sliderVals = setupUI(sliderVals);
 
     // Draw the scene repeatedly
@@ -210,7 +227,7 @@ function drawScene(deltaTime, sliderVals) {
         if (shape.drawableInitialized) {
             // Create extra framebuffer frames if dynamic cubemap
             if (shape.shaderType == "dynamicCubemap") {
-                renderDynamicShape(shape);
+                renderDynamicShape(shape, projectionMatrix, shapes, modelMatrix, viewMatrix, sliderVals, cameraPos, cameraFocus);
                 continue; // `renderDynamicShape` handles drawing of shape
             }
             shape.myDrawable.draw();

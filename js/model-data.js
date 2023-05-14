@@ -1,3 +1,5 @@
+import { getRandomDec, getRandomInt} from "./api/utils-api.js"
+
 class Shape {
   constructor() {
     // Sources
@@ -70,7 +72,7 @@ class Shape {
 
 
 function createShapeData() {
-  list = [];
+  let list = [];
 
   let floor0 = new Shape();
   floor0.setObj("plane.obj");
@@ -220,4 +222,8 @@ function createShapeData() {
   // list.push(bumpyCube)
 
   return list;
+}
+
+export {
+    createShapeData
 }

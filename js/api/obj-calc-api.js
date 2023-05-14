@@ -1,3 +1,4 @@
+import * as glMatrix from "/node_modules/gl-matrix/esm/index.js"
 
 /**
  * calculateBoundingVector loads server local resource as text data (one large string with newlines)
@@ -169,3 +170,8 @@ function calculateBoundingVector(bbox) {
   
   }
   
+export {
+    calculateBoundingVector,
+    calculateVertexNormals,
+    calculateTangents,
+}

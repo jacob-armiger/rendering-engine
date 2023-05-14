@@ -1,3 +1,5 @@
+import * as glMatrix from "/node_modules/gl-matrix/esm/index.js"
+
 /* --------------------------- 
   FUNCTIONS TO HANDLE TEXTURES
   --------------------------*/
@@ -119,11 +121,11 @@ function generateTexture(src, type) {
  */
 function createNormalTextures(assetGroup) {
   
-  tex_norm = generateTexture(`../../shared/resources/grouped_assets/${assetGroup}/normal.jpg`, "normalmap");
-  tex_diffuse = generateTexture(`../../shared/resources/grouped_assets/${assetGroup}/diffuse.jpg`, "normalmap");
-  tex_specular = generateTexture(`../../shared/resources/grouped_assets/${assetGroup}/specular.jpg`, "normalmap");
-  tex_ambient = null;
-  tex_rough = null;
+  let tex_norm = generateTexture(`../../shared/resources/grouped_assets/${assetGroup}/normal.jpg`, "normalmap");
+  let tex_diffuse = generateTexture(`../../shared/resources/grouped_assets/${assetGroup}/diffuse.jpg`, "normalmap");
+  let tex_specular = generateTexture(`../../shared/resources/grouped_assets/${assetGroup}/specular.jpg`, "normalmap");
+  let tex_ambient = null;
+  let tex_rough = null;
   // tex_ambient = generateTexture(`../../shared/resources/grouped_assets/${assetGroup}/ambient.jpg`, "normalmap");
   // tex_rough = generateTexture(`../../shared/resources/grouped_assets/${assetGroup}/roughness.jpg`, "normalmap");
   // tex_depth = generateTexture(`../../shared/resources/grouped_assets/${assetGroup}/height.png`, "normalmap");
@@ -169,8 +171,12 @@ function generateDepthMap() {
 /**
  * renderDynamicShape takes a shape meant to have a dynamic cubemap and creates the frames for it
  * @param {Object} object  shape meant to have dynamicCubemap
+ * @param {Matrix} projectionMatrix
+ * @param {List} shapes
+ * @param {Matrix} modelMatrix
+ * 
  */
-function renderDynamicShape(object) {
+function renderDynamicShape(object, projectionMatrix, shapes, modelMatrix, viewMatrix, sliderVals, cameraPos, cameraFocus) {
   let sides = [
     {
       cubeSide: gl.TEXTURE_CUBE_MAP_POSITIVE_X,
@@ -322,7 +328,7 @@ function renderDynamicShape(object) {
   // Tell WebGL how to convert from clip space to pixels
   gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 
-  aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
+  let aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
   glMatrix.mat4.perspective(projectionMatrix,
                    degreesToRadians(60),
                    aspect,
@@ -410,4 +416,16 @@ async function loadNetworkResourceAsText(resource) {
   const response = await fetch(resource);
   const asText = await response.text();
   return asText;
+}
+
+export {
+    generateTexture,
+    createNormalTextures,
+    generateDepthMap,
+    renderDynamicShape,
+    transformObject,
+    degreesToRadians,
+    getRandomDec,
+    getRandomInt,
+    loadNetworkResourceAsText,
 }
