@@ -1,3 +1,5 @@
+import * as glMatrix from "/node_modules/gl-matrix/esm/index.js"
+
 /* --------------------------- 
   FUNCTIONS TO HANDLE TEXTURES
   --------------------------*/

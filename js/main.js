@@ -1,7 +1,7 @@
 import { ShaderProgram } from "./shader.js";
 import { OBJData } from "./obj-loader.js";
 import { VertexArrayData } from "./vertex-data.js";
-import { createShapeData } from "/js/model-data.js";
+import { createShapeData } from "./model-data.js";
 import { Drawable } from "./drawable.js";
 import {
     createNormalTextures,
@@ -12,8 +12,7 @@ import {
     loadNetworkResourceAsText,
     degreesToRadians,
 } from "./api/utils-api.js";
-
-import './gl-matrix-lib-min.js'
+import * as glMatrix from "/node_modules/gl-matrix/esm/index.js"
 
 // Ideally, we like to avoid global vars, a GL context lives as long as the window does
 // So this is a case where it is understandable to have it in global space.
