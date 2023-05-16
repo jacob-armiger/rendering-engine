@@ -413,4 +413,5 @@ function initializeMyObject(vertSource, fragSource, objData, shape) {
 }
 
 // After all the DOM has loaded, we can run the main function.
-window.onload = main;
+// window.onload = main;
+main()  // NOTE: use this when bundling
