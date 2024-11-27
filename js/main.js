@@ -47,7 +47,7 @@ function main() {
 
     // Only continue if WebGL is available and working
     if (gl === null) {
-        alert("Unable to initialize WebGL2. Contact the TA.");
+        alert("Unable to initialize WebGL2.");
         return;
     }
 
@@ -164,7 +164,7 @@ function drawScene(deltaTime, sliderVals) {
 
     // Clear the color buffer with specified clear color
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-    
+
     // Update light position when user moves light
     lightPosition = glMatrix.vec3.fromValues(
         sliderVals.get("lightXVal"),
@@ -339,7 +339,7 @@ function initializeMyObject(vertSource, fragSource, objData, shape) {
         shape.depthDrawableInitialized = true;
     };
 
-    // Checkout the drawable class' draw function. It calls a uniform setup function every time it is drawn. 
+    // Checkout the drawable class' draw function. It calls a uniform setup function every time it is drawn.
     // Put your uniforms that change per frame in this setup function.
     shape.myDrawable.uniformLocations = shape.shaderProgram.getUniformLocations([
         "uModelViewMatrix",

@@ -45,7 +45,7 @@ class Shape {
   scaleObject(scalar) {
     this.scaleVector = [scalar,scalar,scalar]
   }
-  
+
   scaleByAxis(x,y,z) {
     this.scaleVector = [x,y,z]
   }
@@ -91,7 +91,7 @@ function createShapeData() {
   reflectiveBall.scaleObject(8);
   reflectiveBall.setPositionValue(0, 0, 0);
   list.push(reflectiveBall);
-  
+
   let column = new Shape();
   column.setObj("objColumn.obj");
   column.setShaderSrc("texturePhong");
@@ -100,7 +100,7 @@ function createShapeData() {
   column.scaleObject(6);
   column.setRotationValues([0, 1, 0], 2, false);
   list.push(column);
-  
+
   let column2 = new Shape();
   column2.setObj("objColumn.obj");
   column2.setShaderSrc("texturePhong");
@@ -139,15 +139,15 @@ function createShapeData() {
   fallingColumn.setRotationValues([1, 1, 0], 0, true);
   list.push(fallingColumn);
 
-  let apollo = new Shape();
-  apollo.animate = true
-  apollo.animateSpeed = getRandomDec()
-  apollo.setObj("apollo.obj");
-  apollo.setShaderSrc("texturePhong");
-  apollo.setTexParams("sidewalk.jpg", "image");
-  apollo.setRotationValues([1, 1, 1], 0, true);
-  apollo.setPositionValue(4, 0, 5);
-  list.push(apollo);
+  // let apollo = new Shape();
+  // apollo.animate = true
+  // apollo.animateSpeed = getRandomDec()
+  // apollo.setObj("apollo.obj");
+  // apollo.setShaderSrc("texturePhong");
+  // apollo.setTexParams("sidewalk.jpg", "image");
+  // apollo.setRotationValues([1, 1, 1], 0, true);
+  // apollo.setPositionValue(4, 0, 5);
+  // list.push(apollo);
 
   let mars = new Shape();
   mars.setObj("mars.obj");
